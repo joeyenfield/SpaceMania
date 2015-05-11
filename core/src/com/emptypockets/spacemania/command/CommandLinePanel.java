@@ -1,7 +1,7 @@
 package com.emptypockets.spacemania.command;
 
-import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -11,17 +11,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.console.ConsoleListener;
-import com.emptypockets.spacemania.gui.Scene2DToolkit;
-import com.emptypockets.spacemania.gui.ScreenSizeHelper;
+import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
 
-public class CommandLinePanel extends Table implements ConsoleListener{
-	static final float touchSize = ScreenSizeHelper.getcmtoPxlX(1);
-	int characterLimit = 3000;
+public class CommandLinePanel extends Table implements ConsoleListener, Disposable{
+	float touchSize = 50;
+	int characterLimit = 300000;
 	Skin skin;
 	TextField command;
 	TextButton prevCommand;
@@ -34,13 +35,11 @@ public class CommandLinePanel extends Table implements ConsoleListener{
 
 
 	int currentCommand = 0;
-	int commandHistory = 10;
-	ArrayList<String> commands = new ArrayList<String>(commandHistory);
-	
-	
-	public CommandLinePanel(CommandLine commandHub) {
+
+	public CommandLinePanel(CommandLine commandHub, int minTouchSize) {
 		super(Scene2DToolkit.getToolkit().getSkin());
 		this.commandLine = commandHub;
+		touchSize = minTouchSize;
 		createPanel();
 		console = new StringBuffer();
 		Console.register(this);
@@ -54,10 +53,9 @@ public class CommandLinePanel extends Table implements ConsoleListener{
 		nextCommand = new TextButton("+", getSkin());
 		consoleText = new Label("", getSkin());
 		scroll = new ScrollPane(consoleText, getSkin());
-		
 		row();
-		add(prevCommand).height(touchSize).width(touchSize/2);
-		add(nextCommand).height(touchSize).width(touchSize/2);
+		add(prevCommand).height(touchSize).width(touchSize);
+		add(nextCommand).height(touchSize).width(touchSize);
 		add(command).expandX().fillX().height(touchSize);
 		add(sendButton).height(touchSize).width(touchSize);
 		row();
@@ -108,10 +106,10 @@ public class CommandLinePanel extends Table implements ConsoleListener{
 	
 	public void previousCommand(){
 		currentCommand++;
-		if(currentCommand > commands.size()-1){
-			currentCommand = commands.size()-1;
+		if(currentCommand > commandLine.getHistoryCount()-1){
+			currentCommand = commandLine.getHistoryCount()-1;
 		}
-		command.setText(commands.get(currentCommand));
+		command.setText(commandLine.getHistory(currentCommand));
 		command.setCursorPosition(command.getText().length());
 	}
 
@@ -120,7 +118,7 @@ public class CommandLinePanel extends Table implements ConsoleListener{
 		if(currentCommand < 0){
 			currentCommand = 0;
 		}
-		command.setText(commands.get(currentCommand));
+		command.setText(commandLine.getHistory(currentCommand));
 		command.setCursorPosition(command.getText().length());
 	}
 	public void sendCommand(){
@@ -129,18 +127,9 @@ public class CommandLinePanel extends Table implements ConsoleListener{
 		command.setText("");
 		command.setCursorPosition(0);
 	}
-	
-	public void pushHistory(String cmd){
-		currentCommand = -1;
-		commands.add(0, cmd);
-		if(commands.size() >= commandHistory){
-			commands.remove(commands.size()-1);
-		}	
-	}
-	
+
 	public void sendCommand(String cmd){
-		pushHistory(cmd);
-		
+		currentCommand = -1;
 		commandLine.processCommand(cmd);
 	}
 
@@ -151,9 +140,8 @@ public class CommandLinePanel extends Table implements ConsoleListener{
 			console.delete(0, toRemove);
 			console.setLength(characterLimit);
 		}
-		consoleText.setText(console);
+		consoleText.setText(console.toString());
 		scroll.setScrollbarsOnTop(true);
-		scroll.validate();
 		scroll.setScrollPercentY(100);
 	}
 	
@@ -163,5 +151,10 @@ public class CommandLinePanel extends Table implements ConsoleListener{
 	
 	public void printf(String message, Object... values){
 		print(String.format(message, values));
+	}
+
+	@Override
+	public void dispose(){
+		Console.unregister(this);
 	}
 }

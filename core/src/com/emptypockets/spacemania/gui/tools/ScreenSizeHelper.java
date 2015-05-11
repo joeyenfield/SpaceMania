@@ -1,6 +1,7 @@
-package com.emptypockets.spacemania.gui;
+package com.emptypockets.spacemania.gui.tools;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class ScreenSizeHelper {
 	public static int getcmtoPxlX(float cm){

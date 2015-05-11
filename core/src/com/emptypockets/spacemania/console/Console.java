@@ -1,5 +1,7 @@
 package com.emptypockets.spacemania.console;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 
@@ -83,5 +85,12 @@ public class Console {
 				view.printf(msg, obj);
 			}
 		}
+	}
+
+	public static void error(Throwable e) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		e.printStackTrace(pw);
+		println(sw.toString()); // stack trace as a string
 	}
 }

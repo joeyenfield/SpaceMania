@@ -14,6 +14,10 @@ public class BoundedEntityManager<ENT extends BaseEntity> extends BaseEntityMana
         region.set(-10,-10,10,10);
     }
 
+    public Rectangle getRegion() {
+        return region;
+    }
+
     public void setBounds(float x, float y, float wide, float high){
         region.set(x,y,wide,high);
     }

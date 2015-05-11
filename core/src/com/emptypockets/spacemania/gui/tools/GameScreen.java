@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.gui;
+package com.emptypockets.spacemania.gui.tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -34,12 +34,10 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		this.parentInputMultiplexer = inputProcessor;
 		this.gesture = new GestureDetector(this);
 		eventLogger = new EventRecorder(500);
-		setDrawEvents(true);
 	}
 
 	public void initializeRender() {
 		screenCamera.update();
-
 		eventCamera.update();
 
 		Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
@@ -137,7 +135,8 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	public void resize(int width, int height) {
 		screenCamera.viewportWidth = width;
 		screenCamera.viewportHeight = height;
-		
+		screenCamera.position.x = width/2;
+		screenCamera.position.y=height/2;
 		eventCamera.viewportWidth = width;
 		eventCamera.viewportHeight = height;
 	}
@@ -146,7 +145,6 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	public void show() {
 		Scene2DToolkit.getToolkit().reloadSkin();
 		addInputMultiplexer(parentInputMultiplexer);
-		
 	}
 
 	@Override

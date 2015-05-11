@@ -12,7 +12,6 @@ public class ClientLoginCommand extends ClientCommand {
 
 	@Override
 	public void exec(String data) {
-		client.setUsername(data);
-		client.serverLogin();
+		client.serverLogin(data);
 	}
 }

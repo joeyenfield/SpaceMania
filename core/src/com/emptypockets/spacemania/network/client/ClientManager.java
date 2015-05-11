@@ -1,14 +1,13 @@
 package com.emptypockets.spacemania.network.client;
 
+import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.command.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.CommandService;
+import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.server.ServerManager;
-import com.emptypockets.spacemania.network.transport.ClientLoginRequest;
-import com.emptypockets.spacemania.network.transport.ClientLogoutRequest;
-import com.emptypockets.spacemania.network.transport.ClientStateTransferObject;
-import com.emptypockets.spacemania.network.transport.LoginFailedResponse;
-import com.emptypockets.spacemania.network.transport.LoginSucessfulResponse;
+import com.emptypockets.spacemania.network.server.payloads.LoginRequestPayload;
+import com.emptypockets.spacemania.network.server.payloads.LogoutRequestPayload;
 import com.emptypockets.spacemania.network.transport.NetworkProtocall;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -19,10 +18,9 @@ import java.net.InetAddress;
 import java.util.List;
 
 
-public class ClientManager extends Listener {
+public class ClientManager extends Listener implements Disposable {
 
 	Client client;
-	Object engineLock = new Object();
 
 	private CommandLine command;
 	String username = "client";
@@ -35,6 +33,8 @@ public class ClientManager extends Listener {
 		NetworkProtocall.register(client.getKryo());
 		CommandService.registerClient(this);
 	}
+
+
 
 	public void setupClient() {
 		client = new Client();
@@ -89,10 +89,10 @@ public class ClientManager extends Listener {
 	@Override
 	public void received(Connection connection, Object object) {
 		super.received(connection, object);
-		if (object instanceof LoginSucessfulResponse) {
-			loginSucessfull((LoginSucessfulResponse) object);
-		} else if (object instanceof LoginFailedResponse) {
-			loginFailed((LoginFailedResponse) object);
+
+		if(object instanceof ClientPayload){
+			((ClientPayload) object).setClientManager(this);
+			((ClientPayload) object).executePayload();
 		}
 	}
 
@@ -108,34 +108,37 @@ public class ClientManager extends Listener {
 		this.username = data;
 	}
 
-	public void serverLogin() {
+	public void serverLogin(String data) {
 		Console.println("Sending Login Request to server");
-		client.sendTCP(new ClientLoginRequest(username));
+		LoginRequestPayload request = new LoginRequestPayload();
+		request.setUsername(username);
+		client.sendTCP(request);
 	}
 
 	public void serverLogout() {
 		Console.println("Sending Logout Request to server");
-		client.sendTCP(new ClientLogoutRequest(username));
-	}
-
-	public void loginSucessfull(LoginSucessfulResponse sucessfull) {
-		Console.println("Logout Response : Sucessfully Logged in.");
-		loggedIn = true;
-	}
-
-	public void loginFailed(LoginFailedResponse failed) {
-		Console.println("Logout Response : Login FAILED - " + failed.getRejectionReason());
-		loggedIn = false;
-	}
-
-	public void send(ClientStateTransferObject state) {
-		if (client.isConnected() && loggedIn) {
-			state.username = username;
-			client.sendUDP(state);
-		}
+		LogoutRequestPayload request = new LogoutRequestPayload();
+		client.sendTCP(request);
 	}
 
 	public String getUsername() {
 		return username;
+	}
+
+	public void dispose() {
+		stop();
+		if(serverManager != null){
+			serverManager.stop();
+			serverManager.dispose();
+		}
+		serverManager = null;
+	}
+
+	public boolean isLoggedIn() {
+		return loggedIn;
+	}
+
+	public void setLoggedIn(boolean loggedIn) {
+		this.loggedIn = loggedIn;
 	}
 }

@@ -1,7 +1,8 @@
-package com.emptypockets.spacemania.gui;
+package com.emptypockets.spacemania.gui.tools;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -12,24 +13,25 @@ public abstract class StageScreen extends GameScreen {
 
     public StageScreen(InputMultiplexer inputMultiplexer) {
         super(inputMultiplexer);
-        stageViewport = new ScreenViewport();
+        stageViewport = new ExtendViewport(800,600);
     }
 
     public abstract void createStage(Stage stage);
 
     @Override
     public void addInputMultiplexer(InputMultiplexer input) {
-        input.addProcessor(getStage());
         super.addInputMultiplexer(input);
     }
 
     @Override
     public void removeInputMultiplexer(InputMultiplexer input) {
-        input.removeProcessor(getStage());
         super.removeInputMultiplexer(input);
+        input.removeProcessor(getStage());
     }
 
+    @Override
     public void show() {
+        super.show();
         Stage stage = new Stage(stageViewport);
         setStage(stage);
         super.show();
@@ -39,14 +41,17 @@ public abstract class StageScreen extends GameScreen {
     @Override
     public void hide() {
         super.hide();
-        getStage().dispose();
+        if(getStage() != null) {
+            getStage().dispose();
+        }
         setStage(null);
     }
 
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
-        stageViewport.update(width, height);
+        stageViewport.update(width, height, true);
+
     }
 
     @Override
@@ -79,7 +84,13 @@ public abstract class StageScreen extends GameScreen {
     }
 
     public void setStage(Stage stage) {
+        if(this.stage != null){
+            parentInputMultiplexer.removeProcessor(this.stage);
+        }
         this.stage = stage;
+        if(this.stage != null){
+            parentInputMultiplexer.addProcessor(0,this.stage);
+        }
     }
 
 

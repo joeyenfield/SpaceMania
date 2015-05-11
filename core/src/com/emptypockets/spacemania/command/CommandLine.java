@@ -1,80 +1,108 @@
 package com.emptypockets.spacemania.command;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.emptypockets.spacemania.command.commands.CommandLineHelpCommand;
 import com.emptypockets.spacemania.console.Console;
 
 public class CommandLine {
-	HashMap<String, Command> commands;
-	CommandLinePanel panel;
+	int commandHistoryCount = 10;
+	HashMap<String, Command> commandData;
+	ArrayList<String> commandHistory = new ArrayList<String>(commandHistoryCount);
+
+	boolean echoCommand = false;
+	boolean echoSplitCommand = true;
 
 	public CommandLine() {
-		commands = new HashMap<String, Command>();
+		commandData = new HashMap<String, Command>();
 		registerCommand(new CommandLineHelpCommand(this));
 	}
 
+	public String getHistory(int commandNumber){
+		if(commandNumber < 0 || commandNumber > commandHistory.size()){
+			return "";
+		}
+		return commandHistory.get(commandNumber);
+	}
+
+	public int getHistoryCount(){
+		return commandHistory.size();
+	}
+
 	public void unregistercommand(Command command) {
-		synchronized (commands) {
-			commands.put(command.getName(), command);
+		synchronized (commandData) {
+			commandData.put(command.getName(), command);
 		}
 	}
 
 	public void registerCommand(Command command) {
-		synchronized (commands) {
-			commands.put(command.getName(), command);
+		synchronized (commandData) {
+			commandData.put(command.getName(), command);
 		}
 	}
 
-	public CommandLinePanel getPanel() {
-		if (panel == null) {
-			panel = new CommandLinePanel(this);
+	public void pushHistory(String cmd){
+		commandHistory.add(0, cmd);
+		if(commandHistory.size() >= commandHistoryCount){
+			commandHistory.remove(commandHistory.size() - 1);
 		}
-		return panel;
 	}
 
-	public void processCommand(String data) {
-		Console.println(data);
-		boolean commandFound = false;
+	public void processCommand(String commandString) {
+		if(echoCommand) {
+			Console.println(commandString);
+		}
+		pushHistory(commandString);
 
-		if (data != null) {
-			String cmd[] = data.split(" ", 2);
-			String commandName = cmd[0];
-			String argument = null;
-			if (cmd.length > 1) {
-				argument = cmd[1];
-			}
-			try {
-				Command command = getCommand(commandName);
-				if (command != null) {
-					commandFound = true;
-					command.exec(argument);
+		if (commandString != null) {
+			String splitCommand[] = commandString.split(";");
+			for(String value : splitCommand ) {
+				String data = value.trim();
+				if(echoSplitCommand) {
+					Console.println(">" + data);
 				}
-			} catch (Throwable e) {
-				Console.println("Error processing command " + e.getLocalizedMessage());
+
+				String cmd[] = data.split(" ", 2);
+				String commandName = cmd[0];
+				String argument = null;
+				if (cmd.length > 1) {
+					argument = cmd[1];
+				}
+				try {
+					Command command = getCommand(commandName);
+					if (command != null) {
+						command.exec(argument);
+					}else{
+						Console.println("Unknown Command : " + data);
+						return;
+					}
+				} catch (Throwable e) {
+					Console.println("Error processing command " + e.getLocalizedMessage());
+					Console.error(e);
+				}
+
 			}
 		}
-		if (commandFound == false) {
-			Console.println("Unknown Command : " + data);
-		}
+
 	}
 
 	public Command getCommand(String name) {
-		synchronized (commands) {
-			return commands.get(name);
+		synchronized (commandData) {
+			return commandData.get(name);
 		}
 	}
 
 	public void showHelp() {
-		synchronized (commands) {
+		synchronized (commandData) {
 			int maxLength = 0;
-			for (String name : commands.keySet()) {
+			for (String name : commandData.keySet()) {
 				if (name.length() > maxLength) {
 					maxLength = name.length();
 				}
 			}
-			for (String name : commands.keySet()) {
-				Console.printf(" %" + maxLength + "s : %s\n", name, commands.get(name).getDescription());
+			for (String name : commandData.keySet()) {
+				Console.printf(" %" + maxLength + "s : %s\n", name, commandData.get(name).getDescription());
 			}
 		}
 	}

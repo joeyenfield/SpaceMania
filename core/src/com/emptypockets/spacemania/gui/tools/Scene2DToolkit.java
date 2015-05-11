@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.gui;
+package com.emptypockets.spacemania.gui.tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;

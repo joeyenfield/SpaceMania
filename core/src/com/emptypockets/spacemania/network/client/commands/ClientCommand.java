@@ -6,7 +6,7 @@ import com.emptypockets.spacemania.network.client.ClientManager;
 
 public abstract class ClientCommand extends Command {
 
-	ClientManager client;
+	protected ClientManager client;
 	
 	public ClientCommand(String name, ClientManager client) {
 		super(name);

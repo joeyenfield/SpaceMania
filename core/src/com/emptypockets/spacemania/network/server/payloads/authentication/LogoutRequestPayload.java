@@ -1,8 +1,9 @@
-package com.emptypockets.spacemania.network.server.payloads;
+package com.emptypockets.spacemania.network.server.payloads.authentication;
 
 
-import com.emptypockets.spacemania.network.client.payloads.LogoutSuccessPayload;
+import com.emptypockets.spacemania.network.client.payloads.authentication.LogoutSuccessPayload;
 import com.emptypockets.spacemania.network.client.payloads.NotifyClientPayload;
+import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 
 /**
  * Created by jenfield on 11/05/2015.

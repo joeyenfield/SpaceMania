@@ -3,10 +3,11 @@ package com.emptypockets.spacemania.network.server;
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.command.CommandLine;
 import com.emptypockets.spacemania.console.Console;
-import com.emptypockets.spacemania.engine.ServerEngine;
 import com.emptypockets.spacemania.logging.ServerLogger;
 import com.emptypockets.spacemania.network.CommandService;
 import com.emptypockets.spacemania.network.NetworkProperties;
+import com.emptypockets.spacemania.network.client.payloads.engine.EngineStatePayload;
+import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 import com.emptypockets.spacemania.network.transport.NetworkProtocall;
 import com.esotericsoftware.kryonet.Connection;
@@ -14,14 +15,12 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 public class ServerManager extends Listener implements Runnable, Disposable {
     public static final int DEFAULT_SERVER_UPDATE = 10;
-    int clientCount = 0;
     String name = "Server";
     Server server;
-    long lastEngineUpdate = 0;
+
     long lastBroadcast = 0;
 
     Thread thread;
@@ -33,8 +32,6 @@ public class ServerManager extends Listener implements Runnable, Disposable {
 
     ServerEngine engine;
 
-    HashMap<String, Player> players;
-
     public ServerManager() {
         this(DEFAULT_SERVER_UPDATE);
     }
@@ -42,10 +39,8 @@ public class ServerManager extends Listener implements Runnable, Disposable {
     public ServerManager(int maxUpdateCount) {
         setMaxUpdateCount(maxUpdateCount);
         setupServer();
-
         engine = new ServerEngine();
         command = new CommandLine();
-        players = new HashMap<String, Player>();
         CommandService.registerServer(this);
         NetworkProtocall.register(server.getKryo());
     }
@@ -65,17 +60,22 @@ public class ServerManager extends Listener implements Runnable, Disposable {
     public void start() throws IOException {
         Console.printf("Starting Server [%d,%d]\n", tcpPort, udpPort);
         server.bind(tcpPort, udpPort);
+    }
+
+    public void startGame(){
         thread = new Thread(this);
         alive = true;
         thread.start();
-
     }
 
-    public void stop() {
-        Console.println("Stopping Server");
-        server.stop();
+    public void stopGame(){
         alive = false;
         thread = null;
+    }
+    public void stop() {
+        Console.println("Stopping Server");
+        stopGame();
+        server.stop();
     }
 
     public void clientExit(String name) {
@@ -83,22 +83,16 @@ public class ServerManager extends Listener implements Runnable, Disposable {
         ServerLogger.info(name, "Client Exit : " + name);
         synchronized (engine) {
             engine.removePlayer(name);
-            players.remove(name);
         }
     }
 
     public int clientJoin(String name) {
         Console.println("Client Join : " + name);
         ServerLogger.info(name, "Client Join : " + name);
-        int id;
         synchronized (engine) {
-            id = clientCount++;
-            Player player = new Player();
-            player.setPlayerId(id);
-            player.setPlayerName(name);
-            players.put(name, player);
+            Player player = engine.addPlayer(name);
+            return player.getPlayerId();
         }
-        return id;
     }
 
     @Override
@@ -111,29 +105,25 @@ public class ServerManager extends Listener implements Runnable, Disposable {
 
     public void update() {
         synchronized (engine) {
-            if (lastEngineUpdate == 0) {
-                lastEngineUpdate = System.currentTimeMillis();
-                return;
-            }
-            float time = (System.currentTimeMillis() - lastEngineUpdate) * 1e-3f;
-            engine.update(time);
-            engine.tick();
-            lastEngineUpdate = System.currentTimeMillis();
+            engine.update();
         }
     }
 
     public void broadcast() {
         synchronized (engine) {
+            EngineStatePayload state = new EngineStatePayload();
+            state.readState(engine);
             Connection[] con = server.getConnections();
-//            for (int i = 0; i < con.length; i++) {
-//                if (con[i] instanceof ClientConnection) {
-//                    ClientConnection c = (ClientConnection) con[i];
-//                    if (c.username != null) {
-//                        c.sendUDP(engine);
-//                    }
-//                }
-//            }
-//			server.sendToAllTCP(engine);
+            for (int i = 0; i < con.length; i++) {
+                if (con[i] instanceof ClientConnection) {
+                    ClientConnection c = (ClientConnection) con[i];
+                    if (c.isLoggedIn()) {
+                        if(engine.getPlayerByName(c.getUsername()) != null) {
+                            c.sendTCP(state);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -153,9 +143,9 @@ public class ServerManager extends Listener implements Runnable, Disposable {
     @Override
     public void received(Connection connection, Object object) {
         super.received(connection, object);
-        if(connection instanceof ClientConnection) {
-            ClientConnection clientConnection = (ClientConnection)connection;
-            if(object instanceof ServerPayload){
+        if (connection instanceof ClientConnection) {
+            ClientConnection clientConnection = (ClientConnection) connection;
+            if (object instanceof ServerPayload) {
                 ((ServerPayload) object).setClientConnection(clientConnection);
                 ((ServerPayload) object).setServerManager(this);
                 ((ServerPayload) object).executePayload();
@@ -168,6 +158,7 @@ public class ServerManager extends Listener implements Runnable, Disposable {
         long diff;
         float desired;
         Console.println("Starting started");
+        engine.setStart();
         while (alive) {
             lastBroadcast = System.currentTimeMillis();
             update();
@@ -187,14 +178,15 @@ public class ServerManager extends Listener implements Runnable, Disposable {
         ServerLogger.info(name, "Server Running [" + alive + "] Connected [" + server.getConnections().length + "]");
     }
 
-    public void logUsers(){
+    public void logUsers() {
         synchronized (engine) {
-            ServerLogger.info(name, "Connected [" + server.getConnections().length + "]" + " Playsers [" + players.size() + "]");
-            for(Player p : players.values()){
-                ServerLogger.info(name, "Player ["+p.getPlayerName()+"] - ["+p.getPlayerId()+"]");
+            ServerLogger.info(name, "Connected [" + server.getConnections().length + "]" + " Playsers [" + engine.getPlayers().size() + "]");
+            for (Player p : engine.getPlayers()) {
+                ServerLogger.info(name, "Player [" + p.getPlayerName() + "] - [" + p.getPlayerId() + "]");
             }
         }
     }
+
     public void setMaxUpdateCount(int maxUpdateCount) {
         this.maxUpdateCount = maxUpdateCount;
     }
@@ -233,5 +225,9 @@ public class ServerManager extends Listener implements Runnable, Disposable {
 
     public void dispose() {
         stop();
+    }
+
+    public ServerEngine getEngine() {
+        return engine;
     }
 }

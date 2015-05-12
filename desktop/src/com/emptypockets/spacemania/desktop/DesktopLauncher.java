@@ -9,21 +9,20 @@ import java.util.Scanner;
 
 public class DesktopLauncher {
     public static void main(String[] arg) throws InterruptedException {
-        ServerManager manager = new ServerManager(ServerManager.DEFAULT_SERVER_UPDATE);
-
-
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = 10;
-        config.height = 10;
-        config.x = 0;
-        config.y = 1070;
+        config.width = 1280;
+        config.height = 720;
+//        config.x = 0;
+//        config.y = 1070;
 
         SpaceMania test = new SpaceMania();
 
         new LwjglApplication(test, config);
 
         Thread.sleep(1000);
-        test.screen.getClient().getCommand().processCommand("server setup 10; server start; server status; connect localhost,8080,8081");
+        test.screen.getClient().getCommand().processCommand("server setup 10; server start; server status; connect localhost,8080,9090;login jenfield; server startgame");
+
+//        test.screen.getClient().getCommand().processCommand("connect 109.77.88.13,8080,9090;login user2;");
 
         while(true){
             Scanner in = new Scanner(System.in);

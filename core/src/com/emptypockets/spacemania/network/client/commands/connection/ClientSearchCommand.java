@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.network.client.commands;
+package com.emptypockets.spacemania.network.client.commands.connection;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -7,6 +7,7 @@ import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.NetworkProperties;
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.NetworkDiscoveryInterface;
+import com.emptypockets.spacemania.network.client.commands.ClientCommand;
 
 public class ClientSearchCommand extends ClientCommand {
 
@@ -45,7 +46,7 @@ class PushHostsToConsoleCallback implements NetworkDiscoveryInterface {
 	public void notifyDiscoveredHosts(List<InetAddress> hosts) {
 		for (InetAddress host : hosts) {
 			Console.println("Host : " + host.getHostAddress() +" - "+host.getHostName());
-			command.client.getCommand().pushHistory("connect "+host.getHostAddress()+","+tcpPort+","+udpPort);
+			command.getClient().getCommand().pushHistory("connect "+host.getHostAddress()+","+tcpPort+","+udpPort);
 		}
 
 	}

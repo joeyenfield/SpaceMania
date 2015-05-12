@@ -1,6 +1,7 @@
-package com.emptypockets.spacemania.network.client.payloads;
+package com.emptypockets.spacemania.network.client.payloads.authentication;
 
 import com.emptypockets.spacemania.console.Console;
+import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 
 /**
  * Created by jenfield on 11/05/2015.

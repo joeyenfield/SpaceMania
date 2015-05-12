@@ -1,9 +1,11 @@
-package com.emptypockets.spacemania.network.server.payloads;
+package com.emptypockets.spacemania.network.server.payloads.authentication;
 
 import com.emptypockets.spacemania.console.Console;
-import com.emptypockets.spacemania.network.client.payloads.LoginFailedResponsePayload;
-import com.emptypockets.spacemania.network.client.payloads.LoginSuccessResponsePayload;
+import com.emptypockets.spacemania.network.client.payloads.authentication.LoginFailedResponsePayload;
+import com.emptypockets.spacemania.network.client.payloads.authentication.LoginSuccessResponsePayload;
 import com.emptypockets.spacemania.network.client.payloads.NotifyClientPayload;
+import com.emptypockets.spacemania.network.client.payloads.engine.GameJoinPayload;
+import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 
 /**
  * Created by jenfield on 11/05/2015.
@@ -28,6 +30,11 @@ public class LoginRequestPayload extends ServerPayload {
             LoginSuccessResponsePayload resp = new LoginSuccessResponsePayload();
             resp.setUsername(getUsername());
             clientConnection.sendTCP(resp);
+
+            GameJoinPayload start = new GameJoinPayload();
+            start.read(serverManager.getEngine());
+            clientConnection.sendTCP(start);
+
         } else {
             Console.println("User [" + getUsername() + "] is already connected");
 

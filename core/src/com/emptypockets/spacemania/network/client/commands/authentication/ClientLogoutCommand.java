@@ -1,6 +1,7 @@
-package com.emptypockets.spacemania.network.client.commands;
+package com.emptypockets.spacemania.network.client.commands.authentication;
 
 import com.emptypockets.spacemania.network.client.ClientManager;
+import com.emptypockets.spacemania.network.client.commands.ClientCommand;
 
 public class ClientLogoutCommand extends ClientCommand {
 

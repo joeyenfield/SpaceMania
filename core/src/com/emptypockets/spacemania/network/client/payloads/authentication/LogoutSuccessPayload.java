@@ -1,5 +1,6 @@
-package com.emptypockets.spacemania.network.client.payloads;
+package com.emptypockets.spacemania.network.client.payloads.authentication;
 
+import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.esotericsoftware.kryonet.Client;
 
 /**

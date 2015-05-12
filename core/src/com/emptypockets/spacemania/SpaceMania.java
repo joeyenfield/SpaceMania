@@ -28,6 +28,8 @@ public class SpaceMania extends Game {
         Gdx.input.setInputProcessor(input);
         screen = new ClientScreen(input);
         setScreen(screen);
+
+
     }
 
     @Override

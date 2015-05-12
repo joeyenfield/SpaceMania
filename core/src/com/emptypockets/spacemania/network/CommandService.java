@@ -3,13 +3,14 @@ package com.emptypockets.spacemania.network;
 
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.commands.connection.ClientConnectCommand;
-import com.emptypockets.spacemania.network.client.commands.ClientLoginCommand;
-import com.emptypockets.spacemania.network.client.commands.ClientLogoutCommand;
-import com.emptypockets.spacemania.network.client.commands.ClientSearchCommand;
+import com.emptypockets.spacemania.network.client.commands.authentication.ClientLoginCommand;
+import com.emptypockets.spacemania.network.client.commands.authentication.ClientLogoutCommand;
+import com.emptypockets.spacemania.network.client.commands.connection.ClientSearchCommand;
 import com.emptypockets.spacemania.network.client.commands.ClientServerCommand;
 import com.emptypockets.spacemania.network.client.commands.ClientStatusCommand;
 import com.emptypockets.spacemania.network.server.ServerManager;
 import com.emptypockets.spacemania.network.server.commands.ServerStartCommand;
+import com.emptypockets.spacemania.network.server.commands.ServerStartGameCommand;
 import com.emptypockets.spacemania.network.server.commands.ServerStatusCommand;
 import com.emptypockets.spacemania.network.server.commands.ServerStopCommand;
 import com.emptypockets.spacemania.network.server.commands.ServerUsersCommand;
@@ -21,6 +22,7 @@ public class CommandService {
 		server.getCommand().registerCommand(new ServerStopCommand(server));
 		server.getCommand().registerCommand(new ServerStatusCommand(server));
 		server.getCommand().registerCommand(new ServerUsersCommand(server));
+		server.getCommand().registerCommand(new ServerStartGameCommand(server));
 	}
 
 	public static void registerClient(ClientManager client) {

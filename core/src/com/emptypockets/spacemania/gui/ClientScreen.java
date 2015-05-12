@@ -1,6 +1,5 @@
 package com.emptypockets.spacemania.gui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -8,8 +7,6 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -21,11 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.emptypockets.spacemania.EntityRender;
 import com.emptypockets.spacemania.command.CommandLinePanel;
 import com.emptypockets.spacemania.console.Console;
-import com.emptypockets.spacemania.engine.BaseEntity;
-import com.emptypockets.spacemania.engine.entityManager.BoundedEntityManager;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.network.client.ClientManager;
-
 import com.emptypockets.spacemania.utils.GraphicsToolkit;
 import com.emptypockets.spacemania.utils.OrthoCamController;
 
@@ -35,7 +29,8 @@ public class ClientScreen extends StageScreen {
     int touchPadSize = 200;
 
     CommandLinePanel commandLinePanel;
-    Touchpad touchPad;
+    Touchpad movePad;
+    Touchpad shootPad;
     ClientManager client;
 
     ShapeRenderer shape;
@@ -44,10 +39,8 @@ public class ClientScreen extends StageScreen {
     TextButton showConsole;
     boolean alive;
 
-    BoundedEntityManager<BaseEntity> manager;
-    EntityRender render;
 
-    Rectangle bounds;
+    EntityRender render;
 
 
     public ClientScreen(InputMultiplexer inputMultiplexer) {
@@ -55,6 +48,12 @@ public class ClientScreen extends StageScreen {
         client = new ClientManager();
         setClearColor(Color.BLACK);
         control = new OrthoCamController(getScreenCamera());
+
+        getClient().getCommand().pushHistory("server setup 10; server start; server status; connect localhost,8080,9090;login jenfield; server startgame");
+
+        getClient().getCommand().pushHistory("connect 192.168.1.100,8080,9090;login user2;");
+        getClient().getCommand().pushHistory("connect emptypocketgames.noip.me,8080,9090;login user2;");
+
     }
 
     @Override
@@ -74,17 +73,7 @@ public class ClientScreen extends StageScreen {
         super.show();
         shape = new ShapeRenderer();
 
-        manager = new BoundedEntityManager<BaseEntity>();
-        for (int i = 0; i < 100; i++) {
-            BaseEntity entity = new BaseEntity();
-            entity.getPos().set(MathUtils.random(0, Gdx.graphics.getWidth()), MathUtils.random(0, Gdx.graphics.getHeight()));
-            entity.getVel().set(MathUtils.random(-50, 50), MathUtils.random(-50, 50));
-            entity.setSize(MathUtils.random(50), MathUtils.random(50));
-            entity.setAngVel(MathUtils.random(-90, 90));
-            manager.addEntity(entity);
-        }
-        bounds = new Rectangle(0, 0, 500, 500);
-        manager.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+
         render = new EntityRender();
 
         Console.println("AWSOMEO - Showing ");
@@ -103,7 +92,7 @@ public class ClientScreen extends StageScreen {
         }
         commandLinePanel = null;
 
-        if(client != null){
+        if (client != null) {
             client.dispose();
         }
         client = null;
@@ -114,7 +103,8 @@ public class ClientScreen extends StageScreen {
     @Override
     public void createStage(Stage stage) {
         showConsole = new TextButton("C", getSkin());
-        touchPad = new Touchpad(0, getSkin());
+        movePad = new Touchpad(0, getSkin());
+        shootPad = new Touchpad(0, getSkin());
 
         Pixmap pix = new Pixmap(4, 4, Format.RGBA8888);
         Color c = new Color(Color.LIGHT_GRAY);
@@ -126,7 +116,9 @@ public class ClientScreen extends StageScreen {
 
         NinePatch ninePatch = new NinePatch(new Texture(pix), 1, 1, 1, 1);
         Drawable draw = new NinePatchDrawable(ninePatch);
-        touchPad.getStyle().background = draw;
+        movePad.getStyle().background = draw;
+        shootPad.getStyle().background = draw;
+
 
         Table layout = new Table();
         // top
@@ -143,10 +135,9 @@ public class ClientScreen extends StageScreen {
 
         // bottom
         layout.row();
-        layout.add(touchPad).width(touchPadSize).size(touchPadSize);
+        layout.add(movePad).width(touchPadSize).size(touchPadSize);
         layout.add().fillX().expandX();
-        layout.add();
-        layout.setFillParent(true);
+        layout.add(shootPad).width(touchPadSize).size(touchPadSize);
 
         Table inset = new Table();
         inset.row();
@@ -210,8 +201,9 @@ public class ClientScreen extends StageScreen {
 
     @Override
     public void drawScreen(float delta) {
-        manager.update(Gdx.graphics.getRawDeltaTime());
-        render.render(getScreenCamera(), manager);
+        synchronized (client.getEngine()) {
+            render.render(getScreenCamera(), client.getEngine());
+        }
     }
 
     @Override
@@ -221,6 +213,10 @@ public class ClientScreen extends StageScreen {
     @Override
     public void updateLogic(float delta) {
         super.updateLogic(delta);
+        synchronized (client.getEngine()) {
+            client.getEngine().update();
+        }
+        client.sendPlayerState(movePad, shootPad);
     }
 
 }

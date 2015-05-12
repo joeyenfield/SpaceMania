@@ -13,4 +13,7 @@ public abstract class ClientCommand extends Command {
 		this.client = client;
 	}
 
+	public ClientManager getClient() {
+		return client;
+	}
 }

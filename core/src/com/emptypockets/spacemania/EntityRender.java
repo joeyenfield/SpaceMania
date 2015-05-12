@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.emptypockets.spacemania.engine.BaseEntity;
+import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.entityManager.BaseEntityManager;
 import com.emptypockets.spacemania.engine.entityManager.BoundedEntityManager;
 
@@ -41,20 +42,19 @@ public class EntityRender {
                 // shapeRender.polygon(ent.getBounds().getTransformedVertices());
             }
 
-            if(manager instanceof BoundedEntityManager){
-                BoundedEntityManager bounded = (BoundedEntityManager)manager;
-            shapeRender.setColor(Color.BLUE);
-            shapeRender.rect(bounded.getRegion().x, bounded.getRegion().y,bounded.getRegion().width,bounded.getRegion().height);
-            shapeRender.end();
-
+            if (manager instanceof BoundedEntityManager) {
+                BoundedEntityManager bounded = (BoundedEntityManager) manager;
+                shapeRender.setColor(Color.BLUE);
+                shapeRender.rect(bounded.getRegion().x, bounded.getRegion().y, bounded.getRegion().width, bounded.getRegion().height);
+                shapeRender.end();
             }
         }
 
     }
 
-    public void render(OrthographicCamera camera, BaseEntityManager manager) {
+    public void render(OrthographicCamera camera, GameEngine engine) {
         if (debugEnabled) {
-            renderDebug(camera, manager);
+            renderDebug(camera, engine.getEntityManager());
         }
     }
 }

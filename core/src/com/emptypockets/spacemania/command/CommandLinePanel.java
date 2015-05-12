@@ -1,6 +1,7 @@
 package com.emptypockets.spacemania.command;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -133,7 +134,10 @@ public class CommandLinePanel extends Table implements ConsoleListener, Disposab
 		commandLine.processCommand(cmd);
 	}
 
-	public void print(String message){
+	public void print(final String message){
+		Gdx.app.postRunnable(new Runnable() {
+			@Override
+			public void run() {
 		console.append(message);
 		if(console.length() > characterLimit){
 			int toRemove = console.length()-characterLimit;
@@ -142,7 +146,10 @@ public class CommandLinePanel extends Table implements ConsoleListener, Disposab
 		}
 		consoleText.setText(console.toString());
 		scroll.setScrollbarsOnTop(true);
-		scroll.setScrollPercentY(100);
+		scroll.setScrollPercentY(1);
+
+			}
+		});
 	}
 	
 	public void println(String message){

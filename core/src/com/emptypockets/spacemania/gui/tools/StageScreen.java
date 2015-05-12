@@ -3,8 +3,8 @@ package com.emptypockets.spacemania.gui.tools;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.emptypockets.spacemania.console.Console;
 
 public abstract class StageScreen extends GameScreen {
 
@@ -13,7 +13,7 @@ public abstract class StageScreen extends GameScreen {
 
     public StageScreen(InputMultiplexer inputMultiplexer) {
         super(inputMultiplexer);
-        stageViewport = new ExtendViewport(800,600);
+        stageViewport = new ExtendViewport(800, 600);
     }
 
     public abstract void createStage(Stage stage);
@@ -41,7 +41,7 @@ public abstract class StageScreen extends GameScreen {
     @Override
     public void hide() {
         super.hide();
-        if(getStage() != null) {
+        if (getStage() != null) {
             getStage().dispose();
         }
         setStage(null);
@@ -75,7 +75,11 @@ public abstract class StageScreen extends GameScreen {
             getStage().getViewport().apply();
             getStage().draw();
         } catch (Exception e) {
-
+            if (getStage().getBatch().isDrawing()) {
+                //Bug where draw fails which results in the batch.end never being called
+                getStage().getBatch().end();
+            }
+            //Console.error(e);
         }
     }
 
@@ -84,12 +88,12 @@ public abstract class StageScreen extends GameScreen {
     }
 
     public void setStage(Stage stage) {
-        if(this.stage != null){
+        if (this.stage != null) {
             parentInputMultiplexer.removeProcessor(this.stage);
         }
         this.stage = stage;
-        if(this.stage != null){
-            parentInputMultiplexer.addProcessor(0,this.stage);
+        if (this.stage != null) {
+            parentInputMultiplexer.addProcessor(0, this.stage);
         }
     }
 

@@ -5,8 +5,8 @@ public class Event{
 	public enum EventTimerAccuracy{
 		NANO_TIME,
 		MILLI_TIME
-	};
-	
+	}
+
 	private EventTimerAccuracy accuracy = EventTimerAccuracy.MILLI_TIME;
 	private long start;
 	private long end;

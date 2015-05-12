@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.emptypockets.spacemania.EntityRender;
 import com.emptypockets.spacemania.command.CommandLinePanel;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
@@ -72,11 +71,7 @@ public class ClientScreen extends StageScreen {
     public void show() {
         super.show();
         shape = new ShapeRenderer();
-
-
         render = new EntityRender();
-
-        Console.println("AWSOMEO - Showing ");
     }
 
     @Override
@@ -96,7 +91,6 @@ public class ClientScreen extends StageScreen {
             client.dispose();
         }
         client = null;
-        Console.println("AWSOMEO - Hideing");
     }
 
 
@@ -213,10 +207,12 @@ public class ClientScreen extends StageScreen {
     @Override
     public void updateLogic(float delta) {
         super.updateLogic(delta);
-        synchronized (client.getEngine()) {
-            client.getEngine().update();
+        //Update Players Data
+        if(client.getPlayer() != null) {
+            client.getPlayer().getMovement().set(movePad.getKnobPercentX(), movePad.getKnobPercentY());
+            client.getPlayer().getShoot().set(shootPad.getKnobPercentX(), shootPad.getKnobPercentY());
         }
-        client.sendPlayerState(movePad, shootPad);
+        client.update();
     }
 
 }

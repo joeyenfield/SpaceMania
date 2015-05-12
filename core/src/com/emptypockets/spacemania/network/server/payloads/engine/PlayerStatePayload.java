@@ -1,10 +1,8 @@
 package com.emptypockets.spacemania.network.server.payloads.engine;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.emptypockets.spacemania.engine.BaseEntity;
-import com.emptypockets.spacemania.network.client.ClientManager;
-import com.emptypockets.spacemania.network.server.Player;
+import com.emptypockets.spacemania.network.client.engine.ClientPlayer;
+import com.emptypockets.spacemania.network.server.engine.ServerPlayer;
 import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 
 /**
@@ -20,18 +18,17 @@ public class PlayerStatePayload extends ServerPayload {
         shoot = new Vector2();
     }
 
-    public void readPlayer(Touchpad movePad, Touchpad shootPad){
-        movement.set(movePad.getKnobPercentX(), movePad.getKnobPercentY());
-        shoot.set(shootPad.getKnobPercentX(),shootPad.getKnobPercentY());
+    public void readPlayer(ClientPlayer player) {
+        movement.set(player.getMovement());
+        shoot.set(player.getShoot());
     }
+
     @Override
     public void executePayload() {
-        synchronized (serverManager.getEngine()) {
-            Player player = serverManager.getEngine().getPlayerByName(clientConnection.getUsername());
-            if(player != null){
-                player.getMovement().set(movement);
-                player.getShoot().set(shoot);
-            }
+        ServerPlayer player = ((ServerPlayer) clientConnection.getPlayer());
+        if (player != null) {
+            player.getMovement().set(movement);
+            player.getShoot().set(shoot);
         }
     }
 }

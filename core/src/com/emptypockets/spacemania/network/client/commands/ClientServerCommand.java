@@ -12,12 +12,7 @@ public class ClientServerCommand extends ClientCommand {
 	@Override
 	public void exec(String data) {
 		if(data != null && data.startsWith("setup")){
-			String arg[] = data.split(" ");
-			int count = 10;
-			if(arg.length > 1){
-				count = Integer.parseInt(arg[1]);
-			}
-			client.setupServer(count);
+			client.setupServer();
 		}else{
 			client.getServerManager().getCommand().processCommand(data);
 		}

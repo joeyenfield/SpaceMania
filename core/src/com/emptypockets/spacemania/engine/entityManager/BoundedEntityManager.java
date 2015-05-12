@@ -1,7 +1,7 @@
 package com.emptypockets.spacemania.engine.entityManager;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.emptypockets.spacemania.engine.BaseEntity;
+import com.emptypockets.spacemania.engine.entities.BaseEntity;
 
 /**
  * Created by jenfield on 10/05/2015.
@@ -11,7 +11,7 @@ public class BoundedEntityManager<ENT extends BaseEntity> extends BaseEntityMana
     Rectangle region = new Rectangle();
 
     public BoundedEntityManager(){
-        region.set(-10,-10,10,10);
+        region.set(0,0,0,0);
     }
 
     public Rectangle getRegion() {

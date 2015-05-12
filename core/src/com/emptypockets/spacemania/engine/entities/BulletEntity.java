@@ -1,6 +1,4 @@
-package com.emptypockets.spacemania.engine.entityManager;
-
-import com.emptypockets.spacemania.engine.BaseEntity;
+package com.emptypockets.spacemania.engine.entities;
 
 /**
  * Created by jenfield on 12/05/2015.

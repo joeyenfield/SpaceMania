@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.network.server;
+package com.emptypockets.spacemania.engine.players;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -6,8 +6,8 @@ import com.badlogic.gdx.math.Vector2;
  * Created by jenfield on 11/05/2015.
  */
 public class Player {
-    int playerId;
-    String playerName;
+    int id;
+    String username;
 
     Vector2 movement;
     Vector2 shoot;
@@ -26,20 +26,21 @@ public class Player {
     public void setShoot(Vector2 shoot) {
         this.shoot = shoot;
     }
-    public String getPlayerName() {
-        return playerName;
+
+    public int getId() {
+        return id;
     }
 
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getPlayerId() {
-        return playerId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setPlayerId(int playerId) {
-        this.playerId = playerId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Vector2 getMovement() {

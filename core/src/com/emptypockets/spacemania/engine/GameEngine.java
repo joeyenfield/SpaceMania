@@ -3,12 +3,10 @@ package com.emptypockets.spacemania.engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.engine.entityManager.BaseEntityManager;
 import com.emptypockets.spacemania.engine.entityManager.BoundedEntityManager;
 
 import java.util.Collection;
-import java.util.HashMap;
 
 /**
  * Created by jenfield on 10/05/2015.
@@ -17,7 +15,9 @@ public class GameEngine {
 
     Rectangle bounds;
 
-    BoundedEntityManager<BaseEntity> manager;
+    BoundedEntityManager<com.emptypockets.spacemania.engine.entities.BaseEntity> manager;
+
+    boolean running = false;
 
     long startTime;
     long lastUpdate;
@@ -26,13 +26,12 @@ public class GameEngine {
     float deltaTime;
 
     public GameEngine() {
-        manager = new BoundedEntityManager<BaseEntity>();
     }
 
 
-    public void setupTestData(){
+    public void setupTestData() {
         for (int i = 0; i < 0; i++) {
-            BaseEntity entity = new BaseEntity();
+            com.emptypockets.spacemania.engine.entities.BaseEntity entity = new com.emptypockets.spacemania.engine.entities.BaseEntity();
             entity.getPos().set(MathUtils.random(0, Gdx.graphics.getWidth()), MathUtils.random(0, Gdx.graphics.getHeight()));
             entity.getVel().set(MathUtils.random(-50, 50), MathUtils.random(-50, 50));
             entity.setSize(MathUtils.random(50), MathUtils.random(50));
@@ -43,25 +42,41 @@ public class GameEngine {
         manager.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
     }
 
-    public BaseEntityManager getEntityManager(){
-        return manager;
-    }
-    public Collection<BaseEntity> getEntities(){
-        return manager.getEntities();
-    }
 
-    public void setStart(){
+    public void start() {
         startTime = System.currentTimeMillis();
-    }
-    public void update(){
-        elapsedTime = System.currentTimeMillis()-startTime;
-        deltaTime = System.currentTimeMillis()-lastUpdate;
-        lastUpdate = System.currentTimeMillis();
-        float delta = deltaTime/1000f;
-        manager.update(delta);
+        manager = new BoundedEntityManager<com.emptypockets.spacemania.engine.entities.BaseEntity>();
+        unpause();
     }
 
-    public BaseEntity getEntityById(int id){
+
+    public void stop() {
+        pause();
+        if(manager != null) {
+            manager.releaseAll();
+        }
+    }
+
+    public void pause(){
+        running = false;
+    }
+
+    public void unpause(){
+        running = true;
+    }
+
+
+    public void update() {
+        elapsedTime = System.currentTimeMillis() - startTime;
+        deltaTime = System.currentTimeMillis() - lastUpdate;
+        lastUpdate = System.currentTimeMillis();
+        float delta = deltaTime / 1000f;
+        if(running) {
+            manager.update(delta);
+        }
+    }
+
+    public com.emptypockets.spacemania.engine.entities.BaseEntity getEntityById(int id) {
         return manager.getEntity(id);
     }
 
@@ -69,15 +84,30 @@ public class GameEngine {
         return elapsedTime;
     }
 
-    public void addEntity(BaseEntity entity) {
-        manager.addEntity(entity);
+    public void setTime(long time) {
+        this.startTime = System.currentTimeMillis() - time;
     }
 
-    public void setTime(long time) {
-        this.startTime = System.currentTimeMillis()-time;
+    public void addEntity(com.emptypockets.spacemania.engine.entities.BaseEntity entity) {
+        manager.addEntity(entity);
     }
 
     public void removeEntity(int id) {
         manager.removeEntity(id);
+    }
+
+    public BaseEntityManager getEntityManager() {
+        return manager;
+    }
+
+    public Collection<com.emptypockets.spacemania.engine.entities.BaseEntity> getEntities() {
+        return manager.getEntities();
+    }
+
+    public void dispose() {
+        if(manager != null) {
+            manager.dispose();
+        }
+        manager = null;
     }
 }

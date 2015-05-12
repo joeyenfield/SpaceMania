@@ -1,6 +1,7 @@
 package com.emptypockets.spacemania.network.client.payloads.authentication;
 
 import com.emptypockets.spacemania.console.Console;
+import com.emptypockets.spacemania.network.client.engine.ClientPlayer;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 
 /**
@@ -8,6 +9,28 @@ import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
  */
 public class LoginSuccessResponsePayload extends ClientPayload {
     String username;
+    int playerId;
+
+
+
+    @Override
+    public void executePayload() {
+        Console.println("Logout Response : Successfully Logged in.");
+        getClientManager().setLoggedIn(true);
+
+        ClientPlayer clientPlayer = new ClientPlayer();
+        clientPlayer.setId(playerId);
+        clientPlayer.setUsername(username);
+
+        getClientManager().setPlayer(clientPlayer);
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        username = null;
+        playerId = -1;
+    }
 
     public String getUsername() {
         return username;
@@ -17,16 +40,11 @@ public class LoginSuccessResponsePayload extends ClientPayload {
         this.username = username;
     }
 
-    @Override
-    public void executePayload() {
-        Console.println("Logout Response : Successfully Logged in.");
-        getClientManager().setLoggedIn(true);
-        getClientManager().setUsername(username);
+    public int getPlayerId() {
+        return playerId;
     }
 
-    @Override
-    public void reset() {
-        super.reset();
-        username = null;
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
     }
 }

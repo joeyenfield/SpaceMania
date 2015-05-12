@@ -11,9 +11,9 @@ import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 public class LogoutRequestPayload extends ServerPayload {
     @Override
     public void executePayload() {
-        if(clientConnection.getLoggedIn()){
-            serverManager.clientExit(clientConnection.getUsername());
-            clientConnection.setUsername(null);
+        if(clientConnection.isLoggedIn()){
+            serverManager.clientLogout(clientConnection);
+            clientConnection.setPlayer(null);
             clientConnection.setLoggedIn(false);
 
             LogoutSuccessPayload response = new LogoutSuccessPayload();

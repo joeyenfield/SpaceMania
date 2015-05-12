@@ -3,7 +3,7 @@ package com.emptypockets.spacemania.network.client.payloads.engine;
 import com.badlogic.gdx.math.Rectangle;
 import com.emptypockets.spacemania.engine.entityManager.BoundedEntityManager;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
-import com.emptypockets.spacemania.network.server.engine.ServerEngine;
+import com.emptypockets.spacemania.network.server.engine.ServerGameEngine;
 
 /**
  * Created by jenfield on 11/05/2015.
@@ -19,7 +19,7 @@ public class GameJoinPayload extends ClientPayload {
         clientManager.getEngine().setTime(ellapsedTime);
     }
 
-    public void read(ServerEngine engine) {
+    public void read(ServerGameEngine engine) {
         rect.set(((BoundedEntityManager) engine.getEntityManager()).getRegion());
         ellapsedTime = engine.getTime();
     }

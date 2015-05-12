@@ -19,8 +19,8 @@ public class DesktopLauncher {
 
         new LwjglApplication(test, config);
 
-        Thread.sleep(1000);
-        test.screen.getClient().getCommand().processCommand("server setup 10; server start; server status; connect localhost,8080,9090;login jenfield; server startgame");
+        Thread.sleep(5000);
+        test.screen.getClient().getCommand().processCommand("server setup; server start; server status; connect localhost,8080,9090;login jenfield,password;");
 
 //        test.screen.getClient().getCommand().processCommand("connect 109.77.88.13,8080,9090;login user2;");
 

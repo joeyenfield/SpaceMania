@@ -6,6 +6,8 @@ import com.emptypockets.spacemania.command.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.CommandService;
 import com.emptypockets.spacemania.network.client.engine.ClientEngine;
+import com.emptypockets.spacemania.network.client.engine.ClientPlayer;
+import com.emptypockets.spacemania.network.client.exceptions.ClientNotConnectedException;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.server.ServerManager;
 import com.emptypockets.spacemania.network.server.payloads.authentication.LoginRequestPayload;
@@ -18,119 +20,108 @@ import com.esotericsoftware.kryonet.Listener;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class ClientManager extends Listener implements Disposable{
+public class ClientManager implements Disposable {
+    ArrayList<ClientPayload> payloads;
 
-    Client client;
+    CommandLine command;
 
-    PlayerStatePayload state = new PlayerStatePayload();
-    private CommandLine command;
-    String username = "client";
     ServerManager serverManager;
+
     boolean loggedIn = false;
 
     ClientEngine engine;
+    ClientPlayer player;
 
+    ClientConnectionManager connection;
 
     public ClientManager() {
         setCommand(new CommandLine());
-        setupClient();
-        NetworkProtocall.register(client.getKryo());
+        connection = new ClientConnectionManager(this);
         CommandService.registerClient(this);
         engine = new ClientEngine();
+        payloads = new ArrayList<ClientPayload>();
     }
 
-    public void setupClient() {
-        client = new Client(10*1024*1024,10*1024*1024);
-        client.start();
-        client.addListener(this);
-    }
-
-
-    public void connect(String address, int tcpPort, int udpPort) throws IOException {
-        loggedIn = false;
-        Console.printf("Connecting to server %s : %d,%d\n", address, tcpPort, udpPort);
-        client.connect(20000, address, tcpPort, udpPort);
-    }
-
-    public void listStatus() {
-        Console.println("Connected : " + client.isConnected() + " - LoggedIn : " + loggedIn);
-    }
-
-    public void listNetworkServers(final int udpPort, final int timeoutSec, final NetworkDiscoveryInterface callback) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                Console.println("Searching for hosts Port [" + udpPort + "] holding for [" + timeoutSec + " s]");
-                List<InetAddress> hosts = client.discoverHosts(udpPort, timeoutSec * 1000);
-                Console.println("Found : " + hosts.size());
-                for (InetAddress host : hosts) {
-                    Console.println("Host : " + host.getHostAddress() + " - " + host.getHostName());
-                }
-                if (callback != null) {
-                    callback.notifyDiscoveredHosts(hosts);
-                }
-            }
-        }).start();
-    }
 
     public void stop() {
         Console.println("Disconnecting from server");
-        client.close();
+        engine.stop();
+        connection.disconnect();
     }
 
     public void startEngine() {
-        engine.setStart();
+        engine.start();
     }
 
-    public void stopEngine(){
+    public void pauseEngine() {
+        engine.pause();
     }
 
-    @Override
-    public void received(Connection connection, Object object) {
-        super.received(connection, object);
-        if (object instanceof ClientPayload) {
-            ((ClientPayload) object).setClientManager(this);
-            ((ClientPayload) object).executePayload();
+
+    public void update() {
+        //Process Payloads
+        synchronized (payloads) {
+            for (ClientPayload payload : payloads) {
+                payload.executePayload();
+            }
+            payloads.clear();
         }
+
+        //Update Server
+        engine.update();
+
+        //Send Current State to server
+        if (player != null && connection.isConnected()) {
+            //Send Player State to Server
+            PlayerStatePayload playerState = new PlayerStatePayload();
+            playerState.readPlayer(player);
+
+            try {
+                connection.sendUDP(playerState);
+            } catch (ClientNotConnectedException e) {
+                Console.println("Not Connected");
+            }
+        }
+
     }
 
 
-    public void serverLogin(String data) {
+    public void serverLogin(String username, String password) {
         Console.println("Sending Login Request to server");
         LoginRequestPayload request = new LoginRequestPayload();
-        request.setUsername(data);
-        client.sendTCP(request);
+        request.setUsername(username);
+        request.setPassword(password);
+        try {
+            connection.sendTCP(request);
+        } catch (ClientNotConnectedException e) {
+            Console.println("Not connected");
+        }
     }
 
     public void serverLogout() {
         Console.println("Sending Logout Request to server");
         LogoutRequestPayload request = new LogoutRequestPayload();
-        client.sendTCP(request);
-    }
-
-    public void sendPlayerState(Touchpad movePad, Touchpad shootPad) {
-        if(isLoggedIn()) {
-            state.readPlayer(movePad,shootPad);
-            client.sendTCP(state);
+        try {
+            connection.sendTCP(request);
+        } catch (ClientNotConnectedException e) {
+            Console.println("Not connected");
         }
     }
 
-
     public void dispose() {
         stop();
+        connection.disconnect();
         if (serverManager != null) {
             serverManager.stop();
             serverManager.dispose();
         }
         serverManager = null;
-    }
 
-    public String getUsername() {
-        return username;
+        engine.dispose();
     }
 
     public boolean isLoggedIn() {
@@ -149,12 +140,8 @@ public class ClientManager extends Listener implements Disposable{
         this.command = command;
     }
 
-    public void setUsername(String data) {
-        this.username = data;
-    }
-
-    public void setupServer(int updateCount) {
-        serverManager = new ServerManager(updateCount);
+    public void setupServer() {
+        serverManager = new ServerManager();
     }
 
     public ServerManager getServerManager() {
@@ -169,4 +156,35 @@ public class ClientManager extends Listener implements Disposable{
     }
 
 
+    public ClientPlayer getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(ClientPlayer player) {
+        this.player = player;
+    }
+
+
+    public void addPayload(ClientPayload object) {
+        ((ClientPayload) object).setClientManager(this);
+        synchronized (payloads) {
+            payloads.add((ClientPayload) object);
+        }
+    }
+
+    public void listStatus() {
+        connection.listStatus();
+        Console.println("Logged in : " + isLoggedIn());
+    }
+
+    public void connect(String address, int tcpPort, int udpPort) throws IOException {
+        disconnect();
+        connection.connect(address, tcpPort, udpPort);
+    }
+
+    public void disconnect() {
+        loggedIn = false;
+        player = null;
+        connection.disconnect();
+    }
 }

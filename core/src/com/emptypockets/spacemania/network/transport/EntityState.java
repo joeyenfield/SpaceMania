@@ -1,8 +1,7 @@
 package com.emptypockets.spacemania.network.transport;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.engine.BaseEntity;
+import com.emptypockets.spacemania.engine.entities.BaseEntity;
 
 /**
  * Created by jenfield on 11/05/2015.

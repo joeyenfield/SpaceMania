@@ -10,6 +10,6 @@ public class LogoutSuccessPayload extends ClientPayload {
     @Override
     public void executePayload() {
         clientManager.setLoggedIn(false);
-        clientManager.setUsername(null);
+        clientManager.setPlayer(null);
     }
 }

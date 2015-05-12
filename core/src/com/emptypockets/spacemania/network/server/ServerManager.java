@@ -3,11 +3,13 @@ package com.emptypockets.spacemania.network.server;
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.command.CommandLine;
 import com.emptypockets.spacemania.console.Console;
+import com.emptypockets.spacemania.engine.players.Player;
+import com.emptypockets.spacemania.engine.players.PlayerList;
 import com.emptypockets.spacemania.logging.ServerLogger;
 import com.emptypockets.spacemania.network.CommandService;
 import com.emptypockets.spacemania.network.NetworkProperties;
-import com.emptypockets.spacemania.network.client.payloads.engine.EngineStatePayload;
-import com.emptypockets.spacemania.network.server.engine.ServerEngine;
+import com.emptypockets.spacemania.network.server.engine.ServerGameRoom;
+import com.emptypockets.spacemania.network.server.engine.ServerPlayer;
 import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 import com.emptypockets.spacemania.network.transport.NetworkProtocall;
 import com.esotericsoftware.kryonet.Connection;
@@ -15,34 +17,30 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-public class ServerManager extends Listener implements Runnable, Disposable {
-    public static final int DEFAULT_SERVER_UPDATE = 10;
+public class ServerManager extends Listener implements Disposable {
+
     String name = "Server";
     Server server;
 
-    long lastBroadcast = 0;
+    int connectedUserCount = 0;
 
-    Thread thread;
-    int maxUpdateCount = 0;
-    boolean alive = false;
     CommandLine command;
     int udpPort = NetworkProperties.udpPort;
     int tcpPort = NetworkProperties.tcpPort;
 
-    ServerEngine engine;
+    PlayerList<ServerPlayer> playerList;
+    ArrayList<ServerGameRoom> rooms;
 
     public ServerManager() {
-        this(DEFAULT_SERVER_UPDATE);
-    }
-
-    public ServerManager(int maxUpdateCount) {
-        setMaxUpdateCount(maxUpdateCount);
         setupServer();
-        engine = new ServerEngine();
         command = new CommandLine();
         CommandService.registerServer(this);
         NetworkProtocall.register(server.getKryo());
+        playerList= new PlayerList<ServerPlayer>();
+        rooms = new ArrayList<ServerGameRoom>();
     }
 
     public void setupServer() {
@@ -62,82 +60,57 @@ public class ServerManager extends Listener implements Runnable, Disposable {
         server.bind(tcpPort, udpPort);
     }
 
-    public void startGame(){
-        thread = new Thread(this);
-        alive = true;
-        thread.start();
-    }
-
-    public void stopGame(){
-        alive = false;
-        thread = null;
-    }
     public void stop() {
         Console.println("Stopping Server");
-        stopGame();
         server.stop();
     }
 
-    public void clientExit(String name) {
+    public void clientLogout(ClientConnection connection) {
         Console.println("Client Exit : " + name);
         ServerLogger.info(name, "Client Exit : " + name);
-        synchronized (engine) {
-            engine.removePlayer(name);
+        if(connection.isLoggedIn()){
+            playerList.removePlayer(connection.getPlayer());
+            connection.getPlayer().setConnection(null);
+            connection.setPlayer(null);
+            connection.setLoggedIn(false);
         }
     }
 
-    public int clientJoin(String name) {
+    public synchronized ServerPlayer clientLogin(ClientConnection connection, String username, String password) {
         Console.println("Client Join : " + name);
         ServerLogger.info(name, "Client Join : " + name);
-        synchronized (engine) {
-            Player player = engine.addPlayer(name);
-            return player.getPlayerId();
-        }
+
+        connectedUserCount++;
+
+        ServerPlayer player = new ServerPlayer();
+        player.setUsername(username);
+        player.setId(connectedUserCount);
+        player.setConnection(connection);
+        connection.setPlayer(player);
+        playerList.addPlayer(player);
+        return player;
+    }
+
+    public void sendToPlayerUDP(ServerPlayer player, Object data) {
+        player.getConnection().sendUDP(data);
+    }
+
+    public void sendToPlayerTCP(ServerPlayer player, Object data) {
+        player.getConnection().sendTCP(data);
     }
 
     @Override
     public void disconnected(Connection connection) {
         super.disconnected(connection);
         if (connection instanceof ClientConnection) {
-            clientExit(((ClientConnection) connection).getUsername());
+            clientLogout(((ClientConnection) connection));
         }
     }
 
-    public void update() {
-        synchronized (engine) {
-            engine.update();
-        }
-    }
 
-    public void broadcast() {
-        synchronized (engine) {
-            EngineStatePayload state = new EngineStatePayload();
-            state.readState(engine);
-            Connection[] con = server.getConnections();
-            for (int i = 0; i < con.length; i++) {
-                if (con[i] instanceof ClientConnection) {
-                    ClientConnection c = (ClientConnection) con[i];
-                    if (c.isLoggedIn()) {
-                        if(engine.getPlayerByName(c.getUsername()) != null) {
-                            c.sendTCP(state);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public ClientConnection isUserConnected(String userName) {
-        Connection[] con = server.getConnections();
-        for (int i = 0; i < con.length; i++) {
-            if (con[i] instanceof ClientConnection) {
-                ClientConnection c = (ClientConnection) con[i];
-                if (c.getUsername() != null && userName != null && c.getUsername().equalsIgnoreCase(userName)) {
-                    return c;
-                }
-            }
-        }
-        return null;
+    public boolean isUserConnected(String userName) {
+        ServerPlayer player = playerList.getPlayerByUsername(userName);
+        return player != null;
     }
 
     @Override
@@ -153,42 +126,13 @@ public class ServerManager extends Listener implements Runnable, Disposable {
         }
     }
 
-    @Override
-    public void run() {
-        long diff;
-        float desired;
-        Console.println("Starting started");
-        engine.setStart();
-        while (alive) {
-            lastBroadcast = System.currentTimeMillis();
-            update();
-            broadcast();
-            diff = System.currentTimeMillis() - lastBroadcast;
-            desired = 1000f / maxUpdateCount;
-            if (diff < desired) {
-                try {
-                    Thread.sleep((long) (desired - diff));
-                } catch (InterruptedException e) {
-                }
-            }
-        }
-    }
-
     public void logStatus() {
-        ServerLogger.info(name, "Server Running [" + alive + "] Connected [" + server.getConnections().length + "]");
+        ServerLogger.info(name, "Server Running - Connected [" + server.getConnections().length + "]");
     }
 
     public void logUsers() {
-        synchronized (engine) {
-            ServerLogger.info(name, "Connected [" + server.getConnections().length + "]" + " Playsers [" + engine.getPlayers().size() + "]");
-            for (Player p : engine.getPlayers()) {
-                ServerLogger.info(name, "Player [" + p.getPlayerName() + "] - [" + p.getPlayerId() + "]");
-            }
-        }
-    }
+        ServerLogger.info(name, "Connected [" + server.getConnections().length + "]" + " Players [" + playerList.getPlayerCount() + "]");
 
-    public void setMaxUpdateCount(int maxUpdateCount) {
-        this.maxUpdateCount = maxUpdateCount;
     }
 
     public CommandLine getCommand() {
@@ -225,9 +169,5 @@ public class ServerManager extends Listener implements Runnable, Disposable {
 
     public void dispose() {
         stop();
-    }
-
-    public ServerEngine getEngine() {
-        return engine;
     }
 }

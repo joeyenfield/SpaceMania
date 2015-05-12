@@ -1,28 +1,29 @@
 package com.emptypockets.spacemania.network.server;
 
+import com.emptypockets.spacemania.network.server.engine.ServerPlayer;
 import com.esotericsoftware.kryonet.Connection;
 
 public class ClientConnection extends Connection {
-	String username;
-	private boolean loggedIn;
+    ServerPlayer player;
+    private boolean loggedIn;
 
-	public String getUsername() {
-		return username;
-	}
+    public boolean getLoggedIn() {
+        return loggedIn;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public ServerPlayer getPlayer() {
+        return player;
+    }
 
-	public boolean getLoggedIn() {
-		return loggedIn;
-	}
+    public void setPlayer(ServerPlayer player) {
+        this.player = player;
+    }
 
-	public boolean isLoggedIn() {
-		return loggedIn;
-	}
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
 
-	public void setLoggedIn(boolean loggedIn) {
-		this.loggedIn = loggedIn;
-	}
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
 }

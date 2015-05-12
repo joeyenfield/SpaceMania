@@ -1,9 +1,9 @@
-package com.emptypockets.spacemania;
+package com.emptypockets.spacemania.gui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.emptypockets.spacemania.engine.BaseEntity;
+import com.emptypockets.spacemania.engine.entities.BaseEntity;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.entityManager.BaseEntityManager;
 import com.emptypockets.spacemania.engine.entityManager.BoundedEntityManager;
@@ -24,6 +24,9 @@ public class EntityRender {
 
     public void renderDebug(OrthographicCamera camera, BaseEntityManager manager) {
         shapeRender.setProjectionMatrix(camera.combined);
+        if(manager == null){
+            return;
+        }
         synchronized (manager) {
             Collection<? extends BaseEntity> ents = manager.getEntities();
             shapeRender.begin(ShapeRenderer.ShapeType.Line);

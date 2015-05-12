@@ -21,7 +21,7 @@ public class LoginFailedResponsePayload extends ClientPayload {
     public void executePayload() {
         Console.println("Login Failed : "+errorMessage);
         getClientManager().setLoggedIn(false);
-        getClientManager().setUsername("");
+        getClientManager().setPlayer(null);
     }
 
     @Override

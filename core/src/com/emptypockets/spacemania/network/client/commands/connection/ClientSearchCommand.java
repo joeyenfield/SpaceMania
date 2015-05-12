@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.NetworkProperties;
+import com.emptypockets.spacemania.network.client.ClientConnectionManager;
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.NetworkDiscoveryInterface;
 import com.emptypockets.spacemania.network.client.commands.ClientCommand;
@@ -27,7 +28,7 @@ public class ClientSearchCommand extends ClientCommand {
 			udpPort = Integer.parseInt(arg[1]);
 			timeoutSec = Integer.parseInt(arg[2]);
 		}
-		client.listNetworkServers(udpPort, timeoutSec, new PushHostsToConsoleCallback(this, tcpPort, udpPort));
+		ClientConnectionManager.listNetworkServers(udpPort, timeoutSec, new PushHostsToConsoleCallback(this, tcpPort, udpPort));
 	}
 }
 

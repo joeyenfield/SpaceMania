@@ -19,147 +19,148 @@ import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.console.ConsoleListener;
 import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
 
-public class CommandLinePanel extends Table implements ConsoleListener, Disposable{
-	float touchSize = 50;
-	int characterLimit = 300000;
-	Skin skin;
-	TextField command;
-	TextButton prevCommand;
-	TextButton nextCommand;
-	TextButton sendButton;
-	Label consoleText;
-	StringBuffer console;
-	ScrollPane scroll;
-	CommandLine commandLine;
+public class CommandLinePanel extends Table implements ConsoleListener, Disposable {
+    float touchSize = 50;
+    int characterLimit = 300000;
+    Skin skin;
+    TextField command;
+    TextButton prevCommand;
+    TextButton nextCommand;
+    TextButton sendButton;
+    Label consoleText;
+    StringBuffer console;
+    ScrollPane scroll;
+    CommandLine commandLine;
 
 
-	int currentCommand = 0;
+    int currentCommand = 0;
 
-	public CommandLinePanel(CommandLine commandHub, int minTouchSize) {
-		super(Scene2DToolkit.getToolkit().getSkin());
-		this.commandLine = commandHub;
-		touchSize = minTouchSize;
-		createPanel();
-		console = new StringBuffer();
-		Console.register(this);
-	}
+    public CommandLinePanel(CommandLine commandHub, int minTouchSize) {
+        super(Scene2DToolkit.getToolkit().getSkin());
+        this.commandLine = commandHub;
+        touchSize = minTouchSize;
+        createPanel();
+        console = new StringBuffer();
+        Console.register(this);
+    }
 
-	public void createPanel() {
-		
-		command = new TextField("", getSkin());
-		sendButton = new TextButton("Send", getSkin());
-		prevCommand = new TextButton("-", getSkin());
-		nextCommand = new TextButton("+", getSkin());
-		consoleText = new Label("", getSkin());
-		scroll = new ScrollPane(consoleText, getSkin());
-		row();
-		add(prevCommand).height(touchSize).width(touchSize);
-		add(nextCommand).height(touchSize).width(touchSize);
-		add(command).expandX().fillX().height(touchSize);
-		add(sendButton).height(touchSize).width(touchSize);
-		row();
-		add(scroll).colspan(4).expand().fill();
-		prevCommand.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				previousCommand();
-			}
-		});
-		nextCommand.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				nextCommand();
-			}
-		});
-		command.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if(event instanceof InputEvent){
-					InputEvent e = (InputEvent)event;
-					if(e.getType() == Type.keyUp){
-						int c= e.getKeyCode();
-						if(c == 66){
-							sendCommand();
-						}
-					}else if(e.getType() == Type.keyDown){
-						int c= e.getKeyCode();
-						if(c == 19){
-							previousCommand();
-						}else if(c == 20){
-							nextCommand();
-						}
-					}
-				}
-				return false;
-			}
-		});
-		sendButton.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				sendCommand();
-			}
-		});
+    public void createPanel() {
 
-	}
+        command = new TextField("", getSkin());
+        sendButton = new TextButton("Send", getSkin());
+        prevCommand = new TextButton("-", getSkin());
+        nextCommand = new TextButton("+", getSkin());
+        consoleText = new Label("", getSkin());
+        scroll = new ScrollPane(consoleText, getSkin());
+        row();
+        add(prevCommand).height(touchSize).width(touchSize);
+        add(nextCommand).height(touchSize).width(touchSize);
+        add(command).expandX().fillX().height(touchSize);
+        add(sendButton).height(touchSize).width(touchSize);
+        row();
+        add(scroll).colspan(4).expand().fill();
+        prevCommand.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                previousCommand();
+            }
+        });
+        nextCommand.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                nextCommand();
+            }
+        });
+        command.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                if (event instanceof InputEvent) {
+                    InputEvent e = (InputEvent) event;
+                    if (e.getType() == Type.keyUp) {
+                        int c = e.getKeyCode();
+                        if (c == 66) {
+                            sendCommand();
+                        }
+                    } else if (e.getType() == Type.keyDown) {
+                        int c = e.getKeyCode();
+                        if (c == 19) {
+                            previousCommand();
+                        } else if (c == 20) {
+                            nextCommand();
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+        sendButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                sendCommand();
+            }
+        });
 
-	
-	public void previousCommand(){
-		currentCommand++;
-		if(currentCommand > commandLine.getHistoryCount()-1){
-			currentCommand = commandLine.getHistoryCount()-1;
-		}
-		command.setText(commandLine.getHistory(currentCommand));
-		command.setCursorPosition(command.getText().length());
-	}
+    }
 
-	public void nextCommand(){
-		currentCommand--;
-		if(currentCommand < 0){
-			currentCommand = 0;
-		}
-		command.setText(commandLine.getHistory(currentCommand));
-		command.setCursorPosition(command.getText().length());
-	}
-	public void sendCommand(){
-		String cmd = command.getText();
-		sendCommand(cmd);
-		command.setText("");
-		command.setCursorPosition(0);
-	}
 
-	public void sendCommand(String cmd){
-		currentCommand = -1;
-		commandLine.processCommand(cmd);
-	}
+    public void previousCommand() {
+        currentCommand++;
+        if (currentCommand > commandLine.getHistoryCount() - 1) {
+            currentCommand = commandLine.getHistoryCount() - 1;
+        }
+        command.setText(commandLine.getHistory(currentCommand));
+        command.setCursorPosition(command.getText().length());
+    }
 
-	public void print(final String message){
-		Gdx.app.postRunnable(new Runnable() {
-			@Override
-			public void run() {
-		console.append(message);
-		if(console.length() > characterLimit){
-			int toRemove = console.length()-characterLimit;
-			console.delete(0, toRemove);
-			console.setLength(characterLimit);
-		}
-		consoleText.setText(console.toString());
-		scroll.setScrollbarsOnTop(true);
-		scroll.setScrollPercentY(1);
+    public void nextCommand() {
+        currentCommand--;
+        if (currentCommand < 0) {
+            currentCommand = 0;
+        }
+        command.setText(commandLine.getHistory(currentCommand));
+        command.setCursorPosition(command.getText().length());
+    }
 
-			}
-		});
-	}
-	
-	public void println(String message){
-		print(message+"\n");
-	}
-	
-	public void printf(String message, Object... values){
-		print(String.format(message, values));
-	}
+    public void sendCommand() {
+        String cmd = command.getText();
+        sendCommand(cmd);
+        command.setText("");
+        command.setCursorPosition(0);
+    }
 
-	@Override
-	public void dispose(){
-		Console.unregister(this);
-	}
+    public void sendCommand(String cmd) {
+        currentCommand = -1;
+        commandLine.processCommand(cmd);
+    }
+
+    public void print(final String message) {
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                console.append(message);
+                if (console.length() > characterLimit) {
+                    int toRemove = console.length() - characterLimit;
+                    console.delete(0, toRemove);
+                    console.setLength(characterLimit);
+                }
+                consoleText.setText(console.toString());
+                scroll.setScrollbarsOnTop(true);
+                scroll.setScrollPercentY(1);
+
+            }
+        });
+    }
+
+    public void println(String message) {
+        print(message + "\n");
+    }
+
+    public void printf(String message, Object... values) {
+        print(String.format(message, values));
+    }
+
+    @Override
+    public void dispose() {
+        Console.unregister(this);
+    }
 }

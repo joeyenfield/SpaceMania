@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.network.server.payloads.authentication;
 
 import com.emptypockets.spacemania.console.Console;
-import com.emptypockets.spacemania.engine.players.Player;
 import com.emptypockets.spacemania.network.client.payloads.NotifyClientPayload;
 import com.emptypockets.spacemania.network.client.payloads.authentication.LoginFailedResponsePayload;
 import com.emptypockets.spacemania.network.client.payloads.authentication.LoginSuccessResponsePayload;

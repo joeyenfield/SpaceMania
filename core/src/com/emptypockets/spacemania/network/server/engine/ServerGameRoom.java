@@ -1,16 +1,16 @@
 package com.emptypockets.spacemania.network.server.engine;
 
+import com.emptypockets.spacemania.engine.players.Player;
 import com.emptypockets.spacemania.engine.players.PlayerList;
 import com.emptypockets.spacemania.engine.rooms.GameRoom;
 import com.emptypockets.spacemania.network.client.payloads.engine.stateSync.EngineStatePayload;
-import com.emptypockets.spacemania.engine.players.Player;
-import com.emptypockets.spacemania.network.server.engine.playerProcessors.SendEngineStatePlayerProcessor;
 import com.emptypockets.spacemania.network.server.ServerManager;
+import com.emptypockets.spacemania.network.server.engine.playerProcessors.SendEngineStatePlayerProcessor;
 
 /**
  * Created by jenfield on 12/05/2015.
  */
-public class ServerGameRoom extends GameRoom<ServerPlayer, ServerGameEngine>{
+public class ServerGameRoom extends GameRoom<ServerPlayer, ServerGameEngine> {
     ServerManager manager;
     ServerGameEngine engine;
     EngineStatePayload engineStatePayload;

@@ -15,11 +15,11 @@ public class SendEngineStatePlayerProcessor implements PlayerProcessor<ServerPla
         player.getConnection().sendUDP(engineState);
     }
 
-    public void setEngineState(EngineStatePayload engineState) {
-        this.engineState = engineState;
-    }
-
     public EngineStatePayload getEngineState() {
         return engineState;
+    }
+
+    public void setEngineState(EngineStatePayload engineState) {
+        this.engineState = engineState;
     }
 }

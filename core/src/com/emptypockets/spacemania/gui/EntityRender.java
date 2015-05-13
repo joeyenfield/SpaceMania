@@ -3,12 +3,10 @@ package com.emptypockets.spacemania.gui;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.emptypockets.spacemania.engine.entities.BaseEntity;
 import com.emptypockets.spacemania.engine.GameEngine;
+import com.emptypockets.spacemania.engine.entities.BaseEntity;
 import com.emptypockets.spacemania.engine.entityManager.EntityManager;
 import com.emptypockets.spacemania.engine.entityManager.processors.EntityProcessor;
-
-import java.util.Collection;
 
 /**
  * Created by jenfield on 10/05/2015.

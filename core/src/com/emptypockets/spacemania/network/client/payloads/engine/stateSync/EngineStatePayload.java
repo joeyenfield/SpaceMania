@@ -3,9 +3,9 @@ package com.emptypockets.spacemania.network.client.payloads.engine.stateSync;
 import com.emptypockets.spacemania.engine.entities.BaseEntity;
 import com.emptypockets.spacemania.network.client.engine.ClientEngine;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
+import com.emptypockets.spacemania.network.client.payloads.engine.stateSync.entityProcessors.ReadEntityStateEntityProcessor;
 import com.emptypockets.spacemania.network.client.payloads.engine.stateSync.entityProcessors.RemoveClearedEntitiesIterator;
 import com.emptypockets.spacemania.network.server.engine.ServerGameEngine;
-import com.emptypockets.spacemania.network.client.payloads.engine.stateSync.entityProcessors.ReadEntityStateEntityProcessor;
 import com.emptypockets.spacemania.network.transport.EntityState;
 
 import java.util.ArrayList;
@@ -13,14 +13,14 @@ import java.util.ArrayList;
 /**
  * Created by jenfield on 11/05/2015.
  */
-public class EngineStatePayload extends ClientPayload{
+public class EngineStatePayload extends ClientPayload {
     long engineTime;
     ArrayList<EntityState> states = new ArrayList<EntityState>();
 
     ReadEntityStateEntityProcessor readStateProcessor = new ReadEntityStateEntityProcessor(this);
     RemoveClearedEntitiesIterator removeClearedEntitiesProcessore = new RemoveClearedEntitiesIterator(this);
 
-    public void readState(ServerGameEngine engine){
+    public void readState(ServerGameEngine engine) {
         states.clear();
         engineTime = (engine.getTime());
         engine.getEntityManager().processEntities(readStateProcessor);

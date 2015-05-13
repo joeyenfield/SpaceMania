@@ -7,9 +7,9 @@ import com.emptypockets.spacemania.network.transport.NetworkPayload;
 /**
  * Created by jenfield on 11/05/2015.
  */
-public abstract class ClientPayload extends NetworkPayload implements Pool.Poolable{
+public abstract class ClientPayload extends NetworkPayload implements Pool.Poolable {
 
-   protected ClientManager clientManager;
+    protected ClientManager clientManager;
 
     public ClientManager getClientManager() {
         return clientManager;

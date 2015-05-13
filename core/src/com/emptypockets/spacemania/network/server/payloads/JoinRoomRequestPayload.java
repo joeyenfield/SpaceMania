@@ -5,7 +5,7 @@ import com.emptypockets.spacemania.network.server.engine.ServerGameRoom;
 /**
  * Created by jenfield on 12/05/2015.
  */
-public class JoinRoomRequestPayload extends ServerPayload{
+public class JoinRoomRequestPayload extends ServerPayload {
     int roomId;
 
     public int getRoomId() {

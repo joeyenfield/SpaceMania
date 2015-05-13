@@ -1,10 +1,12 @@
 package com.emptypockets.spacemania.network.server;
 
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Timer;
 import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.engine.players.Player;
 import com.emptypockets.spacemania.engine.players.PlayerList;
+import com.emptypockets.spacemania.engine.players.processor.PlayerProcessor;
 import com.emptypockets.spacemania.logging.ServerLogger;
 import com.emptypockets.spacemania.network.CommandService;
 import com.emptypockets.spacemania.network.NetworkProperties;
@@ -13,11 +15,15 @@ import com.emptypockets.spacemania.network.server.engine.ServerPlayer;
 import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 import com.emptypockets.spacemania.network.transport.NetworkProtocall;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ServerManager extends Listener implements Disposable {
 
@@ -33,14 +39,17 @@ public class ServerManager extends Listener implements Disposable {
 
     PlayerList<ServerPlayer> playerList;
     ArrayList<ServerGameRoom> rooms;
+    Timer pingingScheduled;
 
     public ServerManager() {
         setupServer();
         command = new CommandLine();
         CommandService.registerServer(this);
         NetworkProtocall.register(server.getKryo());
-        playerList= new PlayerList<ServerPlayer>();
+        playerList = new PlayerList<ServerPlayer>();
         rooms = new ArrayList<ServerGameRoom>();
+
+
     }
 
     public void setupServer() {
@@ -53,19 +62,46 @@ public class ServerManager extends Listener implements Disposable {
         };
         server.start();
         server.addListener(this);
+
+
     }
 
     public void start() throws IOException {
         Console.printf("Starting Server [%d,%d]\n", tcpPort, udpPort);
         server.bind(tcpPort, udpPort);
+
+        //PINGER
+        pingingScheduled = new Timer();
+        pingingScheduled.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                updatePings();
+            }
+        }, 20, 20);
+        pingingScheduled.start();
     }
 
+    public void updatePings(){
+        playerList.processPlayers(new PlayerProcessor<ServerPlayer>() {
+            @Override
+            public void processPlayer(ServerPlayer player) {
+                try {
+                    player.getConnection().updateReturnTripTime();
+                } catch (Throwable t) {
+                    Console.printf("Failed to update return trip time for player " + player.getUsername());
+                    Console.error(t);
+                }
+            }
+        });
+    }
     public void stop() {
         Console.println("Stopping Server");
+        pingingScheduled.stop();
         server.stop();
+
     }
 
-    public synchronized  ServerGameRoom createRoom(ServerPlayer host, String roomName) {
+    public synchronized ServerGameRoom createRoom(ServerPlayer host, String roomName) {
         createdRoomCount++;
         //Set State
         ServerGameRoom room = new ServerGameRoom(this);
@@ -85,7 +121,7 @@ public class ServerManager extends Listener implements Disposable {
     public void clientLogout(ClientConnection connection) {
         Console.println("Client Exit : " + name);
         ServerLogger.info(name, "Client Exit : " + name);
-        if(connection.isLoggedIn()){
+        if (connection.isLoggedIn()) {
             playerList.removePlayer(connection.getPlayer());
             connection.getPlayer().setConnection(null);
             connection.setPlayer(null);
@@ -135,6 +171,9 @@ public class ServerManager extends Listener implements Disposable {
         super.received(connection, object);
         if (connection instanceof ClientConnection) {
             ClientConnection clientConnection = (ClientConnection) connection;
+            if(clientConnection.getPlayer()!=null){
+                clientConnection.getPlayer().setPing(connection.getReturnTripTime());
+            }
             if (object instanceof ServerPayload) {
                 ((ServerPayload) object).setClientConnection(clientConnection);
                 ((ServerPayload) object).setServerManager(this);
@@ -149,7 +188,12 @@ public class ServerManager extends Listener implements Disposable {
 
     public void logUsers() {
         ServerLogger.info(name, "Connected [" + server.getConnections().length + "]" + " Players [" + playerList.getPlayerCount() + "]");
-
+        playerList.processPlayers(new PlayerProcessor<ServerPlayer>() {
+            @Override
+            public void processPlayer(ServerPlayer player) {
+                ServerLogger.info("Player [" + player.getUsername() + "](" + player.getPing() + ")ms - In Room[" + player.isInRoom() + "]");
+            }
+        });
     }
 
     public CommandLine getCommand() {
@@ -189,5 +233,13 @@ public class ServerManager extends Listener implements Disposable {
     }
 
 
+    public void pingUser(String username) {
+        ServerPlayer player = playerList.getPlayerByUsername(username);
+        if(player != null){
+            player.getConnection().updateReturnTripTime();
+        }else{
+            Console.println("No user "+username);
+        }
 
+    }
 }

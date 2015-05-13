@@ -5,7 +5,6 @@ import com.emptypockets.spacemania.engine.entities.BaseEntity;
 import com.emptypockets.spacemania.engine.entityManager.processors.EntityIterator;
 import com.emptypockets.spacemania.engine.entityManager.processors.EntityProcessor;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -27,13 +26,13 @@ public class EntityManager<ENT extends BaseEntity> implements Disposable {
         entities.put(ent.getId(), ent);
     }
 
-    public synchronized void processEntities(EntityProcessor<ENT> entityProcessor){
-        for(ENT ent : entities.values()){
+    public synchronized void processEntities(EntityProcessor<ENT> entityProcessor) {
+        for (ENT ent : entities.values()) {
             entityProcessor.processEntity(ent);
         }
     }
 
-    public synchronized void processEntities(EntityIterator<ENT> entityProcessor){
+    public synchronized void processEntities(EntityIterator<ENT> entityProcessor) {
         Iterator<ENT> iterator = entities.values().iterator();
         entityProcessor.iteratateEntities(iterator);
     }
@@ -42,11 +41,11 @@ public class EntityManager<ENT extends BaseEntity> implements Disposable {
         entities.remove(id);
     }
 
-    public synchronized  void dispose() {
+    public synchronized void dispose() {
         releaseAll();
     }
 
-    public synchronized  void releaseAll() {
+    public synchronized void releaseAll() {
         entities.clear();
     }
 }

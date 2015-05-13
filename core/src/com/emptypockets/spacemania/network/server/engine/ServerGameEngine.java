@@ -1,9 +1,8 @@
 package com.emptypockets.spacemania.network.server.engine;
 
 import com.badlogic.gdx.Gdx;
-import com.emptypockets.spacemania.engine.entities.BaseEntity;
 import com.emptypockets.spacemania.engine.GameEngine;
-import com.emptypockets.spacemania.engine.entities.FixedTimeEntity;
+import com.emptypockets.spacemania.engine.entities.BaseEntity;
 import com.emptypockets.spacemania.engine.players.Player;
 import com.emptypockets.spacemania.engine.players.PlayerList;
 import com.emptypockets.spacemania.network.server.engine.playerProcessors.PlayerUpdateProcessor;
@@ -29,7 +28,7 @@ public class ServerGameEngine extends GameEngine {
 
     public Player addPlayer(ServerPlayer player) {
         BaseEntity entity = new BaseEntity();
-        entity.getPos().set(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
+        entity.getPos().set(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
         players.addPlayer(player);
         addEntity(entity);
         return player;

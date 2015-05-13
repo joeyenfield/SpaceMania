@@ -180,4 +180,10 @@ public class ClientManager implements Disposable {
         player = null;
         connection.disconnect();
     }
+
+    public void updatePing() {
+        if(connection.isConnected()){
+            connection.updatePing();
+        }
+    }
 }

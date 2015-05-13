@@ -20,9 +20,10 @@ public class ClientConnectionManager extends Listener {
     Client connection;
     ClientManager manager;
 
-    public ClientConnectionManager(ClientManager manager){
+    public ClientConnectionManager(ClientManager manager) {
         this.manager = manager;
     }
+
     public static void listNetworkServers(final int udpPort, final int timeoutSec, final NetworkDiscoveryInterface callback) {
         new Thread(new Runnable() {
             @Override
@@ -69,7 +70,7 @@ public class ClientConnectionManager extends Listener {
         }
     }
 
-    public boolean isConnected(){
+    public boolean isConnected() {
         synchronized (clientConnectionLock) {
             if (connection != null && connection.isConnected()) {
                 return true;
@@ -77,6 +78,7 @@ public class ClientConnectionManager extends Listener {
         }
         return false;
     }
+
     public void disconnect() {
         synchronized (clientConnectionLock) {
             if (connection != null && connection.isConnected()) {
@@ -92,7 +94,7 @@ public class ClientConnectionManager extends Listener {
             if (connection == null) {
                 Console.println("Not Connected");
             } else {
-                Console.println("Connected : " + connection.isConnected());
+                Console.println("Connected : " + connection.isConnected()+" : Ping ["+getPing()+"]");
             }
         }
     }
@@ -103,7 +105,7 @@ public class ClientConnectionManager extends Listener {
             if (connection != null && connection.isConnected()) {
                 connection.sendTCP(data);
             } else {
-               throw new ClientNotConnectedException();
+                throw new ClientNotConnectedException();
             }
         }
     }
@@ -117,5 +119,22 @@ public class ClientConnectionManager extends Listener {
                 throw new ClientNotConnectedException();
             }
         }
+    }
+
+    public void updatePing() {
+        synchronized (clientConnectionLock){
+            if (connection != null && connection.isConnected()) {
+                connection.updateReturnTripTime();
+            }
+        }
+    }
+
+    public int getPing(){
+        synchronized (clientConnectionLock){
+            if (connection != null && connection.isConnected()) {
+                return connection.getReturnTripTime();
+            }
+        }
+        return -1;
     }
 }

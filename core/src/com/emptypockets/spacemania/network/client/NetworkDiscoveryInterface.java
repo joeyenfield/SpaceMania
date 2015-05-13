@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface NetworkDiscoveryInterface {
 
-	void notifyDiscoveredHosts(List<InetAddress> hosts);
+    void notifyDiscoveredHosts(List<InetAddress> hosts);
 
 }

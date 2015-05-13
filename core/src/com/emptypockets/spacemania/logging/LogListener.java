@@ -1,5 +1,5 @@
 package com.emptypockets.spacemania.logging;
 
 public interface LogListener {
-	void print(String message);
+    void print(String message);
 }

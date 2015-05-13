@@ -4,13 +4,13 @@ import com.emptypockets.spacemania.network.server.ServerManager;
 
 public class ServerStatusCommand extends ServerCommand {
 
-	public ServerStatusCommand(ServerManager nodes) {
-		super("status", nodes);
-		setDescription("Logs the status of the current server : status");
-	}
+    public ServerStatusCommand(ServerManager nodes) {
+        super("status", nodes);
+        setDescription("Logs the status of the current server : status");
+    }
 
-	@Override
-	public void exec(String data) {
-		server.logStatus();
-	}
+    @Override
+    public void exec(String data) {
+        server.logStatus();
+    }
 }

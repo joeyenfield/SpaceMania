@@ -8,42 +8,43 @@ import com.emptypockets.spacemania.engine.players.PlayerList;
  * Created by jenfield on 12/05/2015.
  */
 public abstract class GameRoom<PLR extends Player, ENG extends GameEngine> {
-    String name;
-    private int id;
     protected PlayerList<PLR> players;
     protected ENG engine;
+    String name;
+    private int id;
 
-    public abstract ENG createEngine();
-    public abstract PlayerList<PLR> createPlayerList();
-
-    public GameRoom(){
+    public GameRoom() {
         players = createPlayerList();
         engine = createEngine();
     }
 
-    protected void addPlayer(PLR player){
+    public abstract ENG createEngine();
+
+    public abstract PlayerList<PLR> createPlayerList();
+
+    protected void addPlayer(PLR player) {
         players.addPlayer(player);
     }
 
-    protected void removePlayer(PLR player){
+    protected void removePlayer(PLR player) {
         players.removePlayer(player);
     }
 
-    public void startGame(){
+    public void startGame() {
         engine.start();
     }
 
-    public void pauseGame(){
+    public void pauseGame() {
         engine.pause();
     }
 
-    public void unpauseGame(){
+    public void unpauseGame() {
         engine.unpause();
     }
 
 
-    public void update(){
-        synchronized (engine){
+    public void update() {
+        synchronized (engine) {
             engine.update();
         }
 

@@ -10,17 +10,17 @@ import java.util.Scanner;
 public class DesktopLauncher {
     public static void main(String[] arg) throws InterruptedException {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = 1280;
-        config.height = 720;
-//        config.x = 0;
-//        config.y = 1070;
+        config.width = 20;
+        config.height = 20;
+        config.x = 0;
+        config.y = 1070;
 
         SpaceMania test = new SpaceMania();
 
         new LwjglApplication(test, config);
 
-        Thread.sleep(5000);
-        test.screen.getClient().getCommand().processCommand("server setup; server start; server status; connect localhost,8080,9090;login jenfield,password;");
+        Thread.sleep(2000);
+        test.screen.getClient().getCommand().processCommand("server setup; server start; server status; connect localhost,8080,9090;login jenfield,password;server ping jenfield; server ping jenfield; server users");
 
 //        test.screen.getClient().getCommand().processCommand("connect 109.77.88.13,8080,9090;login user2;");
 

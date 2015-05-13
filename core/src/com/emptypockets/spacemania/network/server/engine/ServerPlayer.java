@@ -19,11 +19,15 @@ public class ServerPlayer extends Player {
         this.room = room;
     }
 
+    public ClientConnection getConnection() {
+        return connection;
+    }
+
     public void setConnection(ClientConnection connection) {
         this.connection = connection;
     }
 
-    public ClientConnection getConnection() {
-        return connection;
+    public boolean isInRoom() {
+        return room != null;
     }
 }

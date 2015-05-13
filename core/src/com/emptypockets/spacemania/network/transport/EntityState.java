@@ -28,15 +28,15 @@ public class EntityState {
         this.time = time;
     }
 
-    public void write(long currentTime, BaseEntity ent, boolean forcePos){
+    public void write(long currentTime, BaseEntity ent, boolean forcePos) {
         ent.setVel(vel);
         ent.setAngVel(angVel);
 
-        if(forcePos || Math.abs(ang-ent.getAng()) > 2*angVel){
+        if (forcePos || Math.abs(ang - ent.getAng()) > 2 * angVel) {
             ent.setAng(ang);
         }
 
-        if(forcePos || pos.dst2(ent.getPos()) > 2*vel.len2()){
+        if (forcePos || pos.dst2(ent.getPos()) > 2 * vel.len2()) {
             ent.setPos(pos);
         }
 

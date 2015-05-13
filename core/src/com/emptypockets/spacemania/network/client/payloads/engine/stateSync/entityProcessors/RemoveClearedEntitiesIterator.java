@@ -15,21 +15,22 @@ import java.util.Iterator;
 public class RemoveClearedEntitiesIterator implements EntityIterator<BaseEntity> {
 
     EngineStatePayload engineStatePayload;
-    public RemoveClearedEntitiesIterator(EngineStatePayload engineStatePayload){
+
+    public RemoveClearedEntitiesIterator(EngineStatePayload engineStatePayload) {
         this.engineStatePayload = engineStatePayload;
     }
 
     @Override
     public void iteratateEntities(Iterator<BaseEntity> entities) {
         //Build Entity Map
-        HashMap<Integer, EntityState> stateMap = new HashMap<Integer,EntityState>();
-        for(EntityState state : engineStatePayload.getStates()){
+        HashMap<Integer, EntityState> stateMap = new HashMap<Integer, EntityState>();
+        for (EntityState state : engineStatePayload.getStates()) {
             stateMap.put(state.getId(), state);
         }
 
-        while(entities.hasNext()){
+        while (entities.hasNext()) {
             BaseEntity entity = entities.next();
-            if(!stateMap.containsKey(entity.getId())){
+            if (!stateMap.containsKey(entity.getId())) {
                 entities.remove();
             }
         }

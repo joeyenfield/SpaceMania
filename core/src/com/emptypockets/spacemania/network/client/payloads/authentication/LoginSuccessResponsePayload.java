@@ -12,7 +12,6 @@ public class LoginSuccessResponsePayload extends ClientPayload {
     int playerId;
 
 
-
     @Override
     public void executePayload() {
         Console.println("Logout Response : Successfully Logged in.");

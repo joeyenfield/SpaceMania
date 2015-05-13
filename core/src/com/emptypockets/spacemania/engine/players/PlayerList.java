@@ -36,13 +36,13 @@ public class PlayerList<PLR extends Player> {
         return players.size();
     }
 
-    public synchronized void processPlayers(PlayerProcessor<PLR> processor){
-        for(PLR player : players){
+    public synchronized void processPlayers(PlayerProcessor<PLR> processor) {
+        for (PLR player : players) {
             processor.processPlayer(player);
         }
     }
 
-    public synchronized void iteratoratePlayers(PlayerIterator<PLR> iterator){
+    public synchronized void iteratoratePlayers(PlayerIterator<PLR> iterator) {
         iterator.iterateOver(players.iterator());
     }
 }

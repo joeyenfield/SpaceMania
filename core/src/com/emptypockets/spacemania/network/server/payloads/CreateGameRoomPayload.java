@@ -1,7 +1,5 @@
 package com.emptypockets.spacemania.network.server.payloads;
 
-import com.emptypockets.spacemania.network.server.engine.ServerGameRoom;
-
 /**
  * Created by jenfield on 12/05/2015.
  */

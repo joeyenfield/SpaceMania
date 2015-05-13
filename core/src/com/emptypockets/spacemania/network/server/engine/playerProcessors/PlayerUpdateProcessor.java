@@ -13,16 +13,17 @@ public class PlayerUpdateProcessor implements PlayerProcessor<ServerPlayer> {
 
     ServerGameEngine engine;
 
-    public PlayerUpdateProcessor(ServerGameEngine engine){
+    public PlayerUpdateProcessor(ServerGameEngine engine) {
         this.engine = engine;
     }
+
     @Override
     public void processPlayer(ServerPlayer player) {
 
         BaseEntity ent = engine.getEntityById(player.getId());
         ent.getVel().set(player.getMovement()).scl(300);
 
-        if(player.canShoot()) {
+        if (player.canShoot()) {
             if (player.getShoot().len2() > 0.3 * 0.3f) {
                 FixedTimeEntity bullet = new FixedTimeEntity();
                 bullet.getPos().set(ent.getPos()).add(player.getShoot().cpy().setLength(10));

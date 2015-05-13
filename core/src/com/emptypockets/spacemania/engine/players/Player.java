@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Player {
     int id;
+    int ping;
+
     String username;
 
     Vector2 movement;
@@ -21,8 +23,8 @@ public class Player {
 
     }
 
-    public boolean canShoot(){
-        return System.currentTimeMillis()-lastShootTime > shootSpeed;
+    public boolean canShoot() {
+        return System.currentTimeMillis() - lastShootTime > shootSpeed;
     }
 
     public Vector2 getShoot() {
@@ -65,5 +67,11 @@ public class Player {
         this.movement = movement;
     }
 
+    public int getPing() {
+        return ping;
+    }
 
+    public void setPing(int ping) {
+        this.ping = ping;
+    }
 }

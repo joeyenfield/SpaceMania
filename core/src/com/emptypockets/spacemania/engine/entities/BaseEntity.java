@@ -32,13 +32,14 @@ public class BaseEntity {
                 -1, 1});
     }
 
-    public void setSize(int sizeX, int sizeY){
+    public void setSize(int sizeX, int sizeY) {
         bounds.setVertices(new float[]{
                 -sizeX, -sizeY,
                 sizeX, -sizeY,
                 sizeX, sizeY,
                 -sizeX, sizeY});
     }
+
     public void update(float timeDelta) {
         vel.x += acl.x * timeDelta;
         vel.y += acl.y * timeDelta;
@@ -57,12 +58,24 @@ public class BaseEntity {
         return vel;
     }
 
+    public void setVel(Vector2 vel) {
+        this.vel = vel;
+    }
+
     public Vector2 getPos() {
         return pos;
     }
 
+    public void setPos(Vector2 pos) {
+        this.pos = pos;
+    }
+
     public Vector2 getAcl() {
         return acl;
+    }
+
+    public void setAcl(Vector2 acl) {
+        this.acl = acl;
     }
 
     public int getId() {
@@ -71,18 +84,6 @@ public class BaseEntity {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public void setPos(Vector2 pos) {
-        this.pos = pos;
-    }
-
-    public void setVel(Vector2 vel) {
-        this.vel = vel;
-    }
-
-    public void setAcl(Vector2 acl) {
-        this.acl = acl;
     }
 
     public float getAng() {
@@ -117,7 +118,7 @@ public class BaseEntity {
         this.bounds = bounds;
     }
 
-    public boolean isDead(){
+    public boolean isDead() {
         return false;
     }
 }

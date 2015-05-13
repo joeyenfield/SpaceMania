@@ -30,6 +30,7 @@ public class GameEngine {
     float deltaTime;
 
     Rectangle boundedRegion;
+
     public GameEngine() {
         entityUpdaterProcessor = new EntityUpdaterProcessor();
         boundedProcessor = new BoundedEntityProcessor();
@@ -61,16 +62,16 @@ public class GameEngine {
 
     public void stop() {
         pause();
-        if(manager != null) {
+        if (manager != null) {
             manager.releaseAll();
         }
     }
 
-    public void pause(){
+    public void pause() {
         running = false;
     }
 
-    public void unpause(){
+    public void unpause() {
         running = true;
     }
 
@@ -82,7 +83,7 @@ public class GameEngine {
         float delta = deltaTime / 1000f;
 
 
-        if(running) {
+        if (running) {
             entityUpdaterProcessor.setDeltaTime(delta);
             boundedProcessor.getRegion().set(boundedRegion);
             manager.processEntities(entityUpdaterProcessor);
@@ -116,7 +117,7 @@ public class GameEngine {
     }
 
     public void dispose() {
-        if(manager != null) {
+        if (manager != null) {
             manager.dispose();
         }
         manager = null;

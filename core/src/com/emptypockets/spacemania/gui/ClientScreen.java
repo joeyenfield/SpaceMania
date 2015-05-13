@@ -207,7 +207,7 @@ public class ClientScreen extends StageScreen {
     public void updateLogic(float delta) {
         super.updateLogic(delta);
         //Update Players Data
-        if(client.getPlayer() != null) {
+        if (client.getPlayer() != null) {
             client.getPlayer().getMovement().set(movePad.getKnobPercentX(), movePad.getKnobPercentY());
             client.getPlayer().getShoot().set(shootPad.getKnobPercentX(), shootPad.getKnobPercentY());
         }

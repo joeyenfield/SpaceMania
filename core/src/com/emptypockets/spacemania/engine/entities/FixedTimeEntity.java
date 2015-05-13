@@ -8,15 +8,16 @@ public class FixedTimeEntity extends BaseEntity {
 
     long creationTime = 0;
 
-    public FixedTimeEntity(){
+    public FixedTimeEntity() {
         super();
         updateCreationTime();
     }
-    public void updateCreationTime(){
+
+    public void updateCreationTime() {
         creationTime = System.currentTimeMillis();
     }
 
-    public boolean isDead(){
-        return System.currentTimeMillis()-creationTime > lifeTime;
+    public boolean isDead() {
+        return System.currentTimeMillis() - creationTime > lifeTime;
     }
 }

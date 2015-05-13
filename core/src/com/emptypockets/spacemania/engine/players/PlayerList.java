@@ -1,5 +1,8 @@
 package com.emptypockets.spacemania.engine.players;
 
+import com.emptypockets.spacemania.engine.players.processor.PlayerIterator;
+import com.emptypockets.spacemania.engine.players.processor.PlayerProcessor;
+
 import java.util.ArrayList;
 
 /**
@@ -8,39 +11,38 @@ import java.util.ArrayList;
 public class PlayerList<PLR extends Player> {
     ArrayList<PLR> players;
 
-    public PlayerList(){
+    public PlayerList() {
         players = new ArrayList<PLR>();
     }
-    public void addPlayer(PLR player){
-        synchronized (players){
-            players.add(player);
-        }
+
+    public synchronized void addPlayer(PLR player) {
+        players.add(player);
     }
 
-    public PLR getPlayerByUsername(String name){
-        synchronized (players) {
-            for (PLR p : players) {
-                if(p.getUsername().equalsIgnoreCase(name)){
-                    return p;
-                }
+    public synchronized PLR getPlayerByUsername(String name) {
+        for (PLR p : players) {
+            if (p.getUsername().equalsIgnoreCase(name)) {
+                return p;
             }
         }
         return null;
     }
 
-    public void removePlayer(PLR player){
-        synchronized (players){
-            players.remove(player);
+    public synchronized void removePlayer(PLR player) {
+        players.remove(player);
+    }
+
+    public synchronized int getPlayerCount() {
+        return players.size();
+    }
+
+    public synchronized void processPlayers(PlayerProcessor<PLR> processor){
+        for(PLR player : players){
+            processor.processPlayer(player);
         }
     }
 
-    public int getPlayerCount() {
-        synchronized (players){
-            return players.size();
-        }
-    }
-
-    public ArrayList<PLR> getPlayers() {
-        return players;
+    public synchronized void iteratoratePlayers(PlayerIterator<PLR> iterator){
+        iterator.iterateOver(players.iterator());
     }
 }

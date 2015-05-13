@@ -16,7 +16,7 @@ public class EntityState {
 
     long time;
 
-    public void read(long time, BaseEntity entity) {
+    public void readStateFromEntity(long time, BaseEntity entity) {
         id = entity.getId();
 
         pos.set(entity.getPos());

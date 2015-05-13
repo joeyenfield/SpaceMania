@@ -1,8 +1,8 @@
-package com.emptypockets.spacemania.command.commands;
+package com.emptypockets.spacemania.commandLine.commands;
 
 
-import com.emptypockets.spacemania.command.Command;
-import com.emptypockets.spacemania.command.CommandLine;
+import com.emptypockets.spacemania.commandLine.Command;
+import com.emptypockets.spacemania.commandLine.CommandLine;
 
 public abstract class CommandLineCommand extends Command {
 

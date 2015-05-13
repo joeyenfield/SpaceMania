@@ -1,7 +1,6 @@
-package com.emptypockets.spacemania.command.commands;
+package com.emptypockets.spacemania.commandLine.commands;
 
-import com.emptypockets.spacemania.command.Command;
-import com.emptypockets.spacemania.command.CommandLine;
+import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 
 public class CommandLineHelpCommand extends CommandLineCommand{
@@ -16,7 +15,7 @@ public class CommandLineHelpCommand extends CommandLineCommand{
 		if(data == null || data.length() == 0){
 			commandHub.showHelp();
 		}else{
-			Command command = commandHub.getCommand(data);
+			com.emptypockets.spacemania.commandLine.Command command = commandHub.getCommand(data);
 			if(command == null){
 				Console.println("Unknown Command : "+data);
 			}else{

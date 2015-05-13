@@ -1,8 +1,7 @@
 package com.emptypockets.spacemania.network.client;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.utils.Disposable;
-import com.emptypockets.spacemania.command.CommandLine;
+import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.CommandService;
 import com.emptypockets.spacemania.network.client.engine.ClientEngine;
@@ -13,15 +12,9 @@ import com.emptypockets.spacemania.network.server.ServerManager;
 import com.emptypockets.spacemania.network.server.payloads.authentication.LoginRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.authentication.LogoutRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.engine.PlayerStatePayload;
-import com.emptypockets.spacemania.network.transport.NetworkProtocall;
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class ClientManager implements Disposable {

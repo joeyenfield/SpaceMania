@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.console;
+package com.emptypockets.spacemania.gui;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -8,8 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
+import com.emptypockets.spacemania.console.Console;
+import com.emptypockets.spacemania.console.ConsoleListener;
 
-public class ConsoleScreen extends Window implements ConsoleListener{
+public class ConsoleScreen extends Window implements ConsoleListener {
 	Label label;
 	ScrollPane scroll;
 	StringBuffer console;

@@ -1,57 +1,68 @@
 package com.emptypockets.spacemania.network.server.engine;
 
-import com.emptypockets.spacemania.network.client.payloads.engine.EngineStatePayload;
+import com.emptypockets.spacemania.engine.players.PlayerList;
+import com.emptypockets.spacemania.engine.rooms.GameRoom;
+import com.emptypockets.spacemania.network.client.payloads.engine.stateSync.EngineStatePayload;
 import com.emptypockets.spacemania.engine.players.Player;
+import com.emptypockets.spacemania.network.server.engine.playerProcessors.SendEngineStatePlayerProcessor;
 import com.emptypockets.spacemania.network.server.ServerManager;
-
-import java.util.ArrayList;
 
 /**
  * Created by jenfield on 12/05/2015.
  */
-public class ServerGameRoom implements Runnable {
+public class ServerGameRoom extends GameRoom<ServerPlayer, ServerGameEngine>{
     ServerManager manager;
-    String name;
-    ArrayList<Player> players;
     ServerGameEngine engine;
+    EngineStatePayload engineStatePayload;
+    SendEngineStatePlayerProcessor sendEngineStateProcessor;
 
-    public ServerGameRoom(ServerManager manager){
+    private Player host;
+
+    public ServerGameRoom(ServerManager manager) {
+        super();
         this.manager = manager;
-    }
-    public void joinGame(Player player){
-
-    }
-
-    public void leaveGame(Player player){
-
+        engineStatePayload = new EngineStatePayload();
+        sendEngineStateProcessor = new SendEngineStatePlayerProcessor();
     }
 
-    public void start(){
-        engine.start();
+    @Override
+    public PlayerList<ServerPlayer> createPlayerList() {
+        return new PlayerList<ServerPlayer>();
+    }
+
+    @Override
+    public ServerGameEngine createEngine() {
+        return new ServerGameEngine();
+    }
+
+    public void joinGame(ServerPlayer player) {
+        player.setRoom(this);
+        addPlayer(player);
+    }
+
+    public void leaveGame(ServerPlayer player) {
+        player.setRoom(null);
+        removePlayer(player);
     }
 
     public void update() {
-        synchronized (engine) {
-            engine.update();
-        }
+        super.update();
+        broadcast();
     }
 
     public void broadcast() {
-        EngineStatePayload state = new EngineStatePayload();
         synchronized (engine) {
-            state.readState(engine);
+            engineStatePayload.readState(engine);
         }
-
-        synchronized (players) {
-            for(Player player : players) {
-                manager.sendToPlayerTCP((ServerPlayer) player, state);
-            }
-        }
+        sendEngineStateProcessor.setEngineState(engineStatePayload);
+        players.processPlayers(sendEngineStateProcessor);
     }
 
+    public Player getHost() {
+        return host;
+    }
 
-    @Override
-    public void run() {
-
+    public void setHost(Player host) {
+        this.host = host;
     }
 }

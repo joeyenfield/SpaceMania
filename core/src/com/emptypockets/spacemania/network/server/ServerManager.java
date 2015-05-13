@@ -1,7 +1,7 @@
 package com.emptypockets.spacemania.network.server;
 
 import com.badlogic.gdx.utils.Disposable;
-import com.emptypockets.spacemania.command.CommandLine;
+import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.engine.players.Player;
 import com.emptypockets.spacemania.engine.players.PlayerList;
@@ -18,7 +18,6 @@ import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ServerManager extends Listener implements Disposable {
 
@@ -26,6 +25,7 @@ public class ServerManager extends Listener implements Disposable {
     Server server;
 
     int connectedUserCount = 0;
+    int createdRoomCount = 0;
 
     CommandLine command;
     int udpPort = NetworkProperties.udpPort;
@@ -63,6 +63,23 @@ public class ServerManager extends Listener implements Disposable {
     public void stop() {
         Console.println("Stopping Server");
         server.stop();
+    }
+
+    public synchronized  ServerGameRoom createRoom(ServerPlayer host, String roomName) {
+        createdRoomCount++;
+        //Set State
+        ServerGameRoom room = new ServerGameRoom(this);
+        room.setId(createdRoomCount);
+        room.setName(roomName);
+        rooms.add(room);
+
+        //Join the room
+        room.setHost(host);
+        return room;
+    }
+
+    public ServerGameRoom getRoomById(int roomId) {
+        return null;
     }
 
     public void clientLogout(ClientConnection connection) {
@@ -170,4 +187,7 @@ public class ServerManager extends Listener implements Disposable {
     public void dispose() {
         stop();
     }
+
+
+
 }

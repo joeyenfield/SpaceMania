@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.network.client.payloads.engine;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.emptypockets.spacemania.engine.entityManager.BoundedEntityManager;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.server.engine.ServerGameEngine;
 
@@ -14,13 +13,13 @@ public class GameJoinPayload extends ClientPayload {
 
     @Override
     public void executePayload() {
-        ((BoundedEntityManager)clientManager.getEngine().getEntityManager()).getRegion().set(rect);
+        clientManager.getEngine().getBoundedRegion().set(rect);
         clientManager.startEngine();
         clientManager.getEngine().setTime(ellapsedTime);
     }
 
     public void read(ServerGameEngine engine) {
-        rect.set(((BoundedEntityManager) engine.getEntityManager()).getRegion());
+        rect.set(engine.getBoundedRegion());
         ellapsedTime = engine.getTime();
     }
 }

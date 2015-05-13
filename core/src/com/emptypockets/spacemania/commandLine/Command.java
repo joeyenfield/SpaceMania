@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.command;
+package com.emptypockets.spacemania.commandLine;
 
 public abstract class Command {
 	String name;

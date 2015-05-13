@@ -11,12 +11,18 @@ public class Player {
 
     Vector2 movement;
     Vector2 shoot;
+    long lastShootTime = 0;
+    long shootSpeed = 1000;
 
     public Player() {
         super();
         movement = new Vector2();
         shoot = new Vector2();
 
+    }
+
+    public boolean canShoot(){
+        return System.currentTimeMillis()-lastShootTime > shootSpeed;
     }
 
     public Vector2 getShoot() {
@@ -33,6 +39,14 @@ public class Player {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public long getShootSpeed() {
+        return shootSpeed;
+    }
+
+    public void setShootSpeed(long shootSpeed) {
+        this.shootSpeed = shootSpeed;
     }
 
     public String getUsername() {

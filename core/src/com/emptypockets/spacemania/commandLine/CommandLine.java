@@ -1,9 +1,8 @@
-package com.emptypockets.spacemania.command;
+package com.emptypockets.spacemania.commandLine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.emptypockets.spacemania.command.commands.CommandLineHelpCommand;
 import com.emptypockets.spacemania.console.Console;
 
 public class CommandLine {
@@ -16,7 +15,7 @@ public class CommandLine {
 
 	public CommandLine() {
 		commandData = new HashMap<String, Command>();
-		registerCommand(new CommandLineHelpCommand(this));
+		registerCommand(new com.emptypockets.spacemania.commandLine.commands.CommandLineHelpCommand(this));
 	}
 
 	public String getHistory(int commandNumber){

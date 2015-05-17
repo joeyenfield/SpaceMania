@@ -41,7 +41,7 @@ public class CommandLinePanel extends Table implements ConsoleListener, Disposab
         touchSize = minTouchSize;
         createPanel();
         console = new StringBuffer();
-        Console.register(this);
+        commandHub.getConsole().register(this);
     }
 
     public void createPanel() {
@@ -133,7 +133,7 @@ public class CommandLinePanel extends Table implements ConsoleListener, Disposab
         commandLine.processCommand(cmd);
     }
 
-    public void print(final String message) {
+    public void print(Console con, final String message) {
         Gdx.app.postRunnable(new Runnable() {
             @Override
             public void run() {
@@ -151,16 +151,16 @@ public class CommandLinePanel extends Table implements ConsoleListener, Disposab
         });
     }
 
-    public void println(String message) {
-        print(message + "\n");
+    public void println(Console con, String message) {
+        print(con,message + "\n");
     }
 
-    public void printf(String message, Object... values) {
-        print(String.format(message, values));
+    public void printf(Console con, String message, Object... values) {
+        print(con,String.format(message, values));
     }
 
     @Override
     public void dispose() {
-        Console.unregister(this);
+    	 this.commandLine.getConsole().unregister(this);
     }
 }

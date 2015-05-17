@@ -6,86 +6,86 @@ import java.util.ArrayList;
 
 
 public class Console {
-    static Console console;
+	String consoleKey;
     static ConsoleListener sysout = new ConsoleListener() {
         @Override
-        public void println(String message) {
-            System.out.println(message);
+        public void println(Console console, String message) {
+            System.out.println(console.consoleKey+message);
         }
 
         @Override
-        public void printf(String message, Object... values) {
-            System.out.printf(message, values);
+        public void printf(Console console, String message, Object... values) {
+            System.out.printf(console.consoleKey+message, values);
         }
 
         @Override
-        public void print(String message) {
-            System.out.print(message);
+        public void print(Console console, String message) {
+            System.out.print(console.consoleKey+message);
         }
     };
     ArrayList<ConsoleListener> screens = new ArrayList<ConsoleListener>();
 
-    private Console() {
-        screens.add(sysout);
+    public Console() {
+        this("");
     }
 
-    public static void enableSysOut() {
+    
+    public void setConsoleKey(String consoleKey) {
+		this.consoleKey = consoleKey;
+	}
+
+
+	public Console(String string) {
+    	consoleKey = string;
+    	screens.add(sysout);
+    }
+
+	public void enableSysOut() {
         register(sysout);
     }
 
-    public static void disableSysOut() {
+    public void disableSysOut() {
         unregister(sysout);
     }
 
-    private static Console getConsole() {
-        if (console == null) {
-            console = new Console();
-        }
-        return console;
-    }
 
-    public static void register(ConsoleListener screen) {
-        Console console = getConsole();
-        synchronized (console.screens) {
-            console.screens.add(screen);
+    public void register(ConsoleListener screen) {
+        synchronized (screens) {
+            screens.add(screen);
         }
     }
 
-    public static void unregister(ConsoleListener screen) {
-        Console console = getConsole();
-        synchronized (console.screens) {
-            console.screens.remove(screen);
+    public void unregister(ConsoleListener screen) {
+        synchronized (screens) {
+            screens.remove(screen);
         }
     }
 
-    public static void print(String msg) {
-        Console console = getConsole();
-        synchronized (console.screens) {
-            for (ConsoleListener view : console.screens) {
-                view.print(msg);
+    public void print(String msg) {
+        synchronized (screens) {
+            for (ConsoleListener view : screens) {
+                view.print(this, msg);
             }
         }
     }
 
-    public static void println(String msg) {
-        Console console = getConsole();
-        synchronized (console.screens) {
-            for (ConsoleListener view : console.screens) {
-                view.println(msg);
+    public void println(String msg) {
+        synchronized (screens) {
+            for (ConsoleListener view : screens) {
+                view.println(this, msg);
             }
         }
     }
 
-    public static void printf(String msg, Object... obj) {
-        Console console = getConsole();
-        synchronized (console.screens) {
-            for (ConsoleListener view : console.screens) {
-                view.printf(msg, obj);
+    public void printf(String msg, Object... obj) {
+        synchronized (screens) {
+            for (ConsoleListener view : screens) {
+                view.printf(this, msg, obj);
             }
         }
     }
 
-    public static void error(Throwable e) {
+    public void error(Throwable e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);

@@ -1,6 +1,5 @@
 package com.emptypockets.spacemania.network.client.commands.rooms;
 
-import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.commands.ClientCommand;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
@@ -18,9 +17,9 @@ public class ClientRoomCommand extends ClientCommand{
     public void exec(String args) {
         ClientRoom room = client.getCurrentRoom();
         if(room == null){
-            Console.println("Not in a room");
+        	client.getConsole().println("Not in a room");
         }else{
-            room.logStatus();
+            room.logStatus(client.getConsole());
         }
     }
 }

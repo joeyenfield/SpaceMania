@@ -54,7 +54,7 @@ public class ServerConnectionManager extends Listener {
     }
 
     public void start() throws IOException {
-        Console.printf("Starting Server [%d,%d]\n", tcpPort, udpPort);
+        manager.console.printf("Starting Server [%d,%d]\n", tcpPort, udpPort);
         server.bind(tcpPort, udpPort);
     }
 

@@ -1,5 +1,6 @@
 package com.emptypockets.spacemania.network.client.rooms.messages;
 
+import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 
 /**
@@ -35,8 +36,8 @@ public class ClientRoomChatMessage extends ClientRoomMessage {
     }
 
     @Override
-    public void processMessage(ClientRoom room) {
-        room.chatMessage(messageTime, username, message);
+    public void processMessage(ClientManager manager, ClientRoom room) {
+        room.chatMessage(manager.getConsole(),messageTime, username, message);
     }
 
     @Override

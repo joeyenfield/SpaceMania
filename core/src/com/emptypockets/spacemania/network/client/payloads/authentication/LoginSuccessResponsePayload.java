@@ -16,7 +16,7 @@ public class LoginSuccessResponsePayload extends ClientPayload {
 
     @Override
     public void executePayload(ClientManager clientManager) {
-        Console.println("Login Response : Successfully Logged in.");
+    	clientManager.getConsole().println("Login Response : Successfully Logged in.");
         clientManager.setLoggedIn(true);
         MyPlayer clientPlayer = new MyPlayer();
         clientPlayer.setId(playerId);

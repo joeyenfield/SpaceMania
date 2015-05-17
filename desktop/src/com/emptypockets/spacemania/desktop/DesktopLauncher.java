@@ -23,7 +23,7 @@ public class DesktopLauncher {
         Thread.sleep(2000);
         CommandLine client = test.screen.getClient().getCommand();
 
-//        client.processCommand("host start; host status;");
+        client.processCommand("host start; host status;");
         client.processCommand("connect localhost,8080,9090;login user1,password;");
         client.processCommand("lobby");
 //        client.processCommand("host rooms");

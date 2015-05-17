@@ -47,7 +47,7 @@ class PushHostsToConsoleCallback implements NetworkDiscoveryInterface {
     @Override
     public void notifyDiscoveredHosts(List<InetAddress> hosts) {
         for (InetAddress host : hosts) {
-            Console.println("Host : " + host.getHostAddress() + " - " + host.getHostName());
+        	command.getClient().getConsole().println("Host : " + host.getHostAddress() + " - " + host.getHostName());
             command.getClient().getCommand().pushHistory("connect " + host.getHostAddress() + "," + tcpPort + "," + udpPort);
         }
 

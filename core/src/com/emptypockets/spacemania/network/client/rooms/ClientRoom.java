@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
+import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomMessage;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
@@ -29,9 +30,9 @@ public class ClientRoom implements Disposable{
         players = new HashSet<ClientPlayer>();
     }
 
-    public void processMessages(ArrayList<ClientRoomMessage> messages){
+    public void processMessages(ClientManager manager, ArrayList<ClientRoomMessage> messages){
         for(ClientRoomMessage message : messages){
-            message.processMessage(this);
+            message.processMessage(manager,this);
         }
     }
 
@@ -99,15 +100,19 @@ public class ClientRoom implements Disposable{
         players.remove(player);
     }
 
-    public void logStatus() {
-        Console.println("Room : " + getName());
-        Console.println("Host : " + (host == null ? "None" : host.getUsername()));
+    public void logStatus(Console console) {
+    	console.println("Room : " + getName());
+        console.println("Host : " + (host == null ? "None" : host.getUsername()));
         for(ClientPlayer player : players){
-                Console.println("Player : "+player);
+                console.println("Player : "+player);
         }
     }
 
-    public synchronized void chatMessage(long messageTime, String username, String message) {
-        Console.println(getName()+" : "+String.format(" %s %s: %s", DateFormat.getTimeInstance().format(messageTime),username==null?"":"["+username+"] ", message));
+    public synchronized void chatMessage(Console console, long messageTime, String username, String message) {
+        console.println(getName()+" : "+String.format(" %s %s: %s", DateFormat.getTimeInstance().format(messageTime),username==null?"":"["+username+"] ", message));
     }
+
+	public Object getPlayerCount() {
+		return players.size();
+	}
 }

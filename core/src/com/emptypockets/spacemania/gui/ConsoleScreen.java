@@ -18,12 +18,12 @@ public class ConsoleScreen extends Window implements ConsoleListener {
     int characterLimit = 1000000;
     TextButton maximise;
 
-    public ConsoleScreen(String title, Skin skin) {
+    public ConsoleScreen(Console con, String title, Skin skin) {
         super(title, skin);
 
         console = new StringBuffer("                                                                                                                                                                                                                ");
         createConsole(skin);
-        Console.register(this);
+        con.register(this);
     }
 
     public void createConsole(Skin skin) {
@@ -57,7 +57,7 @@ public class ConsoleScreen extends Window implements ConsoleListener {
         pack();
     }
 
-    public void print(String message) {
+    public void print(Console con, String message) {
         console.insert(0, message);
         if (console.length() > characterLimit) {
             console.setLength(characterLimit);
@@ -66,12 +66,12 @@ public class ConsoleScreen extends Window implements ConsoleListener {
         label.setText(console);
     }
 
-    public void println(String message) {
-        print(message + "\n");
+    public void println(Console con, String message) {
+        print(con,message + "\n");
     }
 
-    public void printf(String message, Object... values) {
-        print(String.format(message, values));
+    public void printf(Console con, String message, Object... values) {
+        print(con,String.format(message, values));
     }
 
 }

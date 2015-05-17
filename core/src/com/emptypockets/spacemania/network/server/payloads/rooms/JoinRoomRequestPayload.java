@@ -29,9 +29,9 @@ public class JoinRoomRequestPayload extends ServerPayload{
                     Pools.free(payload);
                 }else {
                     try {
-                        serverManager.joinRoom(serverManager.getLobbyRoom(), clientConnection.getPlayer());
+                        serverManager.joinRoom(room, clientConnection.getPlayer());
                         JoinRoomSuccessPayload payload = Pools.obtain(JoinRoomSuccessPayload.class);
-                        payload.setRoom(serverManager.getLobbyRoom().getClientRoom());
+                        payload.setRoom(room.getClientRoom());
                         payload.setComsType(ComsType.TCP);
                         clientConnection.send(payload);
                         Pools.free(payload);

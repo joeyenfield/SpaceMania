@@ -22,20 +22,22 @@ import java.io.IOException;
 public class ClientManager implements Disposable {
     CommandLine command;
     ClientConnectionManager connection;
-
+    
     boolean loggedIn = false;
     MyPlayer player;
     ClientRoom currentRoom;
     private Object serverRooms;
-
+    private Console console;
+    
     public ClientManager() {
-        command = new CommandLine();
+    	setConsole(new Console("\tCLIENT : "));
+        command = new CommandLine(getConsole());
         connection = new ClientConnectionManager(this);
         CommandService.registerClientCommands(this);
     }
 
     public void stop() {
-        Console.println("Disconnecting from server");
+    	getConsole().println("Disconnecting from server");
         connection.disconnect();
     }
 
@@ -50,33 +52,35 @@ public class ClientManager implements Disposable {
 
 
     public void serverLogin(String username, String password) {
-        Console.println("Sending Login Request to server");
+        getConsole().println("Sending Login Request to server ["+username+","+password+"]");
         LoginRequestPayload request = new LoginRequestPayload();
         request.setUsername(username);
         request.setPassword(password);
         try {
             connection.send(request);
         } catch (ClientNotConnectedException e) {
-            Console.println("Not connected");
+        	getConsole().println("Not connected");
         }
     }
 
     public void serverLogout() {
-        Console.println("Sending Logout Request to server");
+    	getConsole().println("Sending Logout Request to server");
         LogoutRequestPayload request = new LogoutRequestPayload();
         try {
             connection.send(request);
         } catch (ClientNotConnectedException e) {
-            Console.println("Not connected");
+        	getConsole().println("Not connected");
         }
     }
 
     public void connect(String address, int tcpPort, int udpPort) throws IOException {
+    	getConsole().println("Connecting to ["+address+":"+tcpPort+","+udpPort+"]");
         disconnect();
         connection.connect(address, tcpPort, udpPort);
     }
 
     public void disconnect() {
+    	getConsole().println("Disconnect");
         connection.disconnect();
     }
 
@@ -87,9 +91,10 @@ public class ClientManager implements Disposable {
     }
 
     public void listStatus() {
+    	getConsole().println("Listing Status");
         connection.listStatus();
-        Console.println("Logged in : " + isLoggedIn());
-        Console.println("Room : " + (getCurrentRoom() == null ? "None" : getCurrentRoom().getName()));
+        getConsole().println("Logged in : " + isLoggedIn());
+        getConsole().println("Room : " + (getCurrentRoom() == null ? "None" : getCurrentRoom().getName()));
     }
 
     public void updatePing() {
@@ -116,6 +121,11 @@ public class ClientManager implements Disposable {
 
     public void setPlayer(MyPlayer player) {
         this.player = player;
+        if(player == null){
+            console.setConsoleKey("\t\tCLIENT[]");
+        }else{
+            console.setConsoleKey("\t\tCLIENT["+player.getUsername()+"]");
+        }
     }
 
     @Override
@@ -132,35 +142,48 @@ public class ClientManager implements Disposable {
     }
 
     public void setCurrentRoom(ClientRoom currentRoom) {
-        Console.println("Joining room " + currentRoom.getName());
+    	getConsole().println("Setting room : " + currentRoom.getName());
         this.currentRoom = currentRoom;
     }
 
     public void joinLobby() {
+    	getConsole().println("Joining :  Lobby");
         JoinLobyRequestPayload request = new JoinLobyRequestPayload();
         connection.send(request);
     }
 
     public void joinRoom(String name) {
-        JoinRoomRequestPayload payload = new JoinRoomRequestPayload();
+    	getConsole().println("Joining Room : " + name);
+    	JoinRoomRequestPayload payload = new JoinRoomRequestPayload();
         payload.setRoomName(name);
         connection.send(payload);
     }
 
     public void createRoom(String roomName) {
-        CreateRoomRequestPayload createRoom = Pools.obtain(CreateRoomRequestPayload.class);
+    	getConsole().println("Creating Room : " + roomName);
+    	CreateRoomRequestPayload createRoom = Pools.obtain(CreateRoomRequestPayload.class);
         createRoom.setRoomName(roomName);
         connection.send(createRoom);
     }
 
     public void sendChatMessage(String message) {
+    	getConsole().println("Sending chat message ["+message+"]");
         ChatMessagePayload payload = Pools.obtain(ChatMessagePayload.class);
         payload.setMessage(message);
         connection.send(payload);
     }
 
     public void requestServerRooms() {
+    	getConsole().println("Requesting Rooms");
         RequestRoomListPayload payload = Pools.obtain(RequestRoomListPayload.class);
         connection.send(payload);
     }
+
+	public Console getConsole() {
+		return console;
+	}
+
+	public void setConsole(Console console) {
+		this.console = console;
+	}
 }

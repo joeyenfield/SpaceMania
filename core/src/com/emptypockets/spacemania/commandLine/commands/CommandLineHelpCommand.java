@@ -18,9 +18,9 @@ public class CommandLineHelpCommand extends CommandLineCommand {
         } else {
             Command command = commandHub.getCommand(data);
             if (command == null) {
-                Console.println("Unknown Command : " + data);
+                getConsole().println("Unknown Command : " + data);
             } else {
-                Console.println(command.getDescription());
+            	getConsole().println(command.getDescription());
             }
 
         }

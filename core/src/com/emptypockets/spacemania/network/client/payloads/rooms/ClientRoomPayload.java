@@ -31,7 +31,7 @@ public class ClientRoomPayload extends ClientPayload {
         ClientRoom room = clientManager.getCurrentRoom();
         if(room != null){
             if(room.getId() == roomId){
-                room.processMessages(messages);
+                room.processMessages(clientManager, messages);
             }
         }
     }

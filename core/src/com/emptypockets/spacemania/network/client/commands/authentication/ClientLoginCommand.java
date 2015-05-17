@@ -24,8 +24,8 @@ public class ClientLoginCommand extends ClientCommand {
             }
             client.serverLogin(username, password);
         } catch (Throwable t) {
-            Console.printf("Invlaid Arguments");
-            Console.error(t);
+        	client.getConsole().printf("Invlaid Arguments");
+        	client.getConsole().error(t);
         }
     }
 }

@@ -13,12 +13,17 @@ public class CommandLine {
 
     boolean echoCommand = false;
     boolean echoSplitCommand = true;
-
-    public CommandLine() {
+    Console console;
+    
+    public CommandLine(Console console) {
+    	this.console = console;
         commandData = new HashMap<String, Command>();
         registerCommand(new com.emptypockets.spacemania.commandLine.commands.CommandLineHelpCommand(this));
     }
 
+    public Console getConsole(){
+    	return console;
+    }
     public String getHistory(int commandNumber) {
         if (commandNumber < 0 || commandNumber > commandHistory.size()) {
             return "";
@@ -51,7 +56,7 @@ public class CommandLine {
 
     public void processCommand(String commandString) {
         if (echoCommand) {
-            Console.println(commandString);
+            console.println(commandString);
         }
         pushHistory(commandString);
 
@@ -60,7 +65,7 @@ public class CommandLine {
             for (String value : splitCommand) {
                 String data = value.trim();
                 if (echoSplitCommand) {
-                    Console.println(">" + data);
+                	console.println(">" + data);
                 }
 
                 String cmd[] = data.split(" ", 2);
@@ -74,12 +79,12 @@ public class CommandLine {
                     if (command != null) {
                         command.exec(argument);
                     } else {
-                        Console.println("Unknown Command : " + data);
+                    	console.println("Unknown Command : " + data);
                         return;
                     }
                 } catch (Throwable e) {
-                    Console.println("Error processing command " + e.getLocalizedMessage());
-                    Console.error(e);
+                	console.println("Error processing command " + e.getLocalizedMessage());
+                	console.error(e);
                 }
 
             }
@@ -106,7 +111,7 @@ public class CommandLine {
                 messages.put(name, String.format(" %" + maxLength + "s : %s", name, commandData.get(name).getDescription()));
             }
             for(String message : messages.values()){
-                Console.println(message);
+            	console.println(message);
             }
         }
     }

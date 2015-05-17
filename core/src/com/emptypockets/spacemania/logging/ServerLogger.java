@@ -67,7 +67,7 @@ public class ServerLogger {
      */
     static public boolean TRACE = level <= LEVEL_TRACE;
     static private Logger logger = new Logger();
-
+    
     private ServerLogger() {
     }
 
@@ -301,7 +301,6 @@ public class ServerLogger {
          * implementation of {@link #log(int, String, String, Throwable)}.
          */
         protected void print(String message) {
-            Console.println(message);
             synchronized (listeners) {
                 for (LogListener listener : listeners) {
                     listener.print(message);

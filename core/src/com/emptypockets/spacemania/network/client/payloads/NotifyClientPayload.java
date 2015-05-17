@@ -1,6 +1,5 @@
 package com.emptypockets.spacemania.network.client.payloads;
 
-import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.client.ClientManager;
 
 /**
@@ -11,7 +10,7 @@ public class NotifyClientPayload extends ClientPayload {
 
     @Override
     public void executePayload(ClientManager clientManager) {
-        Console.println(message);
+    	clientManager.getConsole().println(message);
     }
 
     public String getMessage() {

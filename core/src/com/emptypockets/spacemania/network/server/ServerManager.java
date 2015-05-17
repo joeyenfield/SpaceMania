@@ -20,7 +20,8 @@ import java.util.ArrayList;
 public class ServerManager implements Disposable, Runnable {
     boolean alive = true;
     String name = "Server";
-    int connectedUserCount = 0;
+    int serverConnecedUsersCounter = 0;
+    Console console;
     CommandLine command;
 
     ServerRoom lobbyRoom;
@@ -36,8 +37,9 @@ public class ServerManager implements Disposable, Runnable {
     long lastPingUpdate = 0;
 
 
-    public ServerManager() {
-        command = new CommandLine();
+	public ServerManager() {
+    	console = new Console("SERVER : ");
+        command = new CommandLine(console);
         CommandService.registerServerCommands(this);
 
         playerManager = new PlayerManager();
@@ -51,6 +53,7 @@ public class ServerManager implements Disposable, Runnable {
     }
 
     public void start() throws IOException {
+    	console.println("Starting Server");
         //Startup the server
         connectionManager.start();
         alive = true;
@@ -59,7 +62,7 @@ public class ServerManager implements Disposable, Runnable {
     }
 
     public void stop() {
-        Console.println("Stopping Server");
+    	console.println("Stopping Server");
 
         //Stop Server
         connectionManager.stop();
@@ -67,11 +70,12 @@ public class ServerManager implements Disposable, Runnable {
     }
 
     public ServerRoom createRoom(ServerPlayer host, String roomName) {
+    	console.println("Creating room : "+roomName+" - "+host.getUsername());
         return roomManager.createNewRoom(host, roomName);
     }
 
     public void clientLogout(ClientConnection connection) {
-        Console.println("Client Exit : " + name);
+    	console.println("Client Logout");
         ServerLogger.info(name, "Client Exit : " + name);
         if (connection.isLoggedIn()) {
             ServerPlayer player = connection.getPlayer();
@@ -94,13 +98,13 @@ public class ServerManager implements Disposable, Runnable {
     }
 
     public synchronized ServerPlayer clientLogin(ClientConnection connection, String username, String password) throws TooManyPlayersException {
-        Console.println("Client Join : " + name);
+    	console.println("Client Join : " + username);
         ServerLogger.info(name, "Client Join : " + name);
 
-        connectedUserCount++;
+        serverConnecedUsersCounter++;
 
         ServerPlayer player = new ServerPlayer(connection);
-        player.setId(connectedUserCount);
+        player.setId(serverConnecedUsersCounter);
         player.setUsername(username);
 
         playerManager.addPlayer(player);
@@ -149,7 +153,7 @@ public class ServerManager implements Disposable, Runnable {
         if (player != null) {
             player.updateReturnTripTime();
         } else {
-            Console.println("No user " + username);
+        	console.println("No user " + username);
         }
     }
 
@@ -160,8 +164,8 @@ public class ServerManager implements Disposable, Runnable {
                 try {
                     player.updateReturnTripTime();
                 } catch (Throwable t) {
-                    Console.printf("Failed to update return trip time for player " + player.getUsername());
-                    Console.error(t);
+                	console.printf("Failed to update return trip time for player " + player.getUsername());
+                	console.error(t);
                 }
             }
         });
@@ -186,7 +190,6 @@ public class ServerManager implements Disposable, Runnable {
                 lastPingUpdate = System.currentTimeMillis();
                 updatePings();
             }
-
             //Read All Data
             connectionManager.processIncommingPackets();
 
@@ -222,7 +225,7 @@ public class ServerManager implements Disposable, Runnable {
         if(room != null && room.equals(getLobbyRoom())){
             return;
         }
-        Console.println("Closing room : "+room.getName());
+        console.println("Closing room : "+room.getName());
         final ArrayList<ServerPlayer> players = new ArrayList<ServerPlayer>();
         room.getPlayerManager().process(new SingleProcessor<ServerPlayer>() {
             @Override
@@ -231,19 +234,24 @@ public class ServerManager implements Disposable, Runnable {
                 payload.setMessage("Room is closed - Returning to lobby.");
                 entity.send(payload);
 
-                try {
-                    joinRoom(getLobbyRoom(), entity);
-                } catch (TooManyPlayersException e) {
-                    payload = Pools.obtain(NotifyClientPayload.class);
-                    payload.setMessage("Lobby is full your disconnecting.");
-                    entity.send(payload);
-                }
+                players.add(entity);
             }
         });
+        
+        for(ServerPlayer player : players){
+        	try {
+            	joinRoom(getLobbyRoom(), player);
+            } catch (TooManyPlayersException e) {
+            	NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
+                payload.setMessage("Lobby is full your disconnecting.");
+                player.send(payload);
+            }
+        }
         roomManager.removeRoom(room);
     }
 
     public void joinRoom(ServerRoom room, ServerPlayer player) throws TooManyPlayersException {
+    	console.println("Joining room : "+room.getName()+" - "+player.getUsername());
         if (player.getCurrentRoom() != null) {
             ServerRoom currentRoom =  player.getCurrentRoom();
             currentRoom.leaveRoom(player);
@@ -265,6 +273,37 @@ public class ServerManager implements Disposable, Runnable {
     }
 
     public void chatRecieved(ServerPlayer player, String message) {
+    	console.println("Chat recieved from ["+player+"] : "+message);
         player.getCurrentRoom().sendMessage(message, player.getUsername());
     }
+
+	public int getTcpPort() {
+		return connectionManager.tcpPort;
+	}
+	
+	public int getUdpPort(){
+		return connectionManager.udpPort;
+	}
+
+	public int getConnectedCount() {
+		return connectionManager.getConnectedCount();
+	}
+	
+	public int getLoggedInCount(){
+		return playerManager.getPlayerCount();
+	}
+
+	public int getRoomCount() {
+		return roomManager.getSize();
+	}
+
+	public ServerRoom getRoomByName(String roomName) {
+		return roomManager.findRoomByName(roomName);
+	}
+	
+
+    public Console getConsole() {
+		return console;
+	}
+
 }

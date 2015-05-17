@@ -11,15 +11,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by jenfield on 17/05/2015.
  */
-@RunWith(JUnit38ClassRunner.class)
+@RunWith(JUnit4.class)
 public class RootTest{
-    @Test
-    public void test(){
-        assertTrue(true);
-    }
-
-    @Test
-    public void testItFails(){
-        assertFalse(true);
-    }
+ 
 }

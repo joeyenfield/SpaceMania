@@ -86,7 +86,7 @@ public class PlayerManager extends ObjectProcessor<ServerPlayer> implements Disp
         removePlayer(player);
     }
 
-    public int getSize() {
+    public synchronized int getSize() {
         return players.size();
     }
 }

@@ -47,7 +47,7 @@ public class CreateRoomRequestPayload extends ServerPayload {
                 clientConnection.send(payload);
             }
         } else {
-            Console.println("Room Creation failed");
+        	serverManager.getConsole().println("Room Creation failed");
         }
     }
 }

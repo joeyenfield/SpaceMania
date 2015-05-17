@@ -26,7 +26,7 @@ public class LoginRequestPayload extends ServerPayload {
             clientConnection.sendTCP(resp);
         } else if (serverManager.isUserConnected(getUsername())) {
             // The username is already in use;
-            Console.println("User [" + getUsername() + "] is already connected");
+        	serverManager.getConsole().println("User [" + getUsername() + "] is already connected");
             LoginFailedResponsePayload resp = new LoginFailedResponsePayload();
             resp.setErrorMessage("User already logged in");
             clientConnection.sendTCP(resp);

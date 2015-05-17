@@ -41,12 +41,7 @@ public class ClientConnectionManager extends Listener implements Disposable{
                 Client connection = new Client();
 
                 // TODO Auto-generated method stub
-                Console.println("Searching for hosts Port [" + udpPort + "] holding for [" + timeoutSec + " s]");
                 List<InetAddress> hosts = connection.discoverHosts(udpPort, timeoutSec * 1000);
-                Console.println("Found : " + hosts.size());
-                for (InetAddress host : hosts) {
-                    Console.println("Host : " + host.getHostAddress() + " - " + host.getHostName());
-                }
                 if (callback != null) {
                     callback.notifyDiscoveredHosts(hosts);
                 }
@@ -65,7 +60,7 @@ public class ClientConnectionManager extends Listener implements Disposable{
     }
 
     public void connect(String address, int tcpPort, int udpPort) throws IOException {
-        Console.printf("Connecting to server %s : %d,%d\n", address, tcpPort, udpPort);
+        manager.getConsole().printf("Connecting to server %s : %d,%d\n", address, tcpPort, udpPort);
         synchronized (clientConnectionLock) {
             setupClientConnection();
             connection.connect(20000, address, tcpPort, udpPort);
@@ -101,7 +96,6 @@ public class ClientConnectionManager extends Listener implements Disposable{
     }
 
     public void disconnect() {
-        Console.println("Disconnecting from server");
         processToSendPayloads();
         synchronized (clientConnectionLock) {
             if (connection != null && connection.isConnected()) {
@@ -116,9 +110,9 @@ public class ClientConnectionManager extends Listener implements Disposable{
     public void listStatus() {
         synchronized (clientConnectionLock) {
             if (connection == null) {
-                Console.println("Not Connected");
+            	manager.getConsole().println("Not Connected");
             } else {
-                Console.println("Connected : " + connection.isConnected()+" : Ping ["+getPing()+"]");
+            	manager.getConsole().println("Connected : " + connection.isConnected()+" : Ping ["+getPing()+"]");
             }
         }
     }
@@ -194,8 +188,8 @@ public class ClientConnectionManager extends Listener implements Disposable{
                         sendTCP(payload);
                     }
                 }catch(Throwable t){
-                    Console.println("Failed to send packet");
-                    Console.error(t);
+                	manager.getConsole().println("Failed to send packet");
+                	manager.getConsole().error(t);
                 }
             }
             toSendPayloads.clear();

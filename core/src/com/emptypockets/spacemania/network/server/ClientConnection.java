@@ -1,13 +1,12 @@
 package com.emptypockets.spacemania.network.server;
 
-import com.emptypockets.spacemania.console.Console;
+import java.util.ArrayList;
+
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 import com.emptypockets.spacemania.network.transport.ComsType;
 import com.esotericsoftware.kryonet.Connection;
-
-import java.util.ArrayList;
 
 public class ClientConnection extends Connection {
     ServerManager serverManager;
@@ -29,8 +28,8 @@ public class ClientConnection extends Connection {
                 sendUDP(payload);
             }
         }catch(Throwable t){
-            Console.println("Error sending payload");
-            Console.error(t);
+            serverManager.console.println("Error sending payload");
+            serverManager.console.error(t);
         }
     }
 

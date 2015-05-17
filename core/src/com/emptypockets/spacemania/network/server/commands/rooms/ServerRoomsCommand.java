@@ -1,6 +1,5 @@
 package com.emptypockets.spacemania.network.server.commands.rooms;
 
-import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.server.ServerManager;
 import com.emptypockets.spacemania.network.server.commands.ServerCommand;
@@ -17,11 +16,11 @@ public class ServerRoomsCommand extends ServerCommand {
 
     @Override
     public void exec(String args) {
-        Console.println("Server Rooms ["+server.getRoomManager().getSize()+"]");
+    	server.getConsole().println("Server Rooms ["+server.getRoomManager().getSize()+"]");
         server.getRoomManager().process(new SingleProcessor<ServerRoom>() {
             @Override
             public void process(ServerRoom room) {
-                Console.println("Room ["+room.getId()+"] - "+room.getName()+" : ["+room.getPlayerCount()+" / "+room.getMaxPlayers()+"]");
+            	server.getConsole().println("Room ["+room.getId()+"] - "+room.getName()+" : ["+room.getPlayerCount()+" / "+room.getMaxPlayers()+"]");
             }
         });
     }

@@ -9,29 +9,9 @@ import com.emptypockets.spacemania.network.transport.NetworkPayload;
  */
 public abstract class ServerPayload extends NetworkPayload {
 
-    protected ServerManager serverManager;
-    protected ClientConnection clientConnection;
-
-    public ServerManager getServerManager() {
-        return serverManager;
-    }
-
-    public void setServerManager(ServerManager serverManager) {
-        this.serverManager = serverManager;
-    }
-
-    public ClientConnection getClientConnection() {
-        return clientConnection;
-    }
-
-    public void setClientConnection(ClientConnection clientConnection) {
-        this.clientConnection = clientConnection;
-    }
-
+    public abstract void executePayload(ClientConnection clientConnection, ServerManager serverManager);
     @Override
     public void reset() {
         super.reset();
-        serverManager = null;
-        clientConnection = null;
     }
 }

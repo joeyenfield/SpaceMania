@@ -1,6 +1,7 @@
 package com.emptypockets.spacemania.network.client.payloads.authentication;
 
 import com.emptypockets.spacemania.console.Console;
+import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 
 /**
@@ -18,10 +19,10 @@ public class LoginFailedResponsePayload extends ClientPayload {
     }
 
     @Override
-    public void executePayload() {
+    public void executePayload(ClientManager clientManager) {
         Console.println("Login Failed : " + errorMessage);
-        getClientManager().setLoggedIn(false);
-        getClientManager().setPlayer(null);
+        clientManager.setLoggedIn(false);
+        clientManager.setPlayer(null);
     }
 
     @Override

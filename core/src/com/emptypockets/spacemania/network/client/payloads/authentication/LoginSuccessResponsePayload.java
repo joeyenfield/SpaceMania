@@ -1,8 +1,10 @@
 package com.emptypockets.spacemania.network.client.payloads.authentication;
 
 import com.emptypockets.spacemania.console.Console;
-import com.emptypockets.spacemania.network.client.engine.ClientPlayer;
+import com.emptypockets.spacemania.network.client.ClientManager;
+import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
+import com.emptypockets.spacemania.network.client.player.MyPlayer;
 
 /**
  * Created by jenfield on 11/05/2015.
@@ -13,15 +15,13 @@ public class LoginSuccessResponsePayload extends ClientPayload {
 
 
     @Override
-    public void executePayload() {
-        Console.println("Logout Response : Successfully Logged in.");
-        getClientManager().setLoggedIn(true);
-
-        ClientPlayer clientPlayer = new ClientPlayer();
+    public void executePayload(ClientManager clientManager) {
+        Console.println("Login Response : Successfully Logged in.");
+        clientManager.setLoggedIn(true);
+        MyPlayer clientPlayer = new MyPlayer();
         clientPlayer.setId(playerId);
         clientPlayer.setUsername(username);
-
-        getClientManager().setPlayer(clientPlayer);
+        clientManager.setPlayer(clientPlayer);
     }
 
     @Override

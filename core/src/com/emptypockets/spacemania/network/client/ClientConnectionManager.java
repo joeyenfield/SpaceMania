@@ -1,8 +1,12 @@
 package com.emptypockets.spacemania.network.client;
 
+import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.client.exceptions.ClientNotConnectedException;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
+import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
+import com.emptypockets.spacemania.network.transport.ComsType;
+import com.emptypockets.spacemania.network.transport.NetworkPayload;
 import com.emptypockets.spacemania.network.transport.NetworkProtocall;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -10,18 +14,24 @@ import com.esotericsoftware.kryonet.Listener;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by jenfield on 12/05/2015.
  */
-public class ClientConnectionManager extends Listener {
+public class ClientConnectionManager extends Listener implements Disposable{
+    ArrayList<ClientPayload> recievedPayloads;
+    ArrayList<ServerPayload> toSendPayloads;
+
     Object clientConnectionLock = new Object();
     Client connection;
     ClientManager manager;
 
     public ClientConnectionManager(ClientManager manager) {
         this.manager = manager;
+        recievedPayloads = new ArrayList<ClientPayload>();
+        toSendPayloads = new ArrayList<ServerPayload>();
     }
 
     public static void listNetworkServers(final int udpPort, final int timeoutSec, final NetworkDiscoveryInterface callback) {
@@ -66,7 +76,7 @@ public class ClientConnectionManager extends Listener {
     public void received(Connection connection, Object object) {
         super.received(connection, object);
         if (object instanceof ClientPayload) {
-            manager.addPayload((ClientPayload) object);
+            addPayload((ClientPayload) object);
         }
     }
 
@@ -79,7 +89,20 @@ public class ClientConnectionManager extends Listener {
         return false;
     }
 
+    @Override
+    public void idle(Connection connection) {
+        super.idle(connection);
+    }
+
+    @Override
+    public void disconnected(Connection connection) {
+        super.disconnected(connection);
+        disconnect();
+    }
+
     public void disconnect() {
+        Console.println("Disconnecting from server");
+        processToSendPayloads();
         synchronized (clientConnectionLock) {
             if (connection != null && connection.isConnected()) {
                 connection.close();
@@ -87,6 +110,7 @@ public class ClientConnectionManager extends Listener {
                 connection = null;
             }
         }
+        manager.postDisconnect();
     }
 
     public void listStatus() {
@@ -99,7 +123,12 @@ public class ClientConnectionManager extends Listener {
         }
     }
 
-    public void sendTCP(Object data) {
+    public void send(ServerPayload payload){
+        synchronized (toSendPayloads){
+            toSendPayloads.add(payload);
+        }
+    }
+    private void sendTCP(Object data) {
         synchronized (clientConnectionLock) {
             //Send Current State to server
             if (connection != null && connection.isConnected()) {
@@ -110,7 +139,7 @@ public class ClientConnectionManager extends Listener {
         }
     }
 
-    public void sendUDP(Object data) {
+    private void sendUDP(Object data) {
         synchronized (clientConnectionLock) {
             //Send Current State to server
             if (connection != null && connection.isConnected()) {
@@ -136,5 +165,50 @@ public class ClientConnectionManager extends Listener {
             }
         }
         return -1;
+    }
+
+    public void addPayload(ClientPayload object) {
+        synchronized (recievedPayloads) {
+            recievedPayloads.add(object);
+        }
+    }
+
+    public void processRecievedPayloads(){
+        //Process Payloads
+        synchronized (recievedPayloads) {
+            for (ClientPayload payload : recievedPayloads) {
+                payload.executePayload(manager);
+            }
+            recievedPayloads.clear();
+        }
+    }
+
+    public void processToSendPayloads(){
+        //Send Coms to Server
+        synchronized (toSendPayloads){
+            for(ServerPayload payload : toSendPayloads){
+                try {
+                    if (payload.getComsType() == ComsType.UDP) {
+                        sendUDP(payload);
+                    } else {
+                        sendTCP(payload);
+                    }
+                }catch(Throwable t){
+                    Console.println("Failed to send packet");
+                    Console.error(t);
+                }
+            }
+            toSendPayloads.clear();
+        }
+    }
+
+    public void dispose() {
+        disconnect();
+        synchronized (toSendPayloads) {
+            toSendPayloads.clear();
+        }
+        synchronized (recievedPayloads) {
+            recievedPayloads.clear();
+        };
     }
 }

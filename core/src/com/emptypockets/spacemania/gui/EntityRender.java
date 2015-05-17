@@ -5,13 +5,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.entities.BaseEntity;
-import com.emptypockets.spacemania.engine.entityManager.EntityManager;
-import com.emptypockets.spacemania.engine.entityManager.processors.EntityProcessor;
+import com.emptypockets.spacemania.engine.entities.manager.EntityManager;
+import com.emptypockets.spacemania.holders.SingleProcessor;
 
 /**
  * Created by jenfield on 10/05/2015.
  */
-public class EntityRender implements EntityProcessor<BaseEntity> {
+public class EntityRender implements SingleProcessor<BaseEntity> {
 
     ShapeRenderer shapeRender;
     boolean debugEnabled = true;
@@ -27,7 +27,7 @@ public class EntityRender implements EntityProcessor<BaseEntity> {
         }
 
         shapeRender.begin(ShapeRenderer.ShapeType.Line);
-        manager.processEntities(this);
+        manager.process(this);
         shapeRender.end();
 
 
@@ -40,7 +40,7 @@ public class EntityRender implements EntityProcessor<BaseEntity> {
     }
 
     @Override
-    public void processEntity(BaseEntity entity) {
+    public void process(BaseEntity entity) {
         shapeRender.setColor(Color.RED);
         shapeRender.circle(entity.getPos().x, entity.getPos().y, 3f);
 

@@ -1,5 +1,6 @@
 package com.emptypockets.spacemania.network.client.payloads.authentication;
 
+import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 
 /**
@@ -7,7 +8,7 @@ import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
  */
 public class LogoutSuccessPayload extends ClientPayload {
     @Override
-    public void executePayload() {
+    public void executePayload(ClientManager clientManager) {
         clientManager.setLoggedIn(false);
         clientManager.setPlayer(null);
     }

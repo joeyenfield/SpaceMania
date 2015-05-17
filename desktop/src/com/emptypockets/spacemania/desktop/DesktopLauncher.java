@@ -3,6 +3,7 @@ package com.emptypockets.spacemania.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.emptypockets.spacemania.SpaceMania;
+import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.network.server.ServerManager;
 
 import java.util.Scanner;
@@ -20,8 +21,12 @@ public class DesktopLauncher {
         new LwjglApplication(test, config);
 
         Thread.sleep(2000);
-        test.screen.getClient().getCommand().processCommand("server setup; server start; server status; connect localhost,8080,9090;login jenfield,password;server ping jenfield; server ping jenfield; server users");
+        CommandLine client = test.screen.getClient().getCommand();
 
+//        client.processCommand("host start; host status;");
+        client.processCommand("connect localhost,8080,9090;login user1,password;");
+        client.processCommand("lobby");
+//        client.processCommand("host rooms");
 //        test.screen.getClient().getCommand().processCommand("connect 109.77.88.13,8080,9090;login user2;");
 
         while(true){

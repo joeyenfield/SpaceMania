@@ -4,6 +4,7 @@ import com.emptypockets.spacemania.console.Console;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class CommandLine {
     int commandHistoryCount = 10;
@@ -100,8 +101,12 @@ public class CommandLine {
                     maxLength = name.length();
                 }
             }
+            TreeMap<String, String> messages = new TreeMap<String,String>();
             for (String name : commandData.keySet()) {
-                Console.printf(" %" + maxLength + "s : %s\n", name, commandData.get(name).getDescription());
+                messages.put(name, String.format(" %" + maxLength + "s : %s", name, commandData.get(name).getDescription()));
+            }
+            for(String message : messages.values()){
+                Console.println(message);
             }
         }
     }

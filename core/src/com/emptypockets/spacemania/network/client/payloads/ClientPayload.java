@@ -9,19 +9,9 @@ import com.emptypockets.spacemania.network.transport.NetworkPayload;
  */
 public abstract class ClientPayload extends NetworkPayload implements Pool.Poolable {
 
-    protected ClientManager clientManager;
-
-    public ClientManager getClientManager() {
-        return clientManager;
-    }
-
-    public void setClientManager(ClientManager clientManager) {
-        this.clientManager = clientManager;
-    }
-
+    public abstract void executePayload(ClientManager clientManager);
     @Override
     public void reset() {
         super.reset();
-        clientManager = null;
     }
 }

@@ -194,9 +194,9 @@ public class ClientScreen extends StageScreen {
 
     @Override
     public void drawScreen(float delta) {
-        synchronized (client.getEngine()) {
-            render.render(getScreenCamera(), client.getEngine());
-        }
+//        synchronized (client.getCurrentRoom().getEngine()) {
+//            render.render(getScreenCamera(), client.getEngine());
+//        }
     }
 
     @Override
@@ -208,8 +208,8 @@ public class ClientScreen extends StageScreen {
         super.updateLogic(delta);
         //Update Players Data
         if (client.getPlayer() != null) {
-            client.getPlayer().getMovement().set(movePad.getKnobPercentX(), movePad.getKnobPercentY());
-            client.getPlayer().getShoot().set(shootPad.getKnobPercentX(), shootPad.getKnobPercentY());
+//            client.getServerPlayer().getMovement().set(movePad.getKnobPercentX(), movePad.getKnobPercentY());
+//            client.getServerPlayer().getShoot().set(shootPad.getKnobPercentX(), shootPad.getKnobPercentY());
         }
         client.update();
     }

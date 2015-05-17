@@ -3,6 +3,8 @@ package com.emptypockets.spacemania.network.server.payloads.authentication;
 
 import com.emptypockets.spacemania.network.client.payloads.NotifyClientPayload;
 import com.emptypockets.spacemania.network.client.payloads.authentication.LogoutSuccessPayload;
+import com.emptypockets.spacemania.network.server.ClientConnection;
+import com.emptypockets.spacemania.network.server.ServerManager;
 import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 
 /**
@@ -10,7 +12,7 @@ import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
  */
 public class LogoutRequestPayload extends ServerPayload {
     @Override
-    public void executePayload() {
+    public void executePayload(ClientConnection clientConnection, ServerManager serverManager) {
         if (clientConnection.isLoggedIn()) {
             serverManager.clientLogout(clientConnection);
             clientConnection.setPlayer(null);

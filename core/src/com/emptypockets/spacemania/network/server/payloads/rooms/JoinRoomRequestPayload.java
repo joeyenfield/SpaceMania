@@ -37,7 +37,7 @@ public class JoinRoomRequestPayload extends ServerPayload{
                         Pools.free(payload);
                     } catch (TooManyPlayersException e) {
                         NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
-                        payload.setMessage("Could not connect to lobby as it was full");
+                        payload.setMessage("Could not connect to room as it was full");
                         payload.setComsType(ComsType.TCP);
                         clientConnection.send(payload);
                         Pools.free(payload);

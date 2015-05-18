@@ -156,8 +156,8 @@ public class ServerTesting extends RootTest {
 		assertNull(server.getRoomByName("room"));
 		
 		
-		assertEquals("Loby", clientA.getCurrentRoom().getName());
-		assertEquals("Loby", clientB.getCurrentRoom().getName());
+		assertEquals("Lobby", clientA.getCurrentRoom().getName());
+		assertEquals("Lobby", clientB.getCurrentRoom().getName());
 		assertEquals(2, clientA.getCurrentRoom().getPlayerCount());
 		assertEquals(2, clientB.getCurrentRoom().getPlayerCount());
 		

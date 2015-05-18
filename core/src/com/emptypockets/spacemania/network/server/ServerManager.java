@@ -118,15 +118,15 @@ public class ServerManager implements Disposable, Runnable {
     }
 
     public void logStatus() {
-        ServerLogger.info(name, "Server Running - Connected [" + connectionManager.getConnectedCount() + "]");
+       console.print("Server Running - Connected [" + connectionManager.getConnectedCount() + "]");
     }
 
     public void logUsers() {
-        ServerLogger.info(name, "Connected [" + connectionManager.getConnectedCount() + "]" + " Players [" + playerManager.getPlayerCount() + "]");
+    	console.print("Connected [" + connectionManager.getConnectedCount() + "]" + " Players [" + playerManager.getPlayerCount() + "]");
         playerManager.process(new SingleProcessor<ServerPlayer>() {
             @Override
             public void process(ServerPlayer player) {
-                ServerLogger.info("Player [" + player.getUsername() + "](" + player.getPing() + ")ms - In Room[" + player.isInRoom() + "]");
+            	console.print("Player [" + player.getUsername() + "](" + player.getPing() + ")ms - In Room[" + player.isInRoom() + "]");
             }
         });
     }

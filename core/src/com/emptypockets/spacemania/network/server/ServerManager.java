@@ -8,6 +8,9 @@ import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.logging.ServerLogger;
 import com.emptypockets.spacemania.network.CommandService;
 import com.emptypockets.spacemania.network.client.payloads.NotifyClientPayload;
+import com.emptypockets.spacemania.network.client.payloads.authentication.LoginFailedResponsePayload;
+import com.emptypockets.spacemania.network.client.payloads.authentication.LoginSuccessResponsePayload;
+import com.emptypockets.spacemania.network.client.payloads.authentication.LogoutSuccessPayload;
 import com.emptypockets.spacemania.network.client.payloads.rooms.JoinRoomSuccessPayload;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;
 import com.emptypockets.spacemania.network.server.player.PlayerManager;
@@ -70,8 +73,7 @@ public class ServerManager implements Disposable, Runnable {
 	}
 
 	public ServerRoom createRoom(ServerPlayer host, String roomName) {
-		console.println("Creating room : " + roomName + " - "
-				+ host.getUsername());
+		console.println("Creating room : " + roomName + " - " + host.getUsername());
 		return roomManager.createNewRoom(host, roomName);
 	}
 
@@ -98,8 +100,7 @@ public class ServerManager implements Disposable, Runnable {
 		return true;
 	}
 
-	public synchronized ServerPlayer clientLogin(ClientConnection connection,
-			String username, String password) throws TooManyPlayersException {
+	protected synchronized ServerPlayer clientLogin(ClientConnection connection, String username, String password) throws TooManyPlayersException {
 		console.println("Client Join : " + username);
 		ServerLogger.info(name, "Client Join : " + name);
 
@@ -120,19 +121,15 @@ public class ServerManager implements Disposable, Runnable {
 	}
 
 	public void logStatus() {
-		console.print("Server Running - Connected ["
-				+ connectionManager.getConnectedCount() + "]");
+		console.print("Server Running - Connected [" + connectionManager.getConnectedCount() + "]");
 	}
 
 	public void logUsers() {
-		console.print("Connected [" + connectionManager.getConnectedCount()
-				+ "]" + " Players [" + playerManager.getPlayerCount() + "]");
+		console.print("Connected [" + connectionManager.getConnectedCount() + "]" + " Players [" + playerManager.getPlayerCount() + "]");
 		playerManager.process(new SingleProcessor<ServerPlayer>() {
 			@Override
 			public void process(ServerPlayer player) {
-				console.print("Player [" + player.getUsername() + "]("
-						+ player.getPing() + ")ms - In Room["
-						+ player.isInRoom() + "]");
+				console.print("Player [" + player.getUsername() + "](" + player.getPing() + ")ms - In Room[" + player.isInRoom() + "]");
 			}
 		});
 	}
@@ -170,8 +167,7 @@ public class ServerManager implements Disposable, Runnable {
 				try {
 					player.updateReturnTripTime();
 				} catch (Throwable t) {
-					console.printf("Failed to update return trip time for player "
-							+ player.getUsername());
+					console.printf("Failed to update return trip time for player " + player.getUsername());
 					console.error(t);
 				}
 			}
@@ -236,8 +232,7 @@ public class ServerManager implements Disposable, Runnable {
 		room.getPlayerManager().process(new SingleProcessor<ServerPlayer>() {
 			@Override
 			public void process(ServerPlayer entity) {
-				NotifyClientPayload payload = Pools
-						.obtain(NotifyClientPayload.class);
+				NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 				payload.setMessage("Room is closed - Returning to lobby.");
 				entity.send(payload);
 
@@ -251,21 +246,17 @@ public class ServerManager implements Disposable, Runnable {
 		roomManager.removeRoom(room);
 	}
 
-	public void joinRoom(ServerRoom room, ServerPlayer player)
-			throws TooManyPlayersException {
-		console.println("Joining room : " + room.getName() + " - "
-				+ player.getUsername());
+	public void joinRoom(ServerRoom room, ServerPlayer player) throws TooManyPlayersException {
+		console.println("Joining room : " + room.getName() + " - " + player.getUsername());
 		if (player.getCurrentRoom() != null) {
 			ServerRoom currentRoom = player.getCurrentRoom();
 			currentRoom.leaveRoom(player);
 			boolean closeRoom = false;
-			if (currentRoom.getHost() != null
-					&& currentRoom.getHost().equals(player)) {
+			if (currentRoom.getHost() != null && currentRoom.getHost().equals(player)) {
 				closeRoom = true;
 			}
 
-			if (currentRoom.getPlayerCount() == 0
-					&& !getLobbyRoom().equals(room)) {
+			if (currentRoom.getPlayerCount() == 0 && !getLobbyRoom().equals(room)) {
 				closeRoom = true;
 			}
 
@@ -282,8 +273,7 @@ public class ServerManager implements Disposable, Runnable {
 			ServerRoom room = getRoomManager().findRoomByName(roomName);
 			if (room != null) {
 				if (clientConnection.getPlayer().getCurrentRoom().equals(room)) {
-					NotifyClientPayload payload = Pools
-							.obtain(NotifyClientPayload.class);
+					NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 					payload.setMessage("You are already connected to this room");
 					payload.setComsType(ComsType.TCP);
 					clientConnection.send(payload);
@@ -293,15 +283,13 @@ public class ServerManager implements Disposable, Runnable {
 						// Join the room
 						joinRoom(room, clientConnection.getPlayer());
 
-						JoinRoomSuccessPayload payload = Pools
-								.obtain(JoinRoomSuccessPayload.class);
+						JoinRoomSuccessPayload payload = Pools.obtain(JoinRoomSuccessPayload.class);
 						payload.setRoom(room.getClientRoom());
 						payload.setComsType(ComsType.TCP);
 						clientConnection.send(payload);
 						Pools.free(payload);
 					} catch (TooManyPlayersException e) {
-						NotifyClientPayload payload = Pools
-								.obtain(NotifyClientPayload.class);
+						NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 						payload.setMessage("Could not connect to room as it was full");
 						payload.setComsType(ComsType.TCP);
 						clientConnection.send(payload);
@@ -309,16 +297,14 @@ public class ServerManager implements Disposable, Runnable {
 					}
 				}
 			} else {
-				NotifyClientPayload payload = Pools
-						.obtain(NotifyClientPayload.class);
+				NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 				payload.setMessage("No room found with name [" + roomName + "]");
 				payload.setComsType(ComsType.TCP);
 				clientConnection.send(payload);
 				Pools.free(payload);
 			}
 		} else {
-			NotifyClientPayload payload = Pools
-					.obtain(NotifyClientPayload.class);
+			NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 			payload.setMessage("You are not logged in, please login first");
 			payload.setComsType(ComsType.TCP);
 			clientConnection.send(payload);
@@ -363,24 +349,21 @@ public class ServerManager implements Disposable, Runnable {
 		if (clientConnection.isConnected() && clientConnection.isLoggedIn()) {
 			try {
 				joinRoom(getLobbyRoom(), clientConnection.getPlayer());
-				JoinRoomSuccessPayload payload = Pools
-						.obtain(JoinRoomSuccessPayload.class);
+				JoinRoomSuccessPayload payload = Pools.obtain(JoinRoomSuccessPayload.class);
 				payload.setRoom(getLobbyRoom().getClientRoom());
 				payload.setComsType(ComsType.TCP);
 				clientConnection.send(payload);
 				Pools.free(payload);
 
 			} catch (TooManyPlayersException e) {
-				NotifyClientPayload payload = Pools
-						.obtain(NotifyClientPayload.class);
+				NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 				payload.setMessage("Could not connect to lobby as it was full");
 				payload.setComsType(ComsType.TCP);
 				clientConnection.send(payload);
 				Pools.free(payload);
 			}
 		} else {
-			NotifyClientPayload payload = Pools
-					.obtain(NotifyClientPayload.class);
+			NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 			payload.setMessage("You are not logged in, please login first");
 			payload.setComsType(ComsType.TCP);
 			clientConnection.send(payload);
@@ -392,8 +375,7 @@ public class ServerManager implements Disposable, Runnable {
 		if (clientConnection.isConnected()) {
 			if (clientConnection.getPlayer() != null) {
 				try {
-					ServerRoom room = createRoom(clientConnection.getPlayer(),
-							roomName);
+					ServerRoom room = createRoom(clientConnection.getPlayer(), roomName);
 					joinRoom(room, clientConnection.getPlayer());
 					room.updateClientRoom();
 
@@ -415,6 +397,86 @@ public class ServerManager implements Disposable, Runnable {
 			console.println("Room Creation failed");
 		}
 
+	}
+
+	public void chatRecieved(ClientConnection clientConnection, String message) {
+		if (clientConnection.isLoggedIn()) {
+			if (clientConnection.getPlayer() != null && clientConnection.getPlayer().isInRoom()) {
+				chatRecieved(clientConnection.getPlayer(), message);
+			} else {
+				NotifyClientPayload payload = new NotifyClientPayload();
+				payload.setMessage("You are not in any room");
+				clientConnection.send(payload);
+			}
+		} else {
+			NotifyClientPayload payload = new NotifyClientPayload();
+			payload.setMessage("You must be logged in to chat");
+			clientConnection.send(payload);
+		}
+	}
+
+	public void requestRoomList(ClientConnection clientConnection) {
+		final StringBuilder roomList = new StringBuilder();
+		roomList.append("Server Rooms \n");
+		getRoomManager().process(new SingleProcessor<ServerRoom>() {
+			@Override
+			public void process(ServerRoom entity) {
+				roomList.append(entity.getName() + " - [" + entity.getPlayerCount() + " / " + entity.getMaxPlayers() + "]\n");
+			}
+		});
+
+		NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
+		payload.setMessage(roomList.toString());
+		payload.setComsType(ComsType.TCP);
+		clientConnection.send(payload);
+		Pools.free(payload);
+	}
+
+	public void login(ClientConnection clientConnection, String username, String password) {
+		if (clientConnection.isLoggedIn()) {
+			// The user is already logged in - Tell User to logout
+			NotifyClientPayload resp = new NotifyClientPayload();
+			resp.setMessage("You are already logged in as [" + clientConnection.getPlayer().getUsername() + "] - Log out first");
+			clientConnection.sendTCP(resp);
+		} else if (isUserConnected(username)) {
+			// The username is already in use;
+			console.println("User [" + username + "] is already connected");
+			LoginFailedResponsePayload resp = new LoginFailedResponsePayload();
+			resp.setErrorMessage("User already logged in");
+			clientConnection.sendTCP(resp);
+		} else {
+			// Try to login
+			try {
+				ServerPlayer player = clientLogin(clientConnection, username, password);
+				// Login user
+				clientConnection.setPlayer(player);
+				clientConnection.setLoggedIn(true);
+
+				LoginSuccessResponsePayload resp = new LoginSuccessResponsePayload();
+				resp.setUsername(player.getUsername());
+				resp.setPlayerId(player.getId());
+				clientConnection.sendTCP(resp);
+			} catch (TooManyPlayersException e) {
+				LoginFailedResponsePayload resp = new LoginFailedResponsePayload();
+				resp.setErrorMessage("Server currently full");
+				clientConnection.sendTCP(resp);
+			}
+		}
+
+	}
+
+	public void logout(ClientConnection clientConnection) {
+		if (clientConnection.isLoggedIn()) {
+			clientLogout(clientConnection);
+			clientConnection.setPlayer(null);
+			clientConnection.setLoggedIn(false);
+			LogoutSuccessPayload response = new LogoutSuccessPayload();
+			clientConnection.sendTCP(response);
+		} else {
+			NotifyClientPayload resp = new NotifyClientPayload();
+			resp.setMessage("Your not logged in");
+			clientConnection.sendTCP(resp);
+		}
 	}
 
 }

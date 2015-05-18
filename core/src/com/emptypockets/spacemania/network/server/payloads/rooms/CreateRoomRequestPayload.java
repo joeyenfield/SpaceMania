@@ -25,29 +25,6 @@ public class CreateRoomRequestPayload extends ServerPayload {
 
     @Override
     public void executePayload(ClientConnection clientConnection, ServerManager serverManager) {
-        if (clientConnection.isConnected()) {
-            if (clientConnection.getPlayer() != null) {
-                try {
-                    ServerRoom room = serverManager.createRoom(clientConnection.getPlayer(), roomName);
-                    serverManager.joinRoom(room, clientConnection.getPlayer());
-                    room.updateClientRoom();
-
-                    JoinRoomSuccessPayload payload = new JoinRoomSuccessPayload();
-                    payload.setRoom(room.getClientRoom());
-                    clientConnection.send(payload);
-
-                } catch (TooManyPlayersException e) {
-                    NotifyClientPayload payload = new NotifyClientPayload();
-                    payload.setMessage("Could not create room");
-                    clientConnection.send(payload);
-                }
-            } else {
-                NotifyClientPayload payload = new NotifyClientPayload();
-                payload.setMessage("You must be logged in to create a room");
-                clientConnection.send(payload);
-            }
-        } else {
-        	serverManager.getConsole().println("Room Creation failed");
-        }
+        serverManager.createRoom(clientConnection, roomName);
     }
 }

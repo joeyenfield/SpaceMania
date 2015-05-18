@@ -116,4 +116,8 @@ public class ServerPlayer implements Disposable {
     public void dispose() {
 
     }
+
+	public ClientConnection getClientConnection() {
+		return clientConnection;
+	}
 }

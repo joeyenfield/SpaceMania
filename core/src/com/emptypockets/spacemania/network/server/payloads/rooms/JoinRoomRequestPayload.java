@@ -18,46 +18,7 @@ public class JoinRoomRequestPayload extends ServerPayload{
 
     @Override
     public void executePayload(ClientConnection clientConnection, ServerManager serverManager) {
-        if (clientConnection.isConnected() && clientConnection.isLoggedIn()) {
-            ServerRoom room = serverManager.getRoomManager().findRoomByName(roomName);
-            if(room != null) {
-                if(clientConnection.getPlayer().getCurrentRoom().equals(room)){
-                    NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
-                    payload.setMessage("You are already connected to this room");
-                    payload.setComsType(ComsType.TCP);
-                    clientConnection.send(payload);
-                    Pools.free(payload);
-                }else {
-                    try {
-                        serverManager.joinRoom(room, clientConnection.getPlayer());
-                        JoinRoomSuccessPayload payload = Pools.obtain(JoinRoomSuccessPayload.class);
-                        payload.setRoom(room.getClientRoom());
-                        payload.setComsType(ComsType.TCP);
-                        clientConnection.send(payload);
-                        Pools.free(payload);
-                    } catch (TooManyPlayersException e) {
-                        NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
-                        payload.setMessage("Could not connect to room as it was full");
-                        payload.setComsType(ComsType.TCP);
-                        clientConnection.send(payload);
-                        Pools.free(payload);
-                    }
-                }
-            }else{
-
-                NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
-                payload.setMessage("No room found with name ["+roomName+"]");
-                payload.setComsType(ComsType.TCP);
-                clientConnection.send(payload);
-                Pools.free(payload);
-            }
-        } else {
-            NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
-            payload.setMessage("You are not logged in, please login first");
-            payload.setComsType(ComsType.TCP);
-            clientConnection.send(payload);
-            Pools.free(payload);
-        }
+        serverManager.joinRoom(clientConnection, roomName);
     }
 
     public String getRoomName() {

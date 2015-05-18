@@ -11,10 +11,10 @@ import java.util.Scanner;
 public class DesktopLauncher {
     public static void main(String[] arg) throws InterruptedException {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = 20;
-        config.height = 20;
+        config.width = 800;
+        config.height = 600;
         config.x = 0;
-        config.y = 1070;
+        config.y = 100;
 
         SpaceMania test = new SpaceMania();
 

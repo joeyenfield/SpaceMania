@@ -15,28 +15,6 @@ import com.emptypockets.spacemania.network.transport.ComsType;
 public class JoinLobyRequestPayload extends ServerPayload {
     @Override
     public void executePayload(ClientConnection clientConnection, ServerManager serverManager) {
-        if (clientConnection.isConnected() && clientConnection.isLoggedIn()) {
-            try {
-                serverManager.joinRoom(serverManager.getLobbyRoom(), clientConnection.getPlayer());
-                JoinRoomSuccessPayload payload = Pools.obtain(JoinRoomSuccessPayload.class);
-                payload.setRoom(serverManager.getLobbyRoom().getClientRoom());
-                payload.setComsType(ComsType.TCP);
-                clientConnection.send(payload);
-                Pools.free(payload);
-
-            } catch (TooManyPlayersException e) {
-                NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
-                payload.setMessage("Could not connect to lobby as it was full");
-                payload.setComsType(ComsType.TCP);
-                clientConnection.send(payload);
-                Pools.free(payload);
-            }
-        } else {
-            NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
-            payload.setMessage("You are not logged in, please login first");
-            payload.setComsType(ComsType.TCP);
-            clientConnection.send(payload);
-            Pools.free(payload);
-        }
+        serverManager.joinLobby(clientConnection);
     }
 }

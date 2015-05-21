@@ -4,14 +4,15 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.emptypockets.spacemania.MainGame;
 
 public abstract class StageScreen extends GameScreen {
 
     Viewport stageViewport;
     private Stage stage;
 
-    public StageScreen(InputMultiplexer inputMultiplexer) {
-        super(inputMultiplexer);
+    public StageScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
+        super(mainGame, inputMultiplexer);
         stageViewport = new ExtendViewport(800, 600);
     }
 

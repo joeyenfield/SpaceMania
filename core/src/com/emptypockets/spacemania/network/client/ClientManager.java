@@ -6,8 +6,11 @@ import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.CommandService;
 import com.emptypockets.spacemania.network.client.exceptions.ClientNotConnectedException;
+import com.emptypockets.spacemania.network.client.input.ClientInput;
 import com.emptypockets.spacemania.network.client.player.MyPlayer;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
+import com.emptypockets.spacemania.network.engine.Engine;
+import com.emptypockets.spacemania.network.server.payloads.ServerClientInputUpdatePayload;
 import com.emptypockets.spacemania.network.server.payloads.authentication.LoginRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.authentication.LogoutRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.ChatMessagePayload;
@@ -26,11 +29,11 @@ public class ClientManager implements Disposable {
     boolean loggedIn = false;
     MyPlayer player;
     ClientRoom currentRoom;
-    private Object serverRooms;
+    Engine engine;
     private Console console;
     
     public ClientManager() {
-    	setConsole(new Console("\tCLIENT : "));
+    	setConsole(new Console("CLIENT : "));
         command = new CommandLine(getConsole());
         connection = new ClientConnectionManager(this);
         CommandService.registerClientCommands(this);
@@ -46,6 +49,9 @@ public class ClientManager implements Disposable {
         //Update Room
         if (currentRoom != null) {
             currentRoom.update();
+        }
+        if(engine != null){
+        	engine.update();
         }
         connection.processToSendPayloads();
     }
@@ -77,6 +83,7 @@ public class ClientManager implements Disposable {
     	getConsole().println("Connecting to ["+address+":"+tcpPort+","+udpPort+"]");
         disconnect();
         connection.connect(address, tcpPort, udpPort);
+        engine = new Engine();
     }
 
     public void disconnect() {
@@ -88,13 +95,17 @@ public class ClientManager implements Disposable {
         loggedIn = false;
         player = null;
         currentRoom = null;
+        engine = null;
     }
 
     public void listStatus() {
     	getConsole().println("Listing Status");
         connection.listStatus();
         getConsole().println("Logged in : " + isLoggedIn());
-        getConsole().println("Room : " + (getCurrentRoom() == null ? "None" : getCurrentRoom().getName()));
+        if(isLoggedIn()){
+        	getConsole().println("Player : Username["+getPlayer().getUsername()+"] Ping["+getPlayer().getPing()+"]");
+        	getConsole().println("Room : " + (getCurrentRoom() == null ? "None" : getCurrentRoom().getName()));
+        }
     }
 
     public void updatePing() {
@@ -122,9 +133,9 @@ public class ClientManager implements Disposable {
     public void setPlayer(MyPlayer player) {
         this.player = player;
         if(player == null){
-            console.setConsoleKey("\t\tCLIENT[]");
+            console.setConsoleKey("CLIENT[] : ");
         }else{
-            console.setConsoleKey("\t\tCLIENT["+player.getUsername()+"]");
+            console.setConsoleKey("CLIENT["+player.getUsername()+"] : ");
         }
     }
 
@@ -132,8 +143,11 @@ public class ClientManager implements Disposable {
     public void dispose() {
         stop();
         connection.dispose();
-        if (currentRoom == null) {
+        if (currentRoom != null) {
             currentRoom.dispose();
+        }
+        if(engine != null){
+        	engine.dispose();
         }
     }
 
@@ -147,12 +161,16 @@ public class ClientManager implements Disposable {
     }
 
     public void joinLobby() {
+    	engine.getEntityManager().clear();
+    	engine.start();
     	getConsole().println("Joining :  Lobby");
         JoinLobyRequestPayload request = new JoinLobyRequestPayload();
         connection.send(request);
     }
 
     public void joinRoom(String name) {
+    	engine.getEntityManager().clear();
+    	engine.start();
     	getConsole().println("Joining Room : " + name);
     	JoinRoomRequestPayload payload = new JoinRoomRequestPayload();
         payload.setRoomName(name);
@@ -167,7 +185,6 @@ public class ClientManager implements Disposable {
     }
 
     public void sendChatMessage(String message) {
-    	getConsole().println("Sending chat message ["+message+"]");
         ChatMessagePayload payload = Pools.obtain(ChatMessagePayload.class);
         payload.setMessage(message);
         connection.send(payload);
@@ -185,5 +202,15 @@ public class ClientManager implements Disposable {
 
 	public void setConsole(Console console) {
 		this.console = console;
+	}
+
+	public Engine getEngine() {
+		return engine;
+	}
+
+	public void sendInput(ClientInput clientInput) {
+		ServerClientInputUpdatePayload payload = Pools.obtain(ServerClientInputUpdatePayload.class);
+		payload.setInput(clientInput);
+		connection.send(payload);
 	}
 }

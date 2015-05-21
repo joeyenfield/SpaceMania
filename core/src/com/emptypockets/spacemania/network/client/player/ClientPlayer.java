@@ -35,6 +35,12 @@ public class ClientPlayer{
         username = player.getUsername();
         ping = player.getPing();
     }
+    
+    public void read(ClientPlayer player){
+    	id = player.getId();
+        username = player.getUsername();
+        ping = player.getPing();
+    }
 
     public void dispose() {
         username = null;

@@ -1,10 +1,9 @@
 package com.emptypockets.spacemania.network.server.commands.management;
 
-import com.emptypockets.spacemania.logging.ServerLogger;
+import java.io.IOException;
+
 import com.emptypockets.spacemania.network.server.ServerManager;
 import com.emptypockets.spacemania.network.server.commands.ServerCommand;
-
-import java.io.IOException;
 
 
 public class ServerStartCommand extends ServerCommand {
@@ -34,14 +33,15 @@ public class ServerStartCommand extends ServerCommand {
 
             }
         } catch (Exception e) {
-            ServerLogger.error("Invalid Arguments", e);
+            server.getConsole().println("Invalid Arguments");
+            server.getConsole().error(e);
         }
 
         try {
             server.start();
         } catch (IOException e) {
-            ServerLogger.error("Failed to start server", e);
-            e.printStackTrace();
+            server.getConsole().println("Failed to start server");
+            server.getConsole().error(e);
         }
     }
 }

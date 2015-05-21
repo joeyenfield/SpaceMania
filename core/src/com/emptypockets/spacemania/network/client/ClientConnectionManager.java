@@ -110,9 +110,9 @@ public class ClientConnectionManager extends Listener implements Disposable{
     public void listStatus() {
         synchronized (clientConnectionLock) {
             if (connection == null) {
-            	manager.getConsole().println("Not Connected");
+            	manager.getConsole().println("Connection : Connected[false] : Ping[]");
             } else {
-            	manager.getConsole().println("Connected : " + connection.isConnected()+" : Ping ["+getPing()+"]");
+            	manager.getConsole().println("Connection : Connected[" + connection.isConnected()+"] : Ping["+getPing()+"]");
             }
         }
     }

@@ -4,6 +4,7 @@ import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.NetworkProperties;
 import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 import com.emptypockets.spacemania.network.transport.NetworkProtocall;
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -107,4 +108,8 @@ public class ServerConnectionManager extends Listener {
             }
         }
     }
+
+	public Kryo getKryo() {
+		return server.getKryo();
+	}
 }

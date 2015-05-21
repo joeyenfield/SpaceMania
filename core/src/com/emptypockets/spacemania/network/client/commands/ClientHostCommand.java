@@ -14,7 +14,7 @@ public class ClientHostCommand extends ClientCommand {
     @Override
     public void exec(String data) {
         if (manager == null) {
-            manager = new ServerManager();
+            manager = new ServerManager(client.getConsole());
         }
         manager.getCommand().processCommand(data);
 

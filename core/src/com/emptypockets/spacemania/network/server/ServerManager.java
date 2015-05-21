@@ -1,26 +1,31 @@
 package com.emptypockets.spacemania.network.server;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.holders.SingleProcessor;
-import com.emptypockets.spacemania.logging.ServerLogger;
 import com.emptypockets.spacemania.network.CommandService;
+import com.emptypockets.spacemania.network.client.payloads.ClientMyPlayerStateUpdatePayload;
 import com.emptypockets.spacemania.network.client.payloads.NotifyClientPayload;
 import com.emptypockets.spacemania.network.client.payloads.authentication.LoginFailedResponsePayload;
 import com.emptypockets.spacemania.network.client.payloads.authentication.LoginSuccessResponsePayload;
 import com.emptypockets.spacemania.network.client.payloads.authentication.LogoutSuccessPayload;
+import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineEntityManagerSyncPayload;
 import com.emptypockets.spacemania.network.client.payloads.rooms.JoinRoomSuccessPayload;
+import com.emptypockets.spacemania.network.client.player.MyPlayer;
+import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;
 import com.emptypockets.spacemania.network.server.player.PlayerManager;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoomManager;
 import com.emptypockets.spacemania.network.transport.ComsType;
-
-import java.io.IOException;
-import java.util.ArrayList;
+import com.esotericsoftware.kryo.Kryo;
 
 public class ServerManager implements Disposable, Runnable {
 	boolean alive = true;
@@ -40,8 +45,11 @@ public class ServerManager implements Disposable, Runnable {
 	long pingUpdateTime = 30000;
 	long lastPingUpdate = 0;
 
-	public ServerManager() {
-		console = new Console("SERVER : ");
+	long playerStateUpdateTime = 1000;
+	long lastplayerStateUpdate = 0;
+
+	public ServerManager(Console console) {
+		this.console = console;
 		command = new CommandLine(console);
 		CommandService.registerServerCommands(this);
 
@@ -49,6 +57,10 @@ public class ServerManager implements Disposable, Runnable {
 		connectionManager = new ServerConnectionManager(this);
 		roomManager = new ServerRoomManager(this);
 		lobbyRoom = roomManager.createNewRoom(null, "Lobby");
+	}
+
+	public ServerManager() {
+		this(new Console("SERVER : "));
 	}
 
 	public ServerRoomManager getRoomManager() {
@@ -78,8 +90,7 @@ public class ServerManager implements Disposable, Runnable {
 	}
 
 	public void clientLogout(ClientConnection connection) {
-		console.println("Client Logout");
-		ServerLogger.info(name, "Client Exit : " + name);
+		console.println("Client Logout : " + (connection.getPlayer() == null ? "None" : connection.getPlayer().getUsername()));
 		if (connection.isLoggedIn()) {
 			ServerPlayer player = connection.getPlayer();
 
@@ -102,8 +113,6 @@ public class ServerManager implements Disposable, Runnable {
 
 	protected synchronized ServerPlayer clientLogin(ClientConnection connection, String username, String password) throws TooManyPlayersException {
 		console.println("Client Join : " + username);
-		ServerLogger.info(name, "Client Join : " + name);
-
 		serverConnecedUsersCounter++;
 
 		ServerPlayer player = new ServerPlayer(connection);
@@ -112,6 +121,8 @@ public class ServerManager implements Disposable, Runnable {
 
 		playerManager.addPlayer(player);
 		connection.setPlayer(player);
+		
+		connection.updateReturnTripTime();
 		return player;
 	}
 
@@ -214,6 +225,13 @@ public class ServerManager implements Disposable, Runnable {
 				}
 			});
 
+			// Update All Player States
+			delta = System.currentTimeMillis() - lastplayerStateUpdate;
+			if (delta > playerStateUpdateTime) {
+				lastplayerStateUpdate = System.currentTimeMillis();
+				updatePlayerStates();
+			}
+
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -221,6 +239,24 @@ public class ServerManager implements Disposable, Runnable {
 			}
 		}
 
+	}
+
+	private void updatePlayerStates() {
+		// Update Server Player Client Information
+		playerManager.process(new SingleProcessor<ServerPlayer>() {
+			@Override
+			public void process(ServerPlayer entity) {
+				ClientMyPlayerStateUpdatePayload payload = Pools.obtain(ClientMyPlayerStateUpdatePayload.class);
+				
+				MyPlayer player = new MyPlayer();
+				player.read(entity);
+				player.setEntityId(entity.getEntityId());
+				
+				payload.setMyPlayer(player);
+				entity.send(payload);
+				Pools.free(payload);
+			}
+		});
 	}
 
 	public void closeRoom(ServerRoom room) {
@@ -266,6 +302,8 @@ public class ServerManager implements Disposable, Runnable {
 		}
 		room.joinRoom(player);
 		player.setCurrentRoom(room);
+		
+		
 	}
 
 	public void joinRoom(ClientConnection clientConnection, String roomName) {
@@ -288,6 +326,7 @@ public class ServerManager implements Disposable, Runnable {
 						payload.setComsType(ComsType.TCP);
 						clientConnection.send(payload);
 						Pools.free(payload);
+						
 					} catch (TooManyPlayersException e) {
 						NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 						payload.setMessage("Could not connect to room as it was full");
@@ -313,7 +352,6 @@ public class ServerManager implements Disposable, Runnable {
 	}
 
 	public void chatRecieved(ServerPlayer player, String message) {
-		console.println("Chat recieved from [" + player + "] : " + message);
 		player.getCurrentRoom().sendMessage(message, player.getUsername());
 	}
 
@@ -477,6 +515,11 @@ public class ServerManager implements Disposable, Runnable {
 			resp.setMessage("Your not logged in");
 			clientConnection.sendTCP(resp);
 		}
+	}
+
+	public Kryo getKryo() {
+		return connectionManager.getKryo();
+
 	}
 
 }

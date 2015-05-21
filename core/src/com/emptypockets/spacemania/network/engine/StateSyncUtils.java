@@ -3,7 +3,7 @@ package com.emptypockets.spacemania.network.engine;
 import com.badlogic.gdx.utils.Pools;
 
 public class StateSyncUtils {
-	public static float MAX_POS_DELTA = 15;
+	public static float MAX_POS_DELTA = 20;
 	public static float MAX_POS_DELTA_2 = MAX_POS_DELTA*MAX_POS_DELTA;
 	
 	public static float MAX_ANGLE_DELTA = 3;
@@ -17,20 +17,24 @@ public class StateSyncUtils {
 	 * @param clientState
 	 */
 	public static void updateState(long serverTime, EntityState serverState, long clientTime, EntityState clientState){
-		float timeDelta = (clientTime-serverTime)/1000f;
+		long delta = (clientTime-serverTime);
+		float timeDelta = (delta)/1000f;
 		EntityState tempState = Pools.obtain(EntityState.class);
 		serverState.write(tempState);
 		tempState.delta(timeDelta);
-		
 		//Set Velocity and Acl
 		clientState.getVel().set(tempState.getVel());
 		clientState.getAcl().set(tempState.getAcl());
 		clientState.setAngVel(tempState.getAngVel());
 		
 		//Only force low level positions when the entity is off by a given amount
-		if(clientState.getPos().dst2(tempState.getPos()) > MAX_POS_DELTA_2){
-			System.err.println("Fixing Position"+serverState.getId());
+		float posDelta = clientState.getPos().dst2(tempState.getPos());
+		if(posDelta > MAX_POS_DELTA_2){
+			//Hard Fix
 			clientState.getPos().set(tempState.getPos());
+		}else{
+			//Soft fix
+			clientState.getPos().lerp(tempState.getPos(), 0.1f);
 		}
 		
 		if(Math.abs(clientState.getAng()-tempState.getAng()) > MAX_ANGLE_DELTA){

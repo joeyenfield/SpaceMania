@@ -8,6 +8,7 @@ public class Engine implements Disposable{
 	EntityManager entities;
 	long startTime;
 	long lastUpdate;
+	
 	public Engine() {
 		entities = new EntityManager();
 		start();
@@ -19,6 +20,10 @@ public class Engine implements Disposable{
 
 	public long getTime(){
 		return System.currentTimeMillis()-startTime;
+	}
+	
+	public long getEngineLastUpdateTime(){
+		return lastUpdate;
 	}
 
 	public void start(){

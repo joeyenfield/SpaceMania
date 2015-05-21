@@ -33,7 +33,7 @@ public class ClientConnectCommand extends ClientCommand {
                 tcpPort = Integer.parseInt(arg[1]);
             }
             if (arg.length >= 3 && !arg[2].isEmpty()) {
-                tcpPort = Integer.parseInt(arg[2]);
+            	udpPort = Integer.parseInt(arg[2]);
             }
 
 

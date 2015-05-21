@@ -162,8 +162,8 @@ public class ServerRoom implements Disposable {
 
 		// Add entity for player
 		Entity entity = engine.getEntityManager().createEntity(EntityType.Player);
-		entity.getState().getPos().x = 10 + entity.getState().getId() * 5;
-		entity.getState().getPos().y = 10 + entity.getState().getId() * 5;
+		entity.getState().getPos().x = 5;
+		entity.getState().getPos().y = 5;
 		player.setEntityId(entity.getState().getId());
 		engine.getEntityManager().addEntity(entity);
 
@@ -198,6 +198,8 @@ public class ServerRoom implements Disposable {
 		message.setServerPlayer(player);
 		messageManager.add(message);
 
+		engine.getEntityManager().removeEntityById(player.getEntityId());
+		
 		sendMessage(String.format("%s has left the room", player.getUsername()));
 	}
 

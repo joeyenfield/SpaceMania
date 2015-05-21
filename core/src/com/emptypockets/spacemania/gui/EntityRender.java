@@ -16,6 +16,9 @@ public class EntityRender implements SingleProcessor<Entity> {
     ShapeRenderer shapeRender;
     boolean debugEnabled = true;
 
+    float velScale = .5f;
+    float aclScale = .5f;
+    
     public EntityRender() {
         shapeRender = new ShapeRenderer();
     }
@@ -41,13 +44,13 @@ public class EntityRender implements SingleProcessor<Entity> {
     @Override
     public void process(Entity entity) {
         shapeRender.setColor(Color.RED);
-        shapeRender.circle(entity.getState().getPos().x, entity.getState().getPos().y, 1f);
+        shapeRender.circle(entity.getState().getPos().x, entity.getState().getPos().y, 3f);
 
         shapeRender.setColor(Color.GREEN);
-        //shapeRender.line(ent.getPos().x, ent.getPos().y, ent.getPos().x + ent.getVel().x, ent.getPos().y + ent.getVel().y);
+        shapeRender.line(entity.getPos().x, entity.getPos().y, entity.getPos().x + entity.getVel().x*velScale, entity.getPos().y + entity.getVel().y*velScale);
 
         shapeRender.setColor(Color.BLUE);
-        // shapeRender.line(ent.getPos().x, ent.getPos().y, ent.getPos().x + ent.getAcl().x, ent.getPos().y + ent.getAcl().y);
+         shapeRender.line(entity.getPos().x, entity.getPos().y, entity.getPos().x + entity.getAcl().x*aclScale, entity.getPos().y + entity.getAcl().y*aclScale);
 
         shapeRender.setColor(Color.WHITE);
         // shapeRender.polygon(ent.getBounds().getTransformedVertices());

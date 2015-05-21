@@ -49,4 +49,8 @@ public class Entity {
 		state.delta(deltaTime);
 	}
 
+	public Vector2 getAcl() {
+		return state.getAcl();
+	}
+
 }

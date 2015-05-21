@@ -30,7 +30,7 @@ public class DesktopLauncher {
 //        client.processCommand("lobby");
         
         
-        client.processCommand("host start; connect;login jenfield; lobby");
+//        client.processCommand("host start; connect;login server; lobby");
 //        client.processCommand("connect;login jenfield2; lobby");
 //        client.processCommand("lobby");
 //        client.processCommand("host rooms");

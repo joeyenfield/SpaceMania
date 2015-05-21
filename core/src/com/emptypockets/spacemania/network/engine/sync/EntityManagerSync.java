@@ -49,7 +49,7 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable{
 			@Override
 			public void process(Entity entity) {
 				EntityState serverState = entityStates.get(entity.getState().getId());
-				StateSyncUtils.updateState(time, serverState, engine.getTime(), entity.getState());
+				StateSyncUtils.updateState(time, serverState, engine.getEngineLastUpdateTime(), entity.getState());
 			}
 		});
 		releaseCreationList();

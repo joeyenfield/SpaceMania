@@ -62,7 +62,6 @@ public class MainGame extends Game {
     @Override
     public void resume() {
         super.resume();
-        Scene2DToolkit.getToolkit().reloadSkin();
     }
 
     @Override

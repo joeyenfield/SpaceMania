@@ -1,24 +1,38 @@
 package com.emptypockets.spacemania.network.engine.entities;
 
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.engine.EntityState;
 import com.emptypockets.spacemania.network.engine.EntityType;
 
-public class Entity {
+public abstract class Entity {
+	Polygon shape;
 	EntityState state;
 	EntityType type;
 	boolean alive = true;
+	Rectangle aaBounds;
+	public Entity(EntityType type) {
+		this.type = type;
+		state = new EntityState();
+		aaBounds = new Rectangle();
+	}
+	
+	public abstract boolean intersectsDetailed(Entity entity);
+	public boolean intersectsAABounds(Entity entity){
+		return aaBounds.overlaps(entity.aaBounds);
+	}
 
+	public Rectangle getAABounds(){
+		return aaBounds;
+	}
+	
 	public boolean isAlive() {
 		return alive;
 	}
 
 	public void setAlive(boolean alive) {
 		this.alive = alive;
-	}
-
-	public Entity() {
-		state = new EntityState();
 	}
 
 	public Vector2 getPos() {
@@ -31,10 +45,6 @@ public class Entity {
 
 	public EntityType getType() {
 		return type;
-	}
-
-	public void setType(EntityType type) {
-		this.type = type;
 	}
 
 	public EntityState getState() {

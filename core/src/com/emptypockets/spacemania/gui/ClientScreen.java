@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -55,6 +56,9 @@ public class ClientScreen extends StageScreen {
 		getClient().getCommand().pushHistory("lobby");
 
 		getClient().getCommand().pushHistory("connect emptypocketgames.noip.me");
+		
+		getClient().getCommand().pushHistory("connect; login client"+MathUtils.random(100)+"; lobby");
+		getClient().getCommand().pushHistory("host start;connect; login client"+MathUtils.random(100)+"; lobby");
 
 	}
 

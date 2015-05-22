@@ -21,9 +21,13 @@ public class EntityState {
 
 	@Override
 	public String toString() {
-		return String.format("P[%6.3f,%6.3f] V[%6.3f,%6.3f]", pos.x, pos.y, vel.x, vel.y);
+		return String.format("I[%3d] P[%6.3f,%6.3f] V[%6.3f,%6.3f]", id, pos.x, pos.y, vel.x, vel.y);
 	}
 
+	/**
+	 * Writes the current state on the object
+	 * @param state
+	 */
 	public void write(EntityState state) {
 		state.pos.set(pos);
 		state.vel.set(vel);
@@ -63,7 +67,7 @@ public class EntityState {
 		this.angVel = angVel;
 	}
 
-	public Vector2 getPos() {
+	public Vector2 getPos() {		
 		return pos;
 	}
 

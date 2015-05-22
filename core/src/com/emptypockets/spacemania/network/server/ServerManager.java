@@ -84,11 +84,6 @@ public class ServerManager implements Disposable, Runnable {
 		alive = false;
 	}
 
-	public ServerRoom createRoom(ServerPlayer host, String roomName) {
-		console.println("Creating room : " + roomName + " - " + host.getUsername());
-		return roomManager.createNewRoom(host, roomName);
-	}
-
 	public void clientLogout(ClientConnection connection) {
 		console.println("Client Logout : " + (connection.getPlayer() == null ? "None" : connection.getPlayer().getUsername()));
 		if (connection.isLoggedIn()) {
@@ -121,7 +116,7 @@ public class ServerManager implements Disposable, Runnable {
 
 		playerManager.addPlayer(player);
 		connection.setPlayer(player);
-		
+
 		connection.updateReturnTripTime();
 		return player;
 	}
@@ -196,8 +191,14 @@ public class ServerManager implements Disposable, Runnable {
 
 	@Override
 	public void run() {
-		while (alive) {
 
+		long startTime = 0;
+		long processingTime = 0;
+
+		long desiredPeroid = 100;
+
+		while (alive) {
+			startTime = System.currentTimeMillis();
 			// Update All Pings
 			long delta = System.currentTimeMillis() - lastPingUpdate;
 			if (delta > pingUpdateTime) {
@@ -232,8 +233,13 @@ public class ServerManager implements Disposable, Runnable {
 				updatePlayerStates();
 			}
 
+			processingTime = System.currentTimeMillis() - startTime;
 			try {
-				Thread.sleep(100);
+				if (processingTime < desiredPeroid) {
+					Thread.sleep(desiredPeroid - processingTime);
+				} else {
+					console.println("Server Running Behind");
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -247,11 +253,11 @@ public class ServerManager implements Disposable, Runnable {
 			@Override
 			public void process(ServerPlayer entity) {
 				ClientMyPlayerStateUpdatePayload payload = Pools.obtain(ClientMyPlayerStateUpdatePayload.class);
-				
+
 				MyPlayer player = new MyPlayer();
 				player.read(entity);
 				player.setEntityId(entity.getEntityId());
-				
+
 				payload.setMyPlayer(player);
 				entity.send(payload);
 				Pools.free(payload);
@@ -271,46 +277,25 @@ public class ServerManager implements Disposable, Runnable {
 				NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 				payload.setMessage("Room is closed - Returning to lobby.");
 				entity.send(payload);
-
 				players.add(entity);
 			}
 		});
 
 		for (ServerPlayer player : players) {
-			joinLobby(player.getClientConnection());
+			joinRoom(player.getClientConnection(), lobbyRoom.getName());
 		}
 		roomManager.removeRoom(room);
 	}
 
-	public void joinRoom(ServerRoom room, ServerPlayer player) throws TooManyPlayersException {
-		console.println("Joining room : " + room.getName() + " - " + player.getUsername());
-		if (player.getCurrentRoom() != null) {
-			ServerRoom currentRoom = player.getCurrentRoom();
-			currentRoom.leaveRoom(player);
-			boolean closeRoom = false;
-			if (currentRoom.getHost() != null && currentRoom.getHost().equals(player)) {
-				closeRoom = true;
-			}
-
-			if (currentRoom.getPlayerCount() == 0 && !getLobbyRoom().equals(room)) {
-				closeRoom = true;
-			}
-
-			if (closeRoom) {
-				closeRoom(currentRoom);
-			}
-		}
-		room.joinRoom(player);
-		player.setCurrentRoom(room);
-		
-		
-	}
-
 	public void joinRoom(ClientConnection clientConnection, String roomName) {
 		if (clientConnection.isConnected() && clientConnection.isLoggedIn()) {
-			ServerRoom room = getRoomManager().findRoomByName(roomName);
-			if (room != null) {
-				if (clientConnection.getPlayer().getCurrentRoom().equals(room)) {
+			ServerRoom newRoom = getRoomManager().findRoomByName(roomName);
+			ServerPlayer player = clientConnection.getPlayer();
+			ServerRoom currentRoom = player.getCurrentRoom();
+			
+			
+			if (newRoom != null) {
+				if (currentRoom != null && currentRoom.equals(newRoom)) {
 					NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 					payload.setMessage("You are already connected to this room");
 					payload.setComsType(ComsType.TCP);
@@ -318,15 +303,36 @@ public class ServerManager implements Disposable, Runnable {
 					Pools.free(payload);
 				} else {
 					try {
-						// Join the room
-						joinRoom(room, clientConnection.getPlayer());
+						
+						// If already in a room leave it
+						if (currentRoom != null) {
+							currentRoom.leaveRoom(player);
+							boolean closeRoom = false;
+							if (currentRoom.getHost() != null && currentRoom.getHost().equals(player)) {
+								closeRoom = true;
+							}
+							if (currentRoom.getPlayerCount() == 0 && !getLobbyRoom().equals(newRoom)) {
+								closeRoom = true;
+							}
+
+							if (closeRoom) {
+								closeRoom(currentRoom);
+							}
+						}
+						newRoom.joinRoom(player);
+						player.setCurrentRoom(newRoom);
 
 						JoinRoomSuccessPayload payload = Pools.obtain(JoinRoomSuccessPayload.class);
-						payload.setRoom(room.getClientRoom());
+						payload.setRoom(newRoom.getClientRoom());
 						payload.setComsType(ComsType.TCP);
-						clientConnection.send(payload);
-						Pools.free(payload);
+						synchronized (player.getEntityManagerSync()) {
+							payload.setInitialSync(player.getEntityManagerSync());
+							clientConnection.send(payload);
+							player.getEntityManagerSync().cleanAfterSends();
+						}
 						
+						Pools.free(payload);
+
 					} catch (TooManyPlayersException e) {
 						NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
 						payload.setMessage("Could not connect to room as it was full");
@@ -351,9 +357,6 @@ public class ServerManager implements Disposable, Runnable {
 		}
 	}
 
-	public void chatRecieved(ServerPlayer player, String message) {
-		player.getCurrentRoom().sendMessage(message, player.getUsername());
-	}
 
 	public int getTcpPort() {
 		return connectionManager.tcpPort;
@@ -383,49 +386,12 @@ public class ServerManager implements Disposable, Runnable {
 		return console;
 	}
 
-	public void joinLobby(ClientConnection clientConnection) {
-		if (clientConnection.isConnected() && clientConnection.isLoggedIn()) {
-			try {
-				joinRoom(getLobbyRoom(), clientConnection.getPlayer());
-				JoinRoomSuccessPayload payload = Pools.obtain(JoinRoomSuccessPayload.class);
-				payload.setRoom(getLobbyRoom().getClientRoom());
-				payload.setComsType(ComsType.TCP);
-				clientConnection.send(payload);
-				Pools.free(payload);
-
-			} catch (TooManyPlayersException e) {
-				NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
-				payload.setMessage("Could not connect to lobby as it was full");
-				payload.setComsType(ComsType.TCP);
-				clientConnection.send(payload);
-				Pools.free(payload);
-			}
-		} else {
-			NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
-			payload.setMessage("You are not logged in, please login first");
-			payload.setComsType(ComsType.TCP);
-			clientConnection.send(payload);
-			Pools.free(payload);
-		}
-	}
-
 	public void createRoom(ClientConnection clientConnection, String roomName) {
 		if (clientConnection.isConnected()) {
 			if (clientConnection.getPlayer() != null) {
-				try {
-					ServerRoom room = createRoom(clientConnection.getPlayer(), roomName);
-					joinRoom(room, clientConnection.getPlayer());
-					room.updateClientRoom();
-
-					JoinRoomSuccessPayload payload = new JoinRoomSuccessPayload();
-					payload.setRoom(room.getClientRoom());
-					clientConnection.send(payload);
-
-				} catch (TooManyPlayersException e) {
-					NotifyClientPayload payload = new NotifyClientPayload();
-					payload.setMessage("Could not create room");
-					clientConnection.send(payload);
-				}
+				;
+				ServerRoom room = roomManager.createNewRoom(clientConnection.getPlayer(), roomName);
+				joinRoom(clientConnection, roomName);
 			} else {
 				NotifyClientPayload payload = new NotifyClientPayload();
 				payload.setMessage("You must be logged in to create a room");
@@ -440,7 +406,7 @@ public class ServerManager implements Disposable, Runnable {
 	public void chatRecieved(ClientConnection clientConnection, String message) {
 		if (clientConnection.isLoggedIn()) {
 			if (clientConnection.getPlayer() != null && clientConnection.getPlayer().isInRoom()) {
-				chatRecieved(clientConnection.getPlayer(), message);
+				clientConnection.getPlayer().getCurrentRoom().sendMessage(message, clientConnection.getPlayer().getUsername());
 			} else {
 				NotifyClientPayload payload = new NotifyClientPayload();
 				payload.setMessage("You are not in any room");

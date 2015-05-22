@@ -7,7 +7,7 @@ public class BulletEntity extends Entity {
 	long lifeTime = 3000;
 	
 	public BulletEntity(){
-		setType(EntityType.Bullet);
+		super(EntityType.Bullet);
 	}
 
 	public void setCreationTime(long creationTime) {
@@ -19,5 +19,10 @@ public class BulletEntity extends Entity {
 		if (System.currentTimeMillis() - creationTime > lifeTime) {
 			setAlive(false);
 		}
+	}
+
+	@Override
+	public boolean intersectsDetailed(Entity entity) {
+		return false;
 	}
 }

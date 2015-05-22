@@ -29,13 +29,20 @@ public class StateSyncUtils {
 		
 		//Only force low level positions when the entity is off by a given amount
 		float posDelta = clientState.getPos().dst2(tempState.getPos());
+//		System.out.println("\n");
+//		System.out.println("Client : "+clientState);
+//		System.out.println("Temp   : "+tempState);
+//		System.out.println("DELTA  : "+posDelta);
 		if(posDelta > MAX_POS_DELTA_2){
+//			System.out.println("HARD");
 			//Hard Fix
 			clientState.getPos().set(tempState.getPos());
 		}else{
+//			System.out.println("SOFT");
 			//Soft fix
 			clientState.getPos().lerp(tempState.getPos(), 0.1f);
 		}
+//		System.out.println("Client-: "+clientState);
 		
 		if(Math.abs(clientState.getAng()-tempState.getAng()) > MAX_ANGLE_DELTA){
 			clientState.setAng(tempState.getAng());

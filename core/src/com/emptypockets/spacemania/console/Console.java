@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
+import com.emptypockets.spacemania.utils.ErrorUtils;
+
 
 public class Console {
 	String consoleKey;
@@ -86,9 +88,6 @@ public class Console {
     }
 
     public void error(Throwable e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        println(sw.toString()); // stack trace as a string
+        println(ErrorUtils.getErrorMessage(e)); // stack trace as a string
     }
 }

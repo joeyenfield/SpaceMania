@@ -1,7 +1,5 @@
 package com.emptypockets.spacemania.network.server.rooms;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
@@ -36,14 +34,11 @@ public class ServerRoom implements Disposable {
 	PlayerManager playerManager;
 	ClientRoom clientRoom;
 	Engine engine;
-	EntityManagerSync engineEntitySyncManager;
 
 	public ServerRoom(ServerManager manager) {
 		super();
 		this.manager = manager;
 		engine = new Engine();
-		engineEntitySyncManager = new EntityManagerSync();
-		engine.getEntityManager().register(engineEntitySyncManager);
 		messageManager = new ArrayListProcessor<ServerRoomMessage>();
 		playerManager = new PlayerManager();
 		clientRoom = new ClientRoom();
@@ -113,7 +108,7 @@ public class ServerRoom implements Disposable {
 		return clientRoom;
 	}
 
-	public void processPlayerInput(){
+	public void processPlayerInput() {
 		playerManager.process(new SingleProcessor<ServerPlayer>() {
 			@Override
 			public void process(ServerPlayer player) {
@@ -121,17 +116,15 @@ public class ServerRoom implements Disposable {
 			}
 		});
 	}
+
 	public void update() {
 		processPlayerInput();
 		engine.update();
 		engine.getEntityManager().removeDead();
-		
-		engineEntitySyncManager.setTime(engine.getTime());
 	}
 
 	public synchronized void broadcast() {
 		// If no messages dont broadcast
-		
 		if (messageManager.getSize() > 0) {
 			final ClientRoomMessagesPayload roomMessagePayloads = Pools.obtain(ClientRoomMessagesPayload.class);
 			roomMessagePayloads.setComsType(ComsType.TCP);
@@ -152,9 +145,15 @@ public class ServerRoom implements Disposable {
 			});
 		}
 		
-		//Process Sync Data
-		engineEntitySyncManager.broadcast(this);
-		
+		//Broadcast Player Entity Managers
+		playerManager.process(new SingleProcessor<ServerPlayer>(){
+			@Override
+			public void process(ServerPlayer player) {
+				EntityManagerSync sync = player.getEntityManagerSync(); 
+				sync.setTime(engine.getEngineLastUpdateTime());
+				sync.setSyncTime(false);
+				sync.broadcast(player);
+			}});
 	}
 
 	public synchronized void joinRoom(ServerPlayer player) throws TooManyPlayersException {
@@ -164,31 +163,17 @@ public class ServerRoom implements Disposable {
 		Entity entity = engine.getEntityManager().createEntity(EntityType.Player);
 		entity.getState().getPos().x = 5;
 		entity.getState().getPos().y = 5;
-		player.setEntityId(entity.getState().getId());
 		engine.getEntityManager().addEntity(entity);
+		player.setEntityId(entity.getState().getId());
 
 		// Send message that player has joined
 		ServerRoomPlayerJoinMessage message = Pools.obtain(ServerRoomPlayerJoinMessage.class);
 		message.setServerPlayer(player);
 		messageManager.add(message);
-
-		
-		// Send initial Sync data to the player
-		final EntityManagerSync initSync = new EntityManagerSync();
-		initSync.setSyncTime(true);
-		initSync.setTime(engine.getTime());
-		getEngine().getEntityManager().process(new SingleProcessor<Entity>() {
-			@Override
-			public void process(Entity entity) {
-				initSync.entityAdded(entity);
-			}
-		});
-		final ClientEngineEntityManagerSyncPayload engineSync = Pools.obtain(ClientEngineEntityManagerSyncPayload.class);
-		engineSync.setSyncData(initSync);
-		player.send(engineSync);
-		Pools.free(engineSync);
-		
 		sendMessage(String.format("%s has joined the room", player.getUsername()));
+		
+		engine.getEntityManager().register(player.getEntityManagerSync());
+		player.getEntityManagerSync().setTime(engine.getEngineLastUpdateTime());
 	}
 
 	public void leaveRoom(ServerPlayer player) {
@@ -199,6 +184,8 @@ public class ServerRoom implements Disposable {
 		messageManager.add(message);
 
 		engine.getEntityManager().removeEntityById(player.getEntityId());
+		engine.getEntityManager().unregister(player.getEntityManagerSync());
+		player.getEntityManagerSync().reset();
 		
 		sendMessage(String.format("%s has left the room", player.getUsername()));
 	}

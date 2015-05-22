@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import com.emptypockets.spacemania.holders.ObjectProcessor;
+import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
+import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
 
@@ -30,15 +32,18 @@ public class EntityManager extends ObjectProcessor<Entity> {
 		switch (type) {
 		case Bullet:
 			entity = new BulletEntity();
-			((BulletEntity)entity).setCreationTime(System.currentTimeMillis());
+			((BulletEntity) entity).setCreationTime(System.currentTimeMillis());
 			break;
 		case Player:
 			entity = new PlayerEntity();
 			break;
+		case Enemy:
+			entity = new EnemyEntity();
+			break;
 		default:
 			throw new RuntimeException("Unknown Entity Type");
 		}
-		
+
 		entity.getState().setId(id);
 		return entity;
 	}
@@ -51,6 +56,13 @@ public class EntityManager extends ObjectProcessor<Entity> {
 	public synchronized void removeEntity(Entity entity) {
 		entities.remove(entity.getState().getId());
 		notifyEntityRemoved(entity);
+	}
+
+	public synchronized void removeEntityById(int id) {
+		Entity entity = getEntityById(id);
+		if (entity != null) {
+			removeEntity(entity);
+		}
 	}
 
 	private void notifyEntityAdded(Entity entity) {
@@ -69,25 +81,33 @@ public class EntityManager extends ObjectProcessor<Entity> {
 		}
 	}
 
-	public void register(EntityManagerInterface managerInterface) {
+	public synchronized void register(final EntityManagerInterface managerInterface) {
 		synchronized (entityMangerInterface) {
 			entityMangerInterface.add(managerInterface);
+			process(new SingleProcessor<Entity>() {
+				@Override
+				public void process(Entity entity) {
+					managerInterface.entityAdded(entity);
+				}
+			});
 		}
 	}
 
-	public void unregister(EntityManagerInterface managerInterface) {
+	public synchronized void unregister(final EntityManagerInterface managerInterface) {
 		synchronized (entityMangerInterface) {
 			entityMangerInterface.remove(managerInterface);
+			process(new SingleProcessor<Entity>() {
+				@Override
+				public void process(Entity entity) {
+					managerInterface.entityRemoved(entity);
+				}
+			});
 		}
 	}
 
 	@Override
 	protected Iterator<Entity> getIterator() {
 		return entities.values().iterator();
-	}
-
-	public synchronized void removeEntityById(int id) {
-		entities.remove(id);
 	}
 
 	public synchronized void clear() {
@@ -104,13 +124,13 @@ public class EntityManager extends ObjectProcessor<Entity> {
 
 	public synchronized void removeDead() {
 		final ArrayList<Entity> toRemove = new ArrayList<Entity>();
-		for(Entity ent : entities.values()){
-			if(!ent.isAlive()){
+		for (Entity ent : entities.values()) {
+			if (!ent.isAlive()) {
 				toRemove.add(ent);
 			}
 		}
-		
-		for(Entity ent : toRemove){
+
+		for (Entity ent : toRemove) {
 			removeEntity(ent);
 		}
 	}

@@ -8,6 +8,7 @@ import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.ClientConnection;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
 
@@ -20,6 +21,8 @@ public class ServerPlayer implements Disposable {
 	String username;
 	ClientConnection clientConnection;
 	ServerRoom currentRoom;
+	EntityManagerSync entityManagerSync;
+	
 	ClientPlayer clientPlayer;
 	ClientInput clientInput;
 	int entityId;
@@ -33,6 +36,11 @@ public class ServerPlayer implements Disposable {
 		this.clientConnection = clientConnection;
 		clientPlayer = new ClientPlayer();
 		clientInput = new ClientInput();
+		entityManagerSync = new EntityManagerSync();
+	}
+
+	public EntityManagerSync getEntityManagerSync() {
+		return entityManagerSync;
 	}
 
 	public float getMaxEntitySpeed() {

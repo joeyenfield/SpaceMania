@@ -1,7 +1,5 @@
 package com.emptypockets.spacemania.holders;
 
-import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
-
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

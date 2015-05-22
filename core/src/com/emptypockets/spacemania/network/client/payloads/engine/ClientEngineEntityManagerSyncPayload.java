@@ -8,16 +8,13 @@ import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 public class ClientEngineEntityManagerSyncPayload extends ClientPayload {
 	EntityManagerSync syncData;
 
-	
 	public EntityManagerSync getSyncData() {
 		return syncData;
 	}
 
-
 	public void setSyncData(EntityManagerSync syncData) {
 		this.syncData = syncData;
 	}
-
 
 	@Override
 	public void executePayload(ClientManager clientManager) {

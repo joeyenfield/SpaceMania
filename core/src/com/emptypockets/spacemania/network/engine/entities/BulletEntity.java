@@ -1,6 +1,5 @@
 package com.emptypockets.spacemania.network.engine.entities;
 
-import com.emptypockets.spacemania.network.engine.EntityType;
 
 public class BulletEntity extends Entity {
 	long creationTime = 0;

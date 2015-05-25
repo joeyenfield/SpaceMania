@@ -9,8 +9,8 @@ import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineEn
 import com.emptypockets.spacemania.network.client.payloads.rooms.ClientRoomMessagesPayload;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 import com.emptypockets.spacemania.network.engine.Engine;
-import com.emptypockets.spacemania.network.engine.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.ServerManager;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;

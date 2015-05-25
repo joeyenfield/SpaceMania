@@ -1,6 +1,7 @@
-package com.emptypockets.spacemania.network.engine;
+package com.emptypockets.spacemania.network.engine.sync;
 
 import com.badlogic.gdx.utils.Pools;
+import com.emptypockets.spacemania.network.engine.entities.EntityState;
 
 public class StateSyncUtils {
 	public static float MAX_POS_DELTA = 20;

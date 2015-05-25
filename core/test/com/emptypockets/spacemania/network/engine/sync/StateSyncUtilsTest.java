@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.network.engine;
+package com.emptypockets.spacemania.network.engine.sync;
 
 import static org.junit.Assert.*;
 
@@ -7,8 +7,8 @@ import java.nio.ByteBuffer;
 import org.junit.Test;
 
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.network.engine.EntityState;
-import com.emptypockets.spacemania.network.engine.StateSyncUtils;
+import com.emptypockets.spacemania.network.engine.entities.EntityState;
+import com.emptypockets.spacemania.network.engine.sync.StateSyncUtils;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
 import com.esotericsoftware.kryo.io.Output;

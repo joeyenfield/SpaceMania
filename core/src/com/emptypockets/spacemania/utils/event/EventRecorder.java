@@ -83,6 +83,21 @@ public class EventRecorder {
     public void setAccuracy(Event.EventTimerAccuracy accuracy) {
         this.accuracy = accuracy;
     }
+    
+    public void logData(){
+    	  ArrayList<String> event = new ArrayList<String>(historicEvents.keySet());
+          Collections.sort(event, Collections.reverseOrder());
+          int length = 0;
+          for (String key : event) {
+              if (length < key.length()) {
+                  length = key.length();
+              }
+          }
+          length = 1;
+          for (String key : event) {
+              System.out.println(String.format("%" + length + "s : %1.2f", key, historicEvents.get(key).getAverageDurationMS()));
+          }
+    }
 
     public void draw(SpriteBatch textBatch, BitmapFont font, float x, float y, float yOff) {
 

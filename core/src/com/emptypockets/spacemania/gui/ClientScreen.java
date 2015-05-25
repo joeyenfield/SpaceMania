@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLinePanel;
+import com.emptypockets.spacemania.gui.renderer.EntityRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.input.OnScreenInput;
@@ -51,14 +52,14 @@ public class ClientScreen extends StageScreen {
 		clientInputProducer = new OnScreenInput();
 		setClearColor(Color.BLACK);
 
-		getClient().getCommand().pushHistory("connect 192.168.1.9");
-		getClient().getCommand().pushHistory("login user2;");
-		getClient().getCommand().pushHistory("lobby");
-
-		getClient().getCommand().pushHistory("connect emptypocketgames.noip.me");
-		
-		getClient().getCommand().pushHistory("connect; login client"+MathUtils.random(100)+"; lobby");
-		getClient().getCommand().pushHistory("host start;connect; login client"+MathUtils.random(100)+"; lobby");
+		getClient().getCommand().pushHistory("connect 192.168.43.100; login user"+MathUtils.random(100)+";lobby;");
+//		getClient().getCommand().pushHistory("login user2;");
+//		getClient().getCommand().pushHistory("lobby");
+//
+//		getClient().getCommand().pushHistory("connect emptypocketgames.noip.me");
+//		
+//		getClient().getCommand().pushHistory("connect; login client"+MathUtils.random(100)+"; lobby");
+//		getClient().getCommand().pushHistory("host start;connect; login client"+MathUtils.random(100)+"; lobby");
 
 	}
 

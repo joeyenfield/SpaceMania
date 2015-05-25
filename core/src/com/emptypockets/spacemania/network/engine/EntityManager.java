@@ -9,6 +9,7 @@ import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
 import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
 
 public class EntityManager extends ObjectProcessor<Entity> {

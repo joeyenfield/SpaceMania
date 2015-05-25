@@ -3,11 +3,13 @@ package com.emptypockets.spacemania.network.engine;
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.grid.typeB.GridData2D;
 
 public class Engine implements Disposable{
 	EntityManager entities;
 	long startTime;
 	long lastUpdate;
+	GridData2D gridData;
 	
 	public Engine() {
 		entities = new EntityManager();

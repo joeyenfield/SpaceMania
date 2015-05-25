@@ -3,8 +3,6 @@ package com.emptypockets.spacemania.network.engine.entities;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.network.engine.EntityState;
-import com.emptypockets.spacemania.network.engine.EntityType;
 
 public abstract class Entity {
 	Polygon shape;
@@ -16,6 +14,7 @@ public abstract class Entity {
 		this.type = type;
 		state = new EntityState();
 		aaBounds = new Rectangle();
+		shape = new Polygon();
 	}
 	
 	public abstract boolean intersectsDetailed(Entity entity);

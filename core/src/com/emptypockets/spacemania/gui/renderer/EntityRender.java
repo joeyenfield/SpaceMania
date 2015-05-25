@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.gui;
+package com.emptypockets.spacemania.gui.renderer;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;

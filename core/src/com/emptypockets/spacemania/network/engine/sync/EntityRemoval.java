@@ -1,7 +1,7 @@
 package com.emptypockets.spacemania.network.engine.sync;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.emptypockets.spacemania.network.engine.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.EntityType;
 
 public class EntityRemoval implements Poolable {
 	int id;

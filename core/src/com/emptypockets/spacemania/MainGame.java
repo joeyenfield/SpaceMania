@@ -9,6 +9,7 @@ import com.emptypockets.spacemania.gui.LoadingScreen;
 import com.emptypockets.spacemania.gui.screens.SplashScreen;
 import com.emptypockets.spacemania.gui.tools.GameScreen;
 import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
+import com.emptypockets.spacemania.network.engine.grid.GridScreen;
 
 public class MainGame extends Game {
 

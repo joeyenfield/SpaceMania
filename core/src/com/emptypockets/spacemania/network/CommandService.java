@@ -4,6 +4,7 @@ package com.emptypockets.spacemania.network;
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.commands.connection.ClientPingCommand;
 import com.emptypockets.spacemania.network.client.commands.ClientHostCommand;
+import com.emptypockets.spacemania.network.client.commands.ClientStartCommand;
 import com.emptypockets.spacemania.network.client.commands.ClientStatusCommand;
 import com.emptypockets.spacemania.network.client.commands.authentication.ClientLoginCommand;
 import com.emptypockets.spacemania.network.client.commands.authentication.ClientLogoutCommand;
@@ -36,10 +37,10 @@ public class CommandService {
         server.getCommand().registerCommand(new ServerPingCommand(server));
         server.getCommand().registerCommand(new ServerRoomsCommand(server));
         server.getCommand().registerCommand(new ServerRoomStatusCommand(server));
-
     }
 
     public static void registerClientCommands(ClientManager client) {
+    	client.getCommand().registerCommand(new ClientStartCommand(client));
         client.getCommand().registerCommand(new ClientJoinRoomCommand(client));
 
         client.getCommand().registerCommand(new ClientConnectCommand(client));

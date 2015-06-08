@@ -42,7 +42,28 @@
          operator="in"
          in="result6"
          in2="result7"
-         id="feComposite3403" />
+         id="feComposite3403"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4164" />
+      <feGaussianBlur
+         id="feGaussianBlur4166"
+         result="result6"
+         stdDeviation="3"
+         in="fbSourceGraphic" />
+      <feColorMatrix
+         id="feColorMatrix4168"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0 "
+         result="result7"
+         in="fbSourceGraphic" />
+      <feComposite
+         id="feComposite4170"
+         in2="result7"
+         operator="in"
+         in="result6" />
     </filter>
   </defs>
   <sodipodi:namedview
@@ -53,10 +74,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8177596"
-     inkscape:cx="105.97174"
+     inkscape:cx="43.688215"
      inkscape:cy="148.87052"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer2"
      showgrid="false"
      units="px"
      inkscape:window-width="1920"
@@ -72,7 +93,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -101,10 +122,11 @@
      inkscape:label="Text Foreground"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-752.36216)">
+     transform="translate(0,-752.36216)"
+     style="display:inline">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:56.25px;line-height:100%;font-family:Jokerman;-inkscape-font-specification:'Jokerman, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:56.25px;line-height:100%;font-family:Jokerman;-inkscape-font-specification:'Jokerman, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        x="205.94072"
        y="896.68378"
        id="text3344-2"

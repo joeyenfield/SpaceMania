@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
 import com.emptypockets.spacemania.holders.CleanerProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
-import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineEntityManagerSyncPayload;
 import com.emptypockets.spacemania.network.client.payloads.rooms.ClientRoomMessagesPayload;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 import com.emptypockets.spacemania.network.engine.Engine;
@@ -13,6 +12,7 @@ import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.ServerManager;
+import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;
 import com.emptypockets.spacemania.network.server.player.PlayerManager;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
@@ -33,12 +33,12 @@ public class ServerRoom implements Disposable {
 	ArrayListProcessor<ServerRoomMessage> messageManager;
 	PlayerManager playerManager;
 	ClientRoom clientRoom;
-	Engine engine;
+	ServerEngine engine;
 
 	public ServerRoom(ServerManager manager) {
 		super();
 		this.manager = manager;
-		engine = new Engine();
+		engine = new ServerEngine();
 		messageManager = new ArrayListProcessor<ServerRoomMessage>();
 		playerManager = new PlayerManager();
 		clientRoom = new ClientRoom();
@@ -120,7 +120,6 @@ public class ServerRoom implements Disposable {
 	public void update() {
 		processPlayerInput();
 		engine.update();
-		engine.getEntityManager().removeDead();
 	}
 
 	public synchronized void broadcast() {

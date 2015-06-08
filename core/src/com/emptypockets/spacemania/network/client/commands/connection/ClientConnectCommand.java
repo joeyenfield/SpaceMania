@@ -26,13 +26,13 @@ public class ClientConnectCommand extends ClientCommand {
             int tcpPort = NetworkProperties.tcpPort;
             int udpPort = NetworkProperties.udpPort;
 
-            if (arg.length >= 1 && !arg[0].isEmpty()) {
+            if (arg.length >= 1 && arg[0].length() > 0) {
                 address = arg[0];
             }
-            if (arg.length >= 2 && !arg[1].isEmpty()) {
+            if (arg.length >= 2 && arg[1].length() > 0) {
                 tcpPort = Integer.parseInt(arg[1]);
             }
-            if (arg.length >= 3 && !arg[2].isEmpty()) {
+            if (arg.length >= 3 && arg[2].length() > 0) {
             	udpPort = Integer.parseInt(arg[2]);
             }
 

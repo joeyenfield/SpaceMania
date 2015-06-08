@@ -23,8 +23,8 @@ public class DesktopLauncher {
 
 			Log.ERROR();
 			LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-			config.width = 800;
-			config.height = 600;
+			config.width = 1280;
+			config.height = 800;
 			config.x = 0;
 			config.y = 100;
 
@@ -32,25 +32,31 @@ public class DesktopLauncher {
 			// ViewportDemo demo = new ViewportDemo();
 			new LwjglApplication(test, config);
 
-			if (arg.length > 0) {
-				 Thread.sleep(500);
-				 CommandLine client = test.screen.getClient().getCommand();
-				// client.processCommand("connect emptypocketgames.noip.me");
-				// client.processCommand("login awsoem");
-				// client.processCommand("lobby");
-				// client.processCommand("host start; connect;login server; lobby");
-				// client.processCommand("connect;login jenfield2; lobby");
-				// client.processCommand("lobby");
-				// client.processCommand("host rooms");
-				// test.screen.getClient().getCommand().processCommand("connect 109.77.88.13,8080,9090;login user2;");
+			// if (arg.length > 0) {
+			CommandLine client = null;
+			do {
+				Thread.sleep(100);
+				if (test != null && test.screen != null && test.screen.getClient() != null && test.screen.getClient().getCommand() != null) {
+					client = test.screen.getClient().getCommand();
+				}
+			} while (client == null);
+			client.processCommand("start");
+			// client.processCommand("connect emptypocketgames.noip.me");
+			// client.processCommand("login awsoem");
+			// client.processCommand("lobby");
+			// client.processCommand("host start; connect;login server; lobby");
+			// client.processCommand("connect;login jenfield2; lobby");
+			// client.processCommand("lobby");
+			// client.processCommand("host rooms");
+			// test.screen.getClient().getCommand().processCommand("connect 109.77.88.13,8080,9090;login user2;");
 
+			while (true) {
+				Scanner in = new Scanner(System.in);
 				while (true) {
-					Scanner in = new Scanner(System.in);
-					while (true) {
-						test.screen.getClient().getCommand().processCommand(in.nextLine());
-					}
+					test.screen.getClient().getCommand().processCommand(in.nextLine());
 				}
 			}
+			// }
 		} catch (Throwable t) {
 			JTextArea textArea = new JTextArea();
 			textArea.append(ErrorUtils.getErrorMessage(t));
@@ -62,6 +68,7 @@ public class DesktopLauncher {
 			frame.getContentPane().add(scroll, BorderLayout.CENTER);
 			frame.setSize(600, 480);
 			frame.setVisible(true);
+			t.printStackTrace();
 		}
 	}
 }

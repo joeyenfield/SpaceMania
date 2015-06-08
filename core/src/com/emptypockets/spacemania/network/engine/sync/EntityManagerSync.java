@@ -33,7 +33,7 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 	}
 
 	public void writeToEngine(final Engine engine) {
-		if (syncTime) {
+		if (syncTime || Math.abs(engine.getTime()-time) > 300) {
 			engine.setTime(time);
 		}
 		for (EntityCreation creation : newEntities) {
@@ -43,6 +43,7 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 		}
 
 		for (EntityRemoval removal : removedEntities) {
+			engine.getEntityManager().getEntityById(removal.getId()).getPos().set(removal.pos);
 			engine.getEntityManager().removeEntityById(removal.getId());
 		}
 
@@ -54,6 +55,7 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 				StateSyncUtils.updateState(time, serverState, engine.getEngineLastUpdateTime(), entity.getState());
 			}
 		});
+		
 		releaseCreationList();
 		releaseRemovedList();
 		releaseStateList();
@@ -74,6 +76,7 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 	public synchronized void entityRemoved(Entity entity) {
 		EntityRemoval removed = Pools.obtain(EntityRemoval.class);
 		removed.setId(entity.getState().getId());
+		removed.setPos(entity.getState().getPos());
 		removedEntities.add(removed);
 		entityStates.remove(entity.getState().getId());
 	}

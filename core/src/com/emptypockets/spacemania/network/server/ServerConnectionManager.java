@@ -36,7 +36,7 @@ public class ServerConnectionManager extends Listener {
     }
 
     public void setupServer() {
-        server = new Server() {
+        server = new Server(2*1024*1024,2*1024*1024) {
             @Override
             protected Connection newConnection() {
                 return createConnection();

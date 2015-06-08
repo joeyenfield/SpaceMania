@@ -1,15 +1,15 @@
 package com.emptypockets.spacemania.network.server.player;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.network.client.input.ClientInput;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.client.player.ClientPlayer;
-import com.emptypockets.spacemania.network.engine.Engine;
-import com.emptypockets.spacemania.network.engine.entities.Entity;
-import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
+import com.emptypockets.spacemania.network.engine.entities.wepon.BasicWeapon;
+import com.emptypockets.spacemania.network.engine.entities.wepon.Weapon;
 import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.ClientConnection;
+import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
 
 /**
@@ -22,29 +22,24 @@ public class ServerPlayer implements Disposable {
 	ClientConnection clientConnection;
 	ServerRoom currentRoom;
 	EntityManagerSync entityManagerSync;
+	Weapon weapon;
 	
 	ClientPlayer clientPlayer;
 	ClientInput clientInput;
 	int entityId;
 
-	float maxEntitySpeed = 100;
-	float maxBulletSpeed = 200;
-	long lastShootTime = 0;
-	long shootInterval = 10;
-
+	
 	public ServerPlayer(ClientConnection clientConnection) {
 		this.clientConnection = clientConnection;
 		clientPlayer = new ClientPlayer();
 		clientInput = new ClientInput();
 		entityManagerSync = new EntityManagerSync();
+//		weapon = new SpreadWeapon();
+		weapon = new BasicWeapon();
 	}
 
 	public EntityManagerSync getEntityManagerSync() {
 		return entityManagerSync;
-	}
-
-	public float getMaxEntitySpeed() {
-		return maxEntitySpeed;
 	}
 
 	@Override
@@ -157,20 +152,14 @@ public class ServerPlayer implements Disposable {
 		return clientInput;
 	}
 
-	public void processInput(Engine engine) {
-		Entity entity = engine.getEntityManager().getEntityById(entityId);
+	public void processInput(ServerEngine engine) {
+		PlayerEntity entity = (PlayerEntity) engine.getEntityManager().getEntityById(entityId);
 		if (entity != null) {
-			entity.getVel().set(clientInput.getMove()).scl(maxEntitySpeed);
-			if (System.currentTimeMillis() - lastShootTime > shootInterval) {
-				if (clientInput.getShoot().len2() > 0.1) {
-					lastShootTime = System.currentTimeMillis();
-					Entity bullet = engine.getEntityManager().createEntity(EntityType.Bullet);
-					Vector2 dir = clientInput.getShoot().cpy().nor();
-					bullet.getPos().set(entity.getPos());
-					bullet.getVel().set(dir).scl(maxBulletSpeed);
-					engine.getEntityManager().addEntity(bullet);
-				}
-			}
+			//Process Movement
+			entity.getVel().set(clientInput.getMove()).limit2(1).scl(entity.getMaxVelocity());
+			
+			//Processing Shooting
+			weapon.shoot(this, entity, engine);
 		}
 	}
 }

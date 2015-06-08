@@ -195,7 +195,7 @@ public class ServerManager implements Disposable, Runnable {
 		long startTime = 0;
 		long processingTime = 0;
 
-		long desiredPeroid = 100;
+		long desiredPeroid = 50;
 
 		while (alive) {
 			startTime = System.currentTimeMillis();
@@ -389,7 +389,6 @@ public class ServerManager implements Disposable, Runnable {
 	public void createRoom(ClientConnection clientConnection, String roomName) {
 		if (clientConnection.isConnected()) {
 			if (clientConnection.getPlayer() != null) {
-				;
 				ServerRoom room = roomManager.createNewRoom(clientConnection.getPlayer(), roomName);
 				joinRoom(clientConnection, roomName);
 			} else {

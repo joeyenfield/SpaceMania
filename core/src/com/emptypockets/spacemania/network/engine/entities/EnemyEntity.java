@@ -1,14 +1,15 @@
 package com.emptypockets.spacemania.network.engine.entities;
 
+import com.badlogic.gdx.graphics.Color;
+import com.emptypockets.spacemania.network.engine.Engine;
+import com.emptypockets.spacemania.network.engine.entities.behaviour.FollowEntity;
+
 
 public class EnemyEntity extends Entity{
-
 	public EnemyEntity() {
-		super(EntityType.Enemy);
+		super(EntityType.Enemy_RANDOM);
+		setColor(Color.RED);
 	}
 	
-	@Override
-	public boolean intersectsDetailed(Entity entity) {
-		return false;
-	}
+	
 }

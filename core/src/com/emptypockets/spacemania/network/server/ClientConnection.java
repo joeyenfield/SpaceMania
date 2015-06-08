@@ -16,6 +16,7 @@ public class ClientConnection extends Connection {
     ArrayList<ServerPayload> incommingPayloads;
 
     public ClientConnection(ServerManager serverManager){
+    	super();
         this.serverManager = serverManager;
         incommingPayloads = new ArrayList<ServerPayload>();
     }

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.holders.ObjectProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
@@ -11,6 +14,7 @@ import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
+import com.emptypockets.spacemania.network.engine.entities.particles.Spark;
 
 public class EntityManager extends ObjectProcessor<Entity> {
 	int entityCount = 0;
@@ -28,18 +32,35 @@ public class EntityManager extends ObjectProcessor<Entity> {
 		return createEntity(type, entityCount);
 	}
 
+	public synchronized void getNearbyEntities(Vector2 pos, float dist, ArrayList<Entity> result) {
+		float dist2 = dist * dist;
+		for (Entity e : entities.values()) {
+			if (e.getPos().dst2(pos) < dist2) {
+				result.add(e);
+			}
+		}
+	}
+
 	public synchronized Entity createEntity(EntityType type, int id) {
 		Entity entity;
 		switch (type) {
 		case Bullet:
-			entity = new BulletEntity();
-			((BulletEntity) entity).setCreationTime(System.currentTimeMillis());
+			entity = Pools.obtain(BulletEntity.class);
 			break;
 		case Player:
-			entity = new PlayerEntity();
+			entity = Pools.obtain(PlayerEntity.class);
 			break;
-		case Enemy:
-			entity = new EnemyEntity();
+		case Enemy_FOLLOW:
+			entity = Pools.obtain(EnemyEntity.class);
+			entity.setType(EntityType.Enemy_FOLLOW);
+			break;
+		case Enemy_RANDOM:
+			entity = Pools.obtain(EnemyEntity.class);
+			entity.setType(EntityType.Enemy_RANDOM);
+			break;
+		case Particle:
+			entity = Pools.obtain(Spark.class);
+			((Spark)entity).updateCreationTime();
 			break;
 		default:
 			throw new RuntimeException("Unknown Entity Type");
@@ -57,6 +78,7 @@ public class EntityManager extends ObjectProcessor<Entity> {
 	public synchronized void removeEntity(Entity entity) {
 		entities.remove(entity.getState().getId());
 		notifyEntityRemoved(entity);
+		Pools.free(entity);
 	}
 
 	public synchronized void removeEntityById(int id) {
@@ -134,6 +156,40 @@ public class EntityManager extends ObjectProcessor<Entity> {
 		for (Entity ent : toRemove) {
 			removeEntity(ent);
 		}
+	}
+
+	public synchronized int countType(EntityType entType) {
+		int count = 0;
+		for (Entity ent : entities.values()) {
+			if (ent.getType() == entType) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public synchronized <T> ArrayList<T> filterEntities(Class<T> type) {
+		ArrayList<T> result = new ArrayList<T>();
+		for (Entity ent : entities.values()) {
+			if (ent.getClass().isAssignableFrom(type)) {
+				result.add((T) ent);
+			}
+		}
+
+		return result;
+	}
+
+	public synchronized Entity pickRandom(EntityType entType) {
+		ArrayList<Entity> players = new ArrayList<Entity>();
+		for (Entity ent : entities.values()) {
+			if (ent.getType() == entType) {
+				players.add((PlayerEntity) ent);
+			}
+		}
+		if (players.size() == 0) {
+			return null;
+		}
+		return players.get(MathUtils.random(players.size() - 1));
 	}
 
 }

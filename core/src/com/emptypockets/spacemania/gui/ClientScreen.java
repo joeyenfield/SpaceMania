@@ -4,12 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -20,13 +22,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLinePanel;
-import com.emptypockets.spacemania.gui.renderer.EntityRender;
+import com.emptypockets.spacemania.gui.renderer.EngineRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.input.OnScreenInput;
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
-import com.emptypockets.spacemania.utils.GraphicsToolkit;
 
 public class ClientScreen extends StageScreen {
 	int minTouchSize = 60;
@@ -38,29 +39,26 @@ public class ClientScreen extends StageScreen {
 	Touchpad shootPad;
 	ClientManager client;
 
-	ShapeRenderer shape;
-
 	TextButton showConsole;
 	boolean alive;
 
-	EntityRender render;
+	boolean dynamicGrid = true;
+
+	EngineRender render;
+
 	ClientInputProducer clientInputProducer;
 
 	public ClientScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
+		setDrawEvents(true);
 		client = new ClientManager();
 		clientInputProducer = new OnScreenInput();
 		setClearColor(Color.BLACK);
 
-		getClient().getCommand().pushHistory("connect 192.168.43.100; login user"+MathUtils.random(100)+";lobby;");
-//		getClient().getCommand().pushHistory("login user2;");
-//		getClient().getCommand().pushHistory("lobby");
-//
-//		getClient().getCommand().pushHistory("connect emptypocketgames.noip.me");
-//		
-//		getClient().getCommand().pushHistory("connect; login client"+MathUtils.random(100)+"; lobby");
-//		getClient().getCommand().pushHistory("host start;connect; login client"+MathUtils.random(100)+"; lobby");
-
+		getClient().getCommand().pushHistory("connect 192.168.1.5;login user" + MathUtils.random(100) + ";lobby;");
+		getClient().getCommand().pushHistory("connect 192.168.43.100; login user" + MathUtils.random(100) + ";lobby;");
+		getClient().getCommand().pushHistory("start");
+		getClient().getCommand().pushHistory("connect 192.168.1.8;login user" + MathUtils.random(100) + ";lobby;");
 	}
 
 	@Override
@@ -76,18 +74,12 @@ public class ClientScreen extends StageScreen {
 	@Override
 	public void show() {
 		super.show();
-		shape = new ShapeRenderer();
-		render = new EntityRender();
+		render = new EngineRender();
 	}
 
 	@Override
 	public void hide() {
 		super.hide();
-		if (shape != null) {
-			shape.dispose();
-		}
-		shape = null;
-
 		if (commandLinePanel != null) {
 			commandLinePanel.dispose();
 		}
@@ -192,26 +184,32 @@ public class ClientScreen extends StageScreen {
 		super.initializeRender();
 		if (client.getPlayer() != null) {
 			int myEntityId = client.getPlayer().getEntityId();
-			if(client.getEngine() != null){
+			if (client.getEngine() != null) {
 				Entity ent = client.getEngine().getEntityManager().getEntityById(myEntityId);
-				if(ent != null){
-					getScreenCamera().position.x = ent.getPos().x;
-					getScreenCamera().position.y = ent.getPos().y;
-					getScreenCamera().viewportWidth = Gdx.graphics.getWidth();
-					getScreenCamera().viewportHeight = Gdx.graphics.getHeight();
+				if (ent != null) {
+					getScreenCamera().position.x = 0;
+					getScreenCamera().position.y = 0;
+					// getScreenCamera().viewportHeight = 800;
+					// getScreenCamera().viewportWidth =
+					// 800*((float)Gdx.graphics.getWidth()/Gdx.graphics.getHeight());
+					getScreenCamera().translate(ent.getPos());
 					getScreenCamera().update();
+
 				}
 			}
 		}
-		shape.setProjectionMatrix(getScreenCamera().combined);
 	}
 
 	@Override
 	public void drawScreen(float delta) {
-		GraphicsToolkit.draw2DAxis(shape, getScreenCamera(), 100, Color.WHITE);
+		// GraphicsToolkit.draw2DAxis(shape, getScreenCamera(), 100,
+		// Color.WHITE);
 		if (client.getEngine() != null)
 			synchronized (client.getEngine()) {
+				Gdx.gl.glEnable(GL20.GL_BLEND);
+				Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 				render.render(getScreenCamera(), client.getEngine());
+				Gdx.gl.glDisable(GL20.GL_BLEND);
 			}
 	}
 

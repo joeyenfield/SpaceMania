@@ -1,27 +1,23 @@
 package com.emptypockets.spacemania.network.engine.entities;
 
+import com.badlogic.gdx.graphics.Color;
+
 
 public class BulletEntity extends Entity {
-	long creationTime = 0;
-	long lifeTime = 3000;
-	
-	public BulletEntity(){
+	public BulletEntity() {
 		super(EntityType.Bullet);
+		setRadius(10);
+		setColor(Color.ORANGE);
+		setDamping(0);
+		setMaxVelocity(800);
+		setReflectWall(false);
 	}
-
-	public void setCreationTime(long creationTime) {
-		this.creationTime = creationTime;
-	}
-
+	
+	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
-		if (System.currentTimeMillis() - creationTime > lifeTime) {
-			setAlive(false);
+		if (state.vel.len2() > 1) {
+			state.ang = state.vel.angle();
 		}
-	}
-
-	@Override
-	public boolean intersectsDetailed(Entity entity) {
-		return false;
 	}
 }

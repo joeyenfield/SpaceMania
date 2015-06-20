@@ -15,7 +15,7 @@ public class ConsoleScreen extends Window implements ConsoleListener {
     Label label;
     ScrollPane scroll;
     StringBuffer console;
-    int characterLimit = 1000000;
+    int characterLimit = 10000;
     TextButton maximise;
 
     public ConsoleScreen(Console con, String title, Skin skin) {

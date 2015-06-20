@@ -15,9 +15,11 @@ import com.emptypockets.spacemania.holders.CleanerProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.engine.EntityManagerInterface;
+import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
+import com.emptypockets.spacemania.network.engine.entities.collect.CollectableEntity;
 import com.emptypockets.spacemania.utils.ColorUtils;
 
 public class ParticleSystem extends ArrayListProcessor<Particle> implements EntityManagerInterface {
@@ -41,20 +43,21 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		});
 	}
 
-	public boolean hasMaxParticles(){
+	public boolean hasMaxParticles() {
 		return getSize() >= maxParticles;
 	}
-	
-	public float fillFraction(){
-		return (float)getSize()/(float)maxParticles;
+
+	public float fillFraction() {
+		return (float) getSize() / (float) maxParticles;
 	}
+
 	public void launchSpark(Vector2 pos, Vector2 vel, Color start, Color end) {
-		if(hasMaxParticles()){
+		if (hasMaxParticles()) {
 			return;
 		}
 		float fillFract = fillFraction();
-		if(fillFract > 0.5f){
-			if(MathUtils.random() < fillFract){
+		if (fillFract > 0.5f) {
+			if (MathUtils.random() < fillFract) {
 				return;
 			}
 		}
@@ -67,32 +70,43 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		add(spark);
 	}
 
-	public void launchSphere(Vector2 pos, int particleCount) {
-		if(hasMaxParticles()){
+	public void launchSphere(Vector2 pos, int particleCount, Color start, Color end) {
+		if (hasMaxParticles()) {
 			return;
 		}
-		Color color1 = Pools.obtain(Color.class);
-		Color color2 = Pools.obtain(Color.class);
 
+		Color color1 = null;
+		Color color2 = null;
+		if (start == null && end == null) {
+			color1 = Pools.obtain(Color.class);
+			color2 = Pools.obtain(Color.class);
+		} else {
+			color1 = start;
+			color2 = end;
+		}
 		float angleStep = 360f / (particleCount);
 
 		Vector2 angle = Pools.obtain(Vector2.class).set(1, 0);
 		Vector2 vel = Pools.obtain(Vector2.class);
 		for (int i = 0; i < particleCount; i++) {
-			float hue1 = MathUtils.random(2, 6);
-			float hue2 = (hue1 + MathUtils.random(0, 2)) % 6f;
-			ColorUtils.HSVToColor(color1, hue1, 0.5f, 1);
-			ColorUtils.HSVToColor(color2, hue2, 0.5f, 1);
+			if (start == null && end == null) {
+				float hue1 = MathUtils.random(2, 6);
+				float hue2 = (hue1 + MathUtils.random(0, 2)) % 6f;
+				ColorUtils.HSVToColor(color1, hue1, 0.5f, 1);
+				ColorUtils.HSVToColor(color2, hue2, 0.5f, 1);
+				color2.a = 0;
+			}
 			angle.rotate(MathUtils.random(0.5f, 2) * angleStep);
 			vel.set(angle).scl(MathUtils.random(200, 500));
-			color2.a = 0;
 			launchSpark(pos, vel, color1, color2);
 		}
 		Pools.free(angle);
 		Pools.free(vel);
 
-		Pools.free(color1);
-		Pools.free(color2);
+		if (start == null && end == null) {
+			Pools.free(color1);
+			Pools.free(color2);
+		}
 	}
 
 	private Particle getParticle() {
@@ -129,8 +143,6 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		clearDead();
 	}
 
-	
-
 	public void drawPlayerTrail(PlayerEntity player) {
 		// player.createExhaust(this);
 
@@ -143,12 +155,24 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 	}
 
 	@Override
-	public void entityRemoved(Entity entity) {
-		int multiplier = 1;
+	public void entityRemoved(Entity entity, boolean killed) {
+		if(!killed){
+			return;
+		}
+		if (entity instanceof CollectableEntity) {
+			return;
+		}
+		float multiplier = 1;
 		if (entity instanceof PlayerEntity) {
 			multiplier = 100;
+		}else if(entity instanceof BulletEntity){
+			multiplier  = 0.2f;
 		}
-		launchSphere(entity.getPos(), particleCountSphere * multiplier);
+		Color colorA = new Color(entity.getColor());
+		Color colorB = new Color(entity.getColor());
+		colorB.a = 0.4f;
+		colorA.a = 1f;
+		launchSphere(entity.getPos(), (int)(particleCountSphere * multiplier), colorA, colorB);
 
 		// if (dynamicGrid && !(entity instanceof BulletEntity))
 		// gridManager.applyExplosion(entity.getPos(), -10 * massSize, 800);

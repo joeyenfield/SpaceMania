@@ -20,7 +20,7 @@ import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
 
 public class CommandLinePanel extends Table implements ConsoleListener, Disposable {
 	float touchSize = 50;
-	int characterLimit = 300000;
+	int characterLimit = 10000;
 	Skin skin;
 	TextField command;
 	TextButton prevCommand;
@@ -140,21 +140,24 @@ public class CommandLinePanel extends Table implements ConsoleListener, Disposab
 	}
 
 	public void print(Console con, final String message) {
-		Gdx.app.postRunnable(new Runnable() {
-			@Override
-			public void run() {
-				console.append(message);
-				if (console.length() > characterLimit) {
-					int toRemove = console.length() - characterLimit;
-					console.delete(0, toRemove);
-					console.setLength(characterLimit);
-				}
-				consoleText.setText(console.toString());
-				scroll.setScrollbarsOnTop(true);
-				scroll.setScrollPercentY(1);
+		if (isVisible()){
+			System.out.println("Visible");
+			Gdx.app.postRunnable(new Runnable() {
+				@Override
+				public void run() {
+					console.append(message);
+					if (console.length() > characterLimit) {
+						int toRemove = console.length() - characterLimit;
+						console.delete(0, toRemove);
+						console.setLength(characterLimit);
+					}
+					consoleText.setText(console.toString());
+					scroll.setScrollbarsOnTop(true);
+					scroll.setScrollPercentY(1);
 
-			}
-		});
+				}
+			});
+		}
 	}
 
 	public void println(Console con, String message) {

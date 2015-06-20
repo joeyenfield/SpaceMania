@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.network.engine.entities.EntityState;
 
 public class StateSyncUtils {
-	public static float MAX_POS_DELTA = 100;
+	public static float MAX_POS_DELTA = 400;
 	public static float MAX_POS_DELTA_2 = MAX_POS_DELTA * MAX_POS_DELTA;
 
 	public static float MAX_ANGLE_DELTA = 3;
@@ -31,24 +31,24 @@ public class StateSyncUtils {
 		// Only force low level positions when the entity is off by a given
 		// amount
 		float posDelta = clientState.getPos().dst2(tempState.getPos());
-		
-		// System.out.println("\n");
-		// System.out.println("ServerT: "+serverTime);
-		// System.out.println("ClientT: "+clientTime);
-		// System.out.println("Server : "+serverState);
-		// System.out.println("Client : "+clientState);
-		// System.out.println("Temp   : "+tempState);
-		// System.out.println("DELTA  : "+Math.sqrt(posDelta));
-		// System.out.println("DELTA2 : "+posDelta);
-			
+
+//		System.out.println("\n");
+//		System.out.println("ServerT: " + serverTime);
+//		System.out.println("ClientT: " + clientTime);
+//		System.out.println("Server : " + serverState);
+//		System.out.println("Client : " + clientState);
+//		System.out.println("Temp   : " + tempState);
+//		System.out.println("DELTA  : " + Math.sqrt(posDelta));
+//		System.out.println("DELTA2 : " + posDelta);
+
 		if (posDelta > MAX_POS_DELTA_2) {
-			// System.out.println("--------------------------------------HARD");
+//			System.out.println("--------------------------------------HARD");
 			// Hard Fix
 			clientState.getPos().set(tempState.getPos());
 		} else {
-			// System.out.println("SOFT");
+			//			System.out.println("--------------------------------------SOFT");
 			// Soft fix
-			clientState.getPos().lerp(tempState.getPos(), 0.3f);
+			clientState.getPos().lerp(tempState.getPos(), 0.4f);
 		}
 		// System.out.println("Client-: "+clientState);
 

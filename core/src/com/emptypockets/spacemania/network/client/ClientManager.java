@@ -18,6 +18,7 @@ import com.emptypockets.spacemania.network.server.payloads.rooms.CreateRoomReque
 import com.emptypockets.spacemania.network.server.payloads.rooms.JoinLobyRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.JoinRoomRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.RequestRoomListPayload;
+import com.emptypockets.spacemania.network.server.payloads.rooms.ResizeRoomPayload;
 
 import java.io.IOException;
 
@@ -51,7 +52,7 @@ public class ClientManager implements Disposable {
 		if (engine != null) {
 			engine.update();
 		}
-		
+
 		connection.processRecievedPayloads();
 		connection.processToSendPayloads();
 
@@ -211,6 +212,12 @@ public class ClientManager implements Disposable {
 	public void sendInput(ClientInput clientInput) {
 		ServerClientInputUpdatePayload payload = Pools.obtain(ServerClientInputUpdatePayload.class);
 		payload.setInput(clientInput);
+		connection.send(payload);
+	}
+
+	public void resizeRoom(int size) {
+		ResizeRoomPayload payload = Pools.obtain(ResizeRoomPayload.class);
+		payload.setRoomSize(size);
 		connection.send(payload);
 	}
 }

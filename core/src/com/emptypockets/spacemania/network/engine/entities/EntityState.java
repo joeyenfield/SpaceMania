@@ -23,6 +23,7 @@ public class EntityState {
 
 	/**
 	 * Writes the current state on the object
+	 * 
 	 * @param state
 	 */
 	public void write(EntityState state) {
@@ -35,7 +36,6 @@ public class EntityState {
 	public void delta(float time) {
 		pos.x += vel.x * time;
 		pos.y += vel.y * time;
-
 		ang += angVel * time;
 	}
 
@@ -55,7 +55,7 @@ public class EntityState {
 		this.angVel = angVel;
 	}
 
-	public Vector2 getPos() {		
+	public Vector2 getPos() {
 		return pos;
 	}
 

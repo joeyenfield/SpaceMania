@@ -8,6 +8,7 @@ import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.payloads.rooms.ClientRoomMessagesPayload;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 import com.emptypockets.spacemania.network.engine.Engine;
+import com.emptypockets.spacemania.network.engine.EngineState;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
@@ -34,14 +35,19 @@ public class ServerRoom implements Disposable {
 	PlayerManager playerManager;
 	ClientRoom clientRoom;
 	ServerEngine engine;
+	EngineState engineState;
+	boolean sendEngineState = false;
+	long lastBroadcastTime = 0;
+	long broadcastPeroid = 100;
 
 	public ServerRoom(ServerManager manager) {
 		super();
 		this.manager = manager;
-		engine = new ServerEngine();
 		messageManager = new ArrayListProcessor<ServerRoomMessage>();
 		playerManager = new PlayerManager();
 		clientRoom = new ClientRoom();
+		engine = new ServerEngine(playerManager);
+		engineState = new EngineState();
 	}
 
 	@Override
@@ -100,10 +106,6 @@ public class ServerRoom implements Disposable {
 		return playerManager.getSize();
 	}
 
-	public void updateClientRoom() {
-		clientRoom.read(this);
-	}
-
 	public ClientRoom getClientRoom() {
 		return clientRoom;
 	}
@@ -120,9 +122,11 @@ public class ServerRoom implements Disposable {
 	public void update() {
 		processPlayerInput();
 		engine.update();
+		clientRoom.read(this);
 	}
 
 	public synchronized void broadcast() {
+		lastBroadcastTime = System.currentTimeMillis();
 		// If no messages dont broadcast
 		if (messageManager.getSize() > 0) {
 			final ClientRoomMessagesPayload roomMessagePayloads = Pools.obtain(ClientRoomMessagesPayload.class);
@@ -143,16 +147,30 @@ public class ServerRoom implements Disposable {
 				}
 			});
 		}
-		
-		//Broadcast Player Entity Managers
-		playerManager.process(new SingleProcessor<ServerPlayer>(){
+
+		if (sendEngineState) {
+			engineState.readFrom(engine);
+			// Broadcast Player Entity Managers
+			playerManager.process(new SingleProcessor<ServerPlayer>() {
+				@Override
+				public void process(ServerPlayer player) {
+					engineState.broadcast(player);
+				}
+			});
+
+			sendEngineState = false;
+		}
+
+		// Broadcast Player Entity Managers
+		playerManager.process(new SingleProcessor<ServerPlayer>() {
 			@Override
 			public void process(ServerPlayer player) {
-				EntityManagerSync sync = player.getEntityManagerSync(); 
+				EntityManagerSync sync = player.getEntityManagerSync();
 				sync.setTime(engine.getEngineLastUpdateTime());
 				sync.setSyncTime(false);
 				sync.broadcast(player);
-			}});
+			}
+		});
 	}
 
 	public synchronized void joinRoom(ServerPlayer player) throws TooManyPlayersException {
@@ -170,7 +188,7 @@ public class ServerRoom implements Disposable {
 		message.setServerPlayer(player);
 		messageManager.add(message);
 		sendMessage(String.format("%s has joined the room", player.getUsername()));
-		
+
 		engine.getEntityManager().register(player.getEntityManagerSync());
 		player.getEntityManagerSync().setTime(engine.getEngineLastUpdateTime());
 	}
@@ -182,10 +200,10 @@ public class ServerRoom implements Disposable {
 		message.setServerPlayer(player);
 		messageManager.add(message);
 
-		engine.getEntityManager().removeEntityById(player.getEntityId());
+		engine.getEntityManager().removeEntityById(player.getEntityId(), true);
 		engine.getEntityManager().unregister(player.getEntityManagerSync());
 		player.getEntityManagerSync().reset();
-		
+
 		sendMessage(String.format("%s has left the room", player.getUsername()));
 	}
 
@@ -201,6 +219,11 @@ public class ServerRoom implements Disposable {
 		messageManager.add(message);
 	}
 
+	public void resizeRoom(float size) {
+		engine.setRegion(size);
+		sendEngineState = true;
+	}
+
 	public ServerPlayer getHost() {
 		return host;
 	}
@@ -209,8 +232,24 @@ public class ServerRoom implements Disposable {
 		this.host = host;
 	}
 
-	public Engine getEngine() {
+	public ServerEngine getEngine() {
 		return engine;
+	}
+
+	public long getLastBroadcastTime() {
+		return lastBroadcastTime;
+	}
+
+	public long getBroadcastPeroid() {
+		return broadcastPeroid;
+	}
+
+	public void setBroadcastPeroid(long broadcastPeroid) {
+		this.broadcastPeroid = broadcastPeroid;
+	}
+
+	public boolean shouldBroadcast() {
+		return System.currentTimeMillis() - lastBroadcastTime > broadcastPeroid;
 	}
 
 }

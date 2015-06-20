@@ -17,6 +17,7 @@ import com.emptypockets.spacemania.network.client.payloads.authentication.Logout
 import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineEntityManagerSyncPayload;
 import com.emptypockets.spacemania.network.client.payloads.rooms.JoinRoomSuccessPayload;
 import com.emptypockets.spacemania.network.client.player.MyPlayer;
+import com.emptypockets.spacemania.network.engine.EngineState;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;
@@ -47,6 +48,10 @@ public class ServerManager implements Disposable, Runnable {
 
 	long playerStateUpdateTime = 1000;
 	long lastplayerStateUpdate = 0;
+	
+	long roomDefaultBroadcastTime = 100;
+
+	long desiredUpdatePeroid = 40;
 
 	public ServerManager(Console console) {
 		this.console = console;
@@ -82,6 +87,10 @@ public class ServerManager implements Disposable, Runnable {
 		// Stop Server
 		connectionManager.stop();
 		alive = false;
+	}
+
+	public void resizeRoom(ServerRoom room, ServerPlayer serverPlayer, float size) {
+		room.resizeRoom(size);
 	}
 
 	public void clientLogout(ClientConnection connection) {
@@ -195,7 +204,6 @@ public class ServerManager implements Disposable, Runnable {
 		long startTime = 0;
 		long processingTime = 0;
 
-		long desiredPeroid = 50;
 
 		while (alive) {
 			startTime = System.currentTimeMillis();
@@ -213,8 +221,9 @@ public class ServerManager implements Disposable, Runnable {
 				@Override
 				public void process(ServerRoom entity) {
 					entity.update();
-					entity.updateClientRoom();
-					entity.broadcast();
+					if(entity.shouldBroadcast()){
+						entity.broadcast();
+					}
 				}
 			});
 
@@ -235,10 +244,10 @@ public class ServerManager implements Disposable, Runnable {
 
 			processingTime = System.currentTimeMillis() - startTime;
 			try {
-				if (processingTime < desiredPeroid) {
-					Thread.sleep(desiredPeroid - processingTime);
+				if (processingTime < desiredUpdatePeroid) {
+					Thread.sleep(desiredUpdatePeroid - processingTime);
 				} else {
-					console.println("Server Running Behind");
+					console.println("Server Running Behind : Update["+processingTime+"] - Update Time ["+desiredUpdatePeroid+"]"+getLobbyRoom().getEngine().getEntityManager().getSize());
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -292,8 +301,7 @@ public class ServerManager implements Disposable, Runnable {
 			ServerRoom newRoom = getRoomManager().findRoomByName(roomName);
 			ServerPlayer player = clientConnection.getPlayer();
 			ServerRoom currentRoom = player.getCurrentRoom();
-			
-			
+
 			if (newRoom != null) {
 				if (currentRoom != null && currentRoom.equals(newRoom)) {
 					NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
@@ -303,7 +311,7 @@ public class ServerManager implements Disposable, Runnable {
 					Pools.free(payload);
 				} else {
 					try {
-						
+
 						// If already in a room leave it
 						if (currentRoom != null) {
 							currentRoom.leaveRoom(player);
@@ -330,7 +338,7 @@ public class ServerManager implements Disposable, Runnable {
 							clientConnection.send(payload);
 							player.getEntityManagerSync().cleanAfterSends();
 						}
-						
+
 						Pools.free(payload);
 
 					} catch (TooManyPlayersException e) {
@@ -356,7 +364,6 @@ public class ServerManager implements Disposable, Runnable {
 			Pools.free(payload);
 		}
 	}
-
 
 	public int getTcpPort() {
 		return connectionManager.tcpPort;
@@ -485,6 +492,41 @@ public class ServerManager implements Disposable, Runnable {
 	public Kryo getKryo() {
 		return connectionManager.getKryo();
 
+	}
+
+	public boolean ensureLoggedIn(ClientConnection clientConnection) {
+		if (clientConnection.isLoggedIn()) {
+			return true;
+		} else {
+			NotifyClientPayload payload = new NotifyClientPayload();
+			payload.setMessage("You are not logged in");
+			clientConnection.send(payload);
+		}
+		return false;
+	}
+
+	public boolean ensureInRoom(ClientConnection clientConnection) {
+		if (ensureLoggedIn(clientConnection)) {
+			if (clientConnection.getPlayer() != null && clientConnection.getPlayer().isInRoom()) {
+				return true;
+			} else {
+				NotifyClientPayload payload = new NotifyClientPayload();
+				payload.setMessage("You are not in any room");
+				clientConnection.send(payload);
+			}
+		}
+		return false;
+	}
+
+	public void requestResizeRoom(ClientConnection clientConnection, float size) {
+		if (ensureInRoom(clientConnection)) {
+			ServerRoom room = clientConnection.getPlayer().getCurrentRoom();
+			resizeRoom(room, clientConnection.getPlayer(), size);
+		}
+	}
+
+	public long getRoomDefaultBroadcastTime() {
+		return roomDefaultBroadcastTime;
 	}
 
 }

@@ -3,7 +3,6 @@ package com.emptypockets.spacemania.desktop;
 import java.awt.BorderLayout;
 import java.util.Scanner;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -40,7 +39,7 @@ public class DesktopLauncher {
 					client = test.screen.getClient().getCommand();
 				}
 			} while (client == null);
-			client.processCommand("start");
+			client.processCommand("start;set gridsize 128 128; set roomsize 2000;set gridrender 1;set particles 10000;");
 			// client.processCommand("connect emptypocketgames.noip.me");
 			// client.processCommand("login awsoem");
 			// client.processCommand("lobby");
@@ -48,7 +47,7 @@ public class DesktopLauncher {
 			// client.processCommand("connect;login jenfield2; lobby");
 			// client.processCommand("lobby");
 			// client.processCommand("host rooms");
-			// test.screen.getClient().getCommand().processCommand("connect 109.77.88.13,8080,9090;login user2;");
+//			 test.screen.getClient().getCommand().processCommand("connect 192.168.1.12;login user2;");
 
 			while (true) {
 				Scanner in = new Scanner(System.in);

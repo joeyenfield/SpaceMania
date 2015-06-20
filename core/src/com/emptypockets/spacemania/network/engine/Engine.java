@@ -1,28 +1,36 @@
 package com.emptypockets.spacemania.network.engine;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
-import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
-import com.emptypockets.spacemania.utils.ColorUtils;
+import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePartition;
 
 public class Engine implements Disposable {
-	Rectangle region;
+	Rectangle region = new Rectangle();
 	EntityManager entities;
-
+	CellSpacePartition entitySpatialPartition;
 	long startTime;
 	long lastUpdate;
 
 	public Engine() {
-		float size = 1000;
+		float size = 4000;
 		entities = new EntityManager();
-		region = new Rectangle(-size, -size,2*size, 2*size);
+		entitySpatialPartition = new CellSpacePartition();
+		entitySpatialPartition.create(20, 20);
+		setRegion(size);
 		start();
+	}
+
+	public void setRegion(float size) {
+		setRegion(-size, -size, 2 * size, 2 * size);
+	}
+
+	public void setRegion(float x, float y, float wide, float high) {
+		region.set(x, y, wide, high);
+		entitySpatialPartition.updateCellPositions(region);
 	}
 
 	public EntityManager getEntityManager() {
@@ -57,7 +65,7 @@ public class Engine implements Disposable {
 				boolean hitWall = false;
 				if (pos.x - rad < region.x) {
 					entity.setPos(region.x + inset, pos.y);
-					if (entity.isReflectWall()) {
+					if (entity.isBounceOffWall()) {
 						entity.getVel().x *= -1;
 					} else {
 						entity.getVel().x = 0;
@@ -66,7 +74,7 @@ public class Engine implements Disposable {
 				}
 				if (pos.x + rad > region.x + region.width) {
 					entity.setPos(region.x + region.width - inset, pos.y);
-					if (entity.isReflectWall()) {
+					if (entity.isBounceOffWall()) {
 						entity.getVel().x *= -1;
 					} else {
 						entity.getVel().x = 0;
@@ -75,7 +83,7 @@ public class Engine implements Disposable {
 				}
 				if (pos.y - rad < region.y) {
 					entity.setPos(pos.x, region.y + inset);
-					if (entity.isReflectWall()) {
+					if (entity.isBounceOffWall()) {
 						entity.getVel().y *= -1;
 					} else {
 						entity.getVel().y = 0;
@@ -84,7 +92,7 @@ public class Engine implements Disposable {
 				}
 				if (pos.y + rad > region.y + region.height) {
 					entity.setPos(pos.x, region.y + region.height - inset);
-					if (entity.isReflectWall()) {
+					if (entity.isBounceOffWall()) {
 						entity.getVel().y *= -1;
 					} else {
 						entity.getVel().y = 0;
@@ -97,10 +105,8 @@ public class Engine implements Disposable {
 				}
 			}
 		});
-	}
 
-	public void launchSpark(Vector2 pos, Vector2 dir, Color color) {
-
+		entitySpatialPartition.rebuild(getEntityManager());
 	}
 
 	public void update() {
@@ -110,6 +116,7 @@ public class Engine implements Disposable {
 		float deltaTime = delta / 1000f;
 
 		updateEntities(deltaTime);
+
 	}
 
 	public void dispose() {
@@ -122,6 +129,10 @@ public class Engine implements Disposable {
 
 	public Rectangle getRegion() {
 		return region;
+	}
+
+	public CellSpacePartition getEntitySpatialPartition() {
+		return entitySpatialPartition;
 	}
 
 }

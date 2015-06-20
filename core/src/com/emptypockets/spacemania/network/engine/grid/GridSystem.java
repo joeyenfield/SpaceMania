@@ -17,13 +17,17 @@ import com.emptypockets.spacemania.network.engine.grid.spring.NodeLink;
 import com.emptypockets.spacemania.network.engine.grid.spring.NodeLinkSettings;
 
 public class GridSystem {
+
+	public static final int RENDER_TEXTURE = 1;
+	public static final int RENDER_PATH = 2;
 	public GridNode[][] nodes;
 	public ArrayList<NodeLink> links = new ArrayList<NodeLink>();
 	public GridSettings set;
-
+	
+	int renderType = RENDER_TEXTURE;
 	Vector2 tempSubSampleRec = new Vector2();
 	Object lock = new Object();
-
+	
 	public void move(Rectangle region) {
 		float xP, yP;
 		float xV;
@@ -187,11 +191,11 @@ public class GridSystem {
 					dir.x = nodes[x][y].pos.x - pos.x;
 					dir.y = nodes[x][y].pos.y - pos.y;
 					lenght = dir.len2();
-//					if (lenght < radius * radius) {
-						dir.scl(100 * force / (10000f + lenght));
-						nodes[x][y].applyImpulse(dir);
-						nodes[x][y].increaseDamping(0.6f);
-//					}
+					// if (lenght < radius * radius) {
+					dir.scl(100 * force / (10000f + lenght));
+					nodes[x][y].applyImpulse(dir);
+					nodes[x][y].increaseDamping(0.6f);
+					// }
 				}
 			}
 		}
@@ -220,5 +224,41 @@ public class GridSystem {
 
 	public GridNode getNode(int x, int y) {
 		return nodes[x][y];
+	}
+
+	public void setup(int gridSizeX, int gridSizeY, Rectangle bounds) {
+		GridSettings gridSettings = new GridSettings();
+		gridSettings.numX = gridSizeX;
+		gridSettings.numY = gridSizeY;
+
+		float mass = 1;
+		gridSettings.inverseMass = 1 / mass;
+
+		gridSettings.links.stiffness = .00288f;
+		gridSettings.links.damping = 0.012f;
+
+		gridSettings.ankor.stiffness = 0.01512f;
+		gridSettings.ankor.damping = 0.041f;
+
+		gridSettings.edge.stiffness = 0.01f;
+		gridSettings.edge.damping = 0.1f;
+
+		gridSettings.bounds = bounds;
+
+		createGrid(gridSettings);
+	}
+
+	public void setSize(int sizeX, int sizeY) {
+		this.set.numX = sizeX;
+		this.set.numY = sizeY;
+		createGrid(this.set);
+	}
+
+	public void setRenderType(int type) {
+		this.renderType = type;
+	}
+
+	public int getRenderType() {
+		return renderType;
 	}
 }

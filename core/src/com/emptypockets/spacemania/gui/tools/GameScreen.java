@@ -28,7 +28,6 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	protected OrthographicCamera screenCamera;
 	protected OrthographicCamera overlayCamera;
-    protected OrthoCamController control;
 
 	Stage stage;
 	GestureDetector gesture;
@@ -55,20 +54,17 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	protected void addInputMultiplexer(InputMultiplexer input) {
 		input.addProcessor(this);
-		input.addProcessor(gesture);
-		input.addProcessor(control);
 	}
 
 	public void removeInputMultiplexer(InputMultiplexer input) {
 		input.removeProcessor(this);
 		input.removeProcessor(gesture);
-		input.removeProcessor(control);
-		
 	}
 
-	public Skin getSkin(){
+	public Skin getSkin() {
 		return Scene2DToolkit.getToolkit().getSkin();
 	}
+
 	public GestureDetector getGesture() {
 		return gesture;
 	}
@@ -111,7 +107,7 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		BitmapFont font = getSkin().getFont("default-font");
 
 		eventBatch.begin();
-		eventLogger.draw(eventBatch, font, -512,300, 20);
+		eventLogger.draw(eventBatch, font, -512, 300, 20);
 		font.draw(eventBatch, "FPS : " + Gdx.graphics.getFramesPerSecond(), 0, -Gdx.graphics.getHeight() / 2 + 50);
 		eventBatch.end();
 
@@ -136,9 +132,9 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		overlayCamera.position.x = 0;
 		overlayCamera.position.y = 0;
 		overlayCamera.viewportHeight = 1024;
-		overlayCamera.viewportWidth = 1024*((float)Gdx.graphics.getWidth()/Gdx.graphics.getHeight());
+		overlayCamera.viewportWidth = 1024 * ((float) Gdx.graphics.getWidth() / Gdx.graphics.getHeight());
 		overlayCamera.update();
-		
+
 		screenCamera.viewportWidth = width;
 		screenCamera.viewportHeight = height;
 		screenCamera.update();
@@ -148,7 +144,6 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	public void show() {
 		screenCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		overlayCamera = new OrthographicCamera();
-		control = new OrthoCamController(screenCamera);
 		addInputMultiplexer(parentInputMultiplexer);
 	}
 
@@ -159,8 +154,7 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 			eventBatch.dispose();
 			eventBatch = null;
 		}
-		control = null;
-		screenCamera= null;
+		screenCamera = null;
 		overlayCamera = null;
 	}
 

@@ -5,7 +5,9 @@ import com.emptypockets.spacemania.network.client.input.ClientInput;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
+import com.emptypockets.spacemania.network.engine.entities.collect.ScoreEntity;
 import com.emptypockets.spacemania.network.engine.entities.wepon.BasicWeapon;
+import com.emptypockets.spacemania.network.engine.entities.wepon.SpreadWeapon;
 import com.emptypockets.spacemania.network.engine.entities.wepon.Weapon;
 import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.ClientConnection;
@@ -23,19 +25,21 @@ public class ServerPlayer implements Disposable {
 	ServerRoom currentRoom;
 	EntityManagerSync entityManagerSync;
 	Weapon weapon;
-	
+
+	float score;
+
 	ClientPlayer clientPlayer;
 	ClientInput clientInput;
 	int entityId;
 
-	
 	public ServerPlayer(ClientConnection clientConnection) {
 		this.clientConnection = clientConnection;
 		clientPlayer = new ClientPlayer();
 		clientInput = new ClientInput();
 		entityManagerSync = new EntityManagerSync();
-//		weapon = new SpreadWeapon();
 		weapon = new BasicWeapon();
+		weapon = new SpreadWeapon();
+		score = 0;
 	}
 
 	public EntityManagerSync getEntityManagerSync() {
@@ -155,11 +159,15 @@ public class ServerPlayer implements Disposable {
 	public void processInput(ServerEngine engine) {
 		PlayerEntity entity = (PlayerEntity) engine.getEntityManager().getEntityById(entityId);
 		if (entity != null) {
-			//Process Movement
+			// Process Movement
 			entity.getVel().set(clientInput.getMove()).limit2(1).scl(entity.getMaxVelocity());
-			
-			//Processing Shooting
+
+			// Processing Shooting
 			weapon.shoot(this, entity, engine);
 		}
+	}
+
+	public void addScore(ScoreEntity scoreEntity) {
+		score++;
 	}
 }

@@ -1,14 +1,16 @@
 package com.emptypockets.spacemania.gui.renderer;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.emptypockets.spacemania.holders.SingleProcessor;
@@ -17,6 +19,9 @@ import com.emptypockets.spacemania.network.engine.EntityManager;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
+import com.emptypockets.spacemania.network.engine.grid.GridSystem;
+import com.emptypockets.spacemania.network.engine.partitioning.cell.Cell;
+import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePartition;
 
 /**
  * Created by jenfield on 10/05/2015.
@@ -31,15 +36,19 @@ public class EngineRender {
 	Texture bullet;
 	Sprite bulletSprite;
 
+	BitmapFont font;
+
 	boolean debugEnabled = true;
 
 	GridTextureRenderer gridTextureRender;
 	GridPathRenderer gridPathRender;
 	ParticleSystemRenderer particleRender;
-	
+
 	Vector3 screenStart = new Vector3();
 	Vector3 screenEnd = new Vector3();
 	Rectangle viewport = new Rectangle();
+
+	boolean lastGridTextureRender = false;
 
 	public EngineRender() {
 		gridTextureRender = new GridTextureRenderer();
@@ -58,64 +67,84 @@ public class EngineRender {
 		playerSprite.setOriginCenter();
 		bulletSprite.setOriginCenter();
 
+		font = new BitmapFont();
 	}
 
-	public void renderEntityDebug(OrthographicCamera camera, EntityManager manager) {
-		if (manager == null) {
-			return;
-		}
+	public void renderSpatialPartionDebug(OrthographicCamera camera, CellSpacePartition partition) {
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFuncSeparate(Gdx.gl20.GL_SRC_ALPHA, Gdx.gl20.GL_ONE_MINUS_SRC_ALPHA, Gdx.gl20.GL_ONE, Gdx.gl20.GL_ONE);
+
 		shapeRender.begin(ShapeRenderer.ShapeType.Filled);
-		manager.process(new SingleProcessor<Entity>() {
-			@Override
-			public void process(Entity entity) {
-				if (!entity.isAlive() || (entity instanceof PlayerEntity) || (entity instanceof BulletEntity)) {
-					return;
+		Cell[][] cells = partition.getCells();
+		Color c = new Color();
+		for (int x = 0; x < cells.length; x++) {
+			for (int y = 0; y < cells.length; y++) {
+				Cell cell = cells[x][y];
+				if (cell.getEntities().size() > 0) {
+					c.set(Color.RED).a = 0.1f;
+				} else {
+					c.set(Color.GREEN).a = 0.1f;
 				}
-				shapeRender.setColor(entity.getColor());
-				shapeRender.circle(entity.getState().getPos().x, entity.getState().getPos().y, entity.getRadius());
+				shapeRender.setColor(c);
+				Rectangle rec = cell.getBounds();
+				shapeRender.rect(rec.x, rec.y, rec.width, rec.height);
 			}
-		});
+		}
 		shapeRender.end();
 
+	}
+
+	public void renderEntityDebug(OrthographicCamera camera, ArrayList<Entity> entities) {
+		if (entities.size() == 0) {
+			return;
+		}
+
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFuncSeparate(Gdx.gl20.GL_SRC_ALPHA, Gdx.gl20.GL_ONE_MINUS_SRC_ALPHA, Gdx.gl20.GL_ONE, Gdx.gl20.GL_ONE);
+
+		shapeRender.begin(ShapeRenderer.ShapeType.Filled);
+		final Color c = new Color();
+		for (Entity entity : entities) {
+			if (!(entity instanceof PlayerEntity) && !(entity instanceof BulletEntity)) {
+				c.set(entity.getColor());
+				shapeRender.setColor(c);
+				shapeRender.circle(entity.getState().getPos().x, entity.getState().getPos().y, entity.getRadius());
+			}
+		}
+		shapeRender.end();
+	}
+
+	public void renderEntity(OrthographicCamera camera, ArrayList<Entity> entities) {
 		// Render Players
 		spriteBatch.begin();
 		spriteBatch.enableBlending();
 		spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-
-		manager.process(new SingleProcessor<Entity>() {
-			@Override
-			public void process(Entity entity) {
-				if (!entity.isAlive() || !(entity instanceof PlayerEntity)) {
-					return;
+		for (Entity entity : entities) {
+			if (entity.isAlive()) {
+				if ((entity instanceof PlayerEntity)) {
+					playerSprite.setColor(entity.getColor());
+					playerSprite.setPosition(entity.getPos().x - entity.getRadius(), entity.getPos().y - entity.getRadius());
+					playerSprite.setOriginCenter();
+					playerSprite.setRotation(entity.getState().getAng());
+					playerSprite.setSize(2 * entity.getRadius(), 2 * entity.getRadius());
+					playerSprite.draw(spriteBatch);
 				}
-				playerSprite.setColor(entity.getColor());
-				playerSprite.setPosition(entity.getPos().x - entity.getRadius(), entity.getPos().y - entity.getRadius());
-				playerSprite.setOriginCenter();
-				playerSprite.setRotation(entity.getState().getAng());
-				playerSprite.setSize(2 * entity.getRadius(), 2 * entity.getRadius());
-				playerSprite.draw(spriteBatch);
-			}
-		});
-
-		manager.process(new SingleProcessor<Entity>() {
-			@Override
-			public void process(Entity entity) {
-				if (!entity.isAlive() || !(entity instanceof BulletEntity)) {
-					return;
+				if (entity instanceof BulletEntity) {
+					bulletSprite.setColor(entity.getColor());
+					bulletSprite.setPosition(entity.getPos().x - entity.getRadius(), entity.getPos().y - entity.getRadius());
+					bulletSprite.setOriginCenter();
+					bulletSprite.setRotation(entity.getState().getAng());
+					bulletSprite.setSize(2 * entity.getRadius(), 2 * entity.getRadius());
+					bulletSprite.draw(spriteBatch);
 				}
-				bulletSprite.setColor(entity.getColor());
-				bulletSprite.setPosition(entity.getPos().x - entity.getRadius(), entity.getPos().y - entity.getRadius());
-				bulletSprite.setOriginCenter();
-				bulletSprite.setRotation(entity.getState().getAng());
-				bulletSprite.setSize(2 * entity.getRadius(), 2 * entity.getRadius());
-				bulletSprite.draw(spriteBatch);
 			}
-		});
+		}
 
 		spriteBatch.end();
 	}
 
-	boolean first = true;
+	boolean firstPathRender = true;
+
 	public void render(OrthographicCamera camera, ClientEngine engine) {
 		shapeRender.setProjectionMatrix(camera.combined);
 		spriteBatch.setProjectionMatrix(camera.combined);
@@ -134,22 +163,33 @@ public class EngineRender {
 			viewport.y += viewport.height;
 			viewport.height *= -1;
 		}
-		
-		if(first){
-			gridPathRender.rebuild(engine.getGridData());
-			first = false;
+
+		// Background
+		// renderSpatialPartionDebug(camera,
+		// engine.getEntitySpatialPartition());
+		if (engine.getGridData().getRenderType() == GridSystem.RENDER_PATH) {
+			if (firstPathRender || engine.isRegionChanged()) {
+				gridPathRender.rebuild(engine.getGridData());
+				firstPathRender = false;
+			}
+			gridPathRender.updateBounds();
+			gridPathRender.render(engine.getGridData(), viewport, shapeRender);
+		} else {
+			if (engine.isRegionChanged() || !lastGridTextureRender) {
+				gridTextureRender.relayoutMesh();
+			}
+			// Render Grid
+			gridTextureRender.render(camera, engine);
+			lastGridTextureRender = true;
 		}
-		
-		gridPathRender.updateBounds();
-		gridPathRender.render(engine.getGridData(), viewport, shapeRender);
-
-		// Render Grid
-//		gridTextureRender.render(camera, engine);
-
 		// Particles
-		particleRender.render(engine.getParticleSystem(),viewport, spriteBatch);
+		particleRender.render(engine.getParticleSystem(), viewport, spriteBatch);
+
+		ArrayList<Entity> renderEntities = new ArrayList<Entity>();
+		engine.getEntitySpatialPartition().getEntities(viewport, renderEntities);
 
 		// Entities
-		renderEntityDebug(camera, engine.getEntityManager());
+		renderEntityDebug(camera, renderEntities);
+		renderEntity(camera, renderEntities);
 	}
 }

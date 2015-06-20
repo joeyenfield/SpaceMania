@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.holders.ObjectProcessor;
@@ -14,7 +16,9 @@ import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
-import com.emptypockets.spacemania.network.engine.entities.particles.Spark;
+import com.emptypockets.spacemania.network.engine.entities.collect.ScoreEntity;
+import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePartition;
+import com.sun.corba.se.spi.ior.iiop.MaxStreamFormatVersionComponent;
 
 public class EntityManager extends ObjectProcessor<Entity> {
 	int entityCount = 0;
@@ -32,15 +36,6 @@ public class EntityManager extends ObjectProcessor<Entity> {
 		return createEntity(type, entityCount);
 	}
 
-	public synchronized void getNearbyEntities(Vector2 pos, float dist, ArrayList<Entity> result) {
-		float dist2 = dist * dist;
-		for (Entity e : entities.values()) {
-			if (e.getPos().dst2(pos) < dist2) {
-				result.add(e);
-			}
-		}
-	}
-
 	public synchronized Entity createEntity(EntityType type, int id) {
 		Entity entity;
 		switch (type) {
@@ -50,6 +45,9 @@ public class EntityManager extends ObjectProcessor<Entity> {
 		case Player:
 			entity = Pools.obtain(PlayerEntity.class);
 			break;
+		case Score:
+			entity = Pools.obtain(ScoreEntity.class);
+			break;
 		case Enemy_FOLLOW:
 			entity = Pools.obtain(EnemyEntity.class);
 			entity.setType(EntityType.Enemy_FOLLOW);
@@ -58,15 +56,12 @@ public class EntityManager extends ObjectProcessor<Entity> {
 			entity = Pools.obtain(EnemyEntity.class);
 			entity.setType(EntityType.Enemy_RANDOM);
 			break;
-		case Particle:
-			entity = Pools.obtain(Spark.class);
-			((Spark)entity).updateCreationTime();
-			break;
 		default:
 			throw new RuntimeException("Unknown Entity Type");
 		}
 
 		entity.getState().setId(id);
+		entity.tagCreationTime();
 		return entity;
 	}
 
@@ -75,16 +70,16 @@ public class EntityManager extends ObjectProcessor<Entity> {
 		notifyEntityAdded(entity);
 	}
 
-	public synchronized void removeEntity(Entity entity) {
+	public synchronized void removeEntity(Entity entity, boolean killed) {
 		entities.remove(entity.getState().getId());
-		notifyEntityRemoved(entity);
+		notifyEntityRemoved(entity, killed);
 		Pools.free(entity);
 	}
 
-	public synchronized void removeEntityById(int id) {
+	public synchronized void removeEntityById(int id, boolean killed) {
 		Entity entity = getEntityById(id);
 		if (entity != null) {
-			removeEntity(entity);
+			removeEntity(entity, killed);
 		}
 	}
 
@@ -96,10 +91,10 @@ public class EntityManager extends ObjectProcessor<Entity> {
 		}
 	}
 
-	private void notifyEntityRemoved(Entity entity) {
+	private void notifyEntityRemoved(Entity entity, boolean killed) {
 		synchronized (entityMangerInterface) {
 			for (EntityManagerInterface mgrInterface : entityMangerInterface) {
-				mgrInterface.entityRemoved(entity);
+				mgrInterface.entityRemoved(entity, killed);
 			}
 		}
 	}
@@ -119,10 +114,11 @@ public class EntityManager extends ObjectProcessor<Entity> {
 	public synchronized void unregister(final EntityManagerInterface managerInterface) {
 		synchronized (entityMangerInterface) {
 			entityMangerInterface.remove(managerInterface);
+			//Silently remove all entites
 			process(new SingleProcessor<Entity>() {
 				@Override
 				public void process(Entity entity) {
-					managerInterface.entityRemoved(entity);
+					managerInterface.entityRemoved(entity, false);
 				}
 			});
 		}
@@ -154,7 +150,7 @@ public class EntityManager extends ObjectProcessor<Entity> {
 		}
 
 		for (Entity ent : toRemove) {
-			removeEntity(ent);
+			removeEntity(ent, true);
 		}
 	}
 
@@ -171,7 +167,7 @@ public class EntityManager extends ObjectProcessor<Entity> {
 	public synchronized <T> ArrayList<T> filterEntities(Class<T> type) {
 		ArrayList<T> result = new ArrayList<T>();
 		for (Entity ent : entities.values()) {
-			if (ent.getClass().isAssignableFrom(type)) {
+			if (type.isAssignableFrom(ent.getClass())) {
 				result.add((T) ent);
 			}
 		}

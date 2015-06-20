@@ -78,6 +78,23 @@ public class GridTextureRenderer {
 	private int getVert(int x, int y) {
 		return (int) (x * sizeY + y);
 	}
+	
+	public void relayoutMesh(){
+		Vector2 pos = new Vector2();
+		Vector2 uv = new Vector2();
+		for (int x = 0; x < sizeX; x++) {
+			for (int y = 0; y < sizeY; y++) {
+				float xf = x / (sizeX - 1f);
+				float yf = y / (sizeY - 1f);
+				pos.x = rect.x + rect.width * xf;
+				pos.y = rect.y + rect.height * yf;
+
+				uv.x = (pos.x / texture.getWidth());
+				uv.y = (pos.y / texture.getHeight());
+				setData(x, y, pos, uv,MathUtils.random());
+			}
+		}
+	}
 
 	private void createMesh() {
 		vertData = new float[sizeX * sizeY * pixSize];

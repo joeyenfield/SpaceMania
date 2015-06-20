@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.network.engine.entities.EntityState;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 
-public class EntityCreation implements Poolable {
+public class EntityAdd implements Poolable {
 	int id;
 	EntityType type;
 	EntityState entityState;

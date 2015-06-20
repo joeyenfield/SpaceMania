@@ -2,6 +2,7 @@ package com.emptypockets.spacemania.network.client.commands;
 
 
 import com.emptypockets.spacemania.commandLine.Command;
+import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.client.ClientManager;
 
 public abstract class ClientCommand extends Command {
@@ -15,5 +16,9 @@ public abstract class ClientCommand extends Command {
 
     public ClientManager getClient() {
         return client;
+    }
+    
+    public Console getConsole(){
+    	return client.getConsole();
     }
 }

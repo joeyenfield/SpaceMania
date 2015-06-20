@@ -2,35 +2,49 @@ package com.emptypockets.spacemania.network.engine.entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
 public abstract class Entity implements Poolable {
-	Polygon shape;
 	EntityState state;
 	EntityType type;
-	boolean alive = true;
-	boolean reflectWall = true;
 
-	public void setType(EntityType type) {
-		this.type = type;
-	}
+	boolean alive = true;
 
 	protected Color color;
 	float inverseMass = 1;
 	float radius = 15;
-	float maxVelocity = 100;
-	float maxForce = 100;
+	float maxVelocity = 400;
+	float maxForce = 400;
+
 	Vector2 lastPosition = new Vector2();
-	float lastDist = 0;
+	float lastMovementDist = 0;
+	Vector2 fovTemp1 = new Vector2();
+	Vector2 fovTemp2 = new Vector2();
+
 	float damping = 0;
 
+	Vector2 forceAculumator = new Vector2();
+	boolean bounceOffWalls = true; //Indicate if an enttity should stop dead or bounce off walls
+	protected long creationTime;
+	
 	public Entity(EntityType type) {
 		this.type = type;
 		state = new EntityState();
 		color = Color.GREEN.cpy();
+	}
+	
+	public boolean isInsideFOV(Entity ent, float fovInDeg){
+		
+		fovTemp1.set(getVel()).nor();
+		fovTemp2.set(ent.getPos()).sub(getPos()).nor();
+		float angle = Math.abs(fovTemp1.angle(fovTemp2.nor()));
+		return  angle < fovInDeg/2;
+	}
+
+	public void setType(EntityType type) {
+		this.type = type;
 	}
 
 	public boolean isAlive() {
@@ -40,7 +54,7 @@ public abstract class Entity implements Poolable {
 	public boolean contact(Entity entity) {
 		boolean contact = false;
 		float radSize = getRadius() + entity.getRadius();
-		float interactRadius = radSize + lastDist + entity.lastDist;
+		float interactRadius = radSize + lastMovementDist + entity.lastMovementDist;
 		float dist2 = getPos().dst2(entity.getPos());
 
 		if (dist2 < radSize * radSize) {
@@ -93,12 +107,21 @@ public abstract class Entity implements Poolable {
 
 	public void update(float deltaTime) {
 		lastPosition.set(getPos());
-		state.delta(deltaTime);
+		// Convert the Force to Velocity
+		forceAculumator.limit(maxForce);
+		forceAculumator.scl(inverseMass * deltaTime);
+
+		// Update the velocity
+		getVel().add(forceAculumator);
 		if (damping > 0) {
 			getVel().scl((float) Math.pow(damping, deltaTime));
 		}
 		getVel().limit(maxVelocity);
-		lastDist = lastPosition.dst(getPos());
+		forceAculumator.x = 0;
+		forceAculumator.y = 0;
+		// Update the state
+		state.delta(deltaTime);
+		lastMovementDist = lastPosition.dst(getPos());
 	}
 
 	public float getMaxVelocity() {
@@ -146,11 +169,48 @@ public abstract class Entity implements Poolable {
 		alive = true;
 	}
 
-	public boolean isReflectWall() {
-		return reflectWall;
+	public void resetForce() {
+		forceAculumator.set(0, 0);
 	}
 
-	public void setReflectWall(boolean reflectWall) {
-		this.reflectWall = reflectWall;
+	public void applyForce(Vector2 force) {
+		this.forceAculumator.add(force);
+	}
+
+	public boolean isBounceOffWall() {
+		return bounceOffWalls;
+	}
+
+	public void setBounceOffWalls(boolean boundeWalls) {
+		this.bounceOffWalls = boundeWalls;
+	}
+
+	public float dst2(Entity entity) {
+		return getPos().dst2(entity.getPos());
+	}
+	
+	public void setVel(float x, float y) {
+		getVel().set(x,y);
+	}
+	
+	public void setVel(Vector2 vel) {
+		getVel().set(vel);
+	}
+
+	public void tagCreationTime() {
+		creationTime = System.currentTimeMillis();
+	}
+	
+	public long getAge(){
+		return System.currentTimeMillis()-creationTime;
+	}
+
+	public float getLastMovementDist() {
+		return lastMovementDist;
+	}
+
+	public boolean intersects(Rectangle viewport) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

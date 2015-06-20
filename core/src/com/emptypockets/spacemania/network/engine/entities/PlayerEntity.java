@@ -10,16 +10,15 @@ public class PlayerEntity extends Entity {
 	long lastExhaust = 0;
 	long exhaustTime = 500;
 	Color sideExhauseColor = new Color(200 / 256f, 38 / 256f, 9 / 256f, 1); // deep
-																			// red
 	Color midExhauseColor = new Color(255 / 256f, 187 / 256f, 30 / 256f, 1); // orange-yellow
 
 	public PlayerEntity() {
 		super(EntityType.Player);
 		setColor(Color.GREEN);
 		setDamping(0);
-		setMaxVelocity(700);
+		setMaxVelocity(500);
 		setRadius(30);
-		setReflectWall(false);
+		setBounceOffWalls(false);
 	}
 
 	// TODO Auto-generated method stub
@@ -82,6 +81,11 @@ public class PlayerEntity extends Entity {
 		if (state.vel.len2() > 1) {
 			state.ang = state.vel.angle();
 		}
+	}
+
+	public void addScore() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

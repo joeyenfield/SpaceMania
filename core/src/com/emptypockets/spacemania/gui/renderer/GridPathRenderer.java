@@ -21,11 +21,12 @@ public class GridPathRenderer {
 	ArrayList<Path> paths = new ArrayList<Path>();
 
 	public void rebuild(GridSystem grid) {
-		float alpha = 0.3f;
+		paths.clear();
+		float alpha = 0.2f;
 		// Build Y Paths
 		for (int x = 0; x < grid.getSizeX(); x++) {
 			Path p = new Path();
-			if(x%10 == 0){
+			if(x%4 == 0){
 				p.setColor(Color.CYAN);
 				p.setThickness(3f);
 			}else{
@@ -42,7 +43,7 @@ public class GridPathRenderer {
 		// Build X Paths
 		for (int y = 0; y < grid.getSizeY(); y++) {
 			Path p = new Path();
-			if(y%10 == 0){
+			if(y%4 == 0){
 				p.setColor(Color.CYAN);
 				p.setThickness(3f);
 			}else{

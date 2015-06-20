@@ -11,6 +11,7 @@ import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 public class JoinRoomSuccessPayload extends ClientPayload {
     ClientRoom room;
 	EntityManagerSync initialSync;
+	
 
     public void setRoom(ClientRoom room){
         this.room = room;

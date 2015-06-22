@@ -26,21 +26,27 @@ public abstract class Entity implements Poolable {
 	float damping = 0;
 
 	Vector2 forceAculumator = new Vector2();
-	boolean bounceOffWalls = true; //Indicate if an enttity should stop dead or bounce off walls
+	boolean bounceOffWalls = true; // Indicate if an enttity should stop dead or
+									// bounce off walls
 	protected long creationTime;
-	
+	protected long lifeTime = 0;
+
 	public Entity(EntityType type) {
 		this.type = type;
 		state = new EntityState();
 		color = Color.GREEN.cpy();
 	}
-	
-	public boolean isInsideFOV(Entity ent, float fovInDeg){
-		
+
+	public void setLifeTime(long time) {
+		this.lifeTime = time;
+	}
+
+	public boolean isInsideFOV(Entity ent, float fovInDeg) {
+
 		fovTemp1.set(getVel()).nor();
 		fovTemp2.set(ent.getPos()).sub(getPos()).nor();
 		float angle = Math.abs(fovTemp1.angle(fovTemp2.nor()));
-		return  angle < fovInDeg/2;
+		return angle < fovInDeg / 2;
 	}
 
 	public void setType(EntityType type) {
@@ -122,6 +128,12 @@ public abstract class Entity implements Poolable {
 		// Update the state
 		state.delta(deltaTime);
 		lastMovementDist = lastPosition.dst(getPos());
+
+		if (lifeTime != 0) {
+			if (getAge() > lifeTime) {
+				setAlive(false);
+			}
+		}
 	}
 
 	public float getMaxVelocity() {
@@ -188,11 +200,11 @@ public abstract class Entity implements Poolable {
 	public float dst2(Entity entity) {
 		return getPos().dst2(entity.getPos());
 	}
-	
+
 	public void setVel(float x, float y) {
-		getVel().set(x,y);
+		getVel().set(x, y);
 	}
-	
+
 	public void setVel(Vector2 vel) {
 		getVel().set(vel);
 	}
@@ -200,9 +212,9 @@ public abstract class Entity implements Poolable {
 	public void tagCreationTime() {
 		creationTime = System.currentTimeMillis();
 	}
-	
-	public long getAge(){
-		return System.currentTimeMillis()-creationTime;
+
+	public long getAge() {
+		return System.currentTimeMillis() - creationTime;
 	}
 
 	public float getLastMovementDist() {

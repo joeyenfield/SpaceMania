@@ -53,7 +53,6 @@ public class EntityManager extends ObjectProcessor<Entity> {
 			entity = Pools.obtain(EnemyEntity.class);
 			entity.setType(EntityType.Enemy_FOLLOW);
 			entity.setColor(Color.CYAN);
-			entity.setRadius(20);
 			break;
 		case Enemy_RANDOM:
 			entity = Pools.obtain(EnemyEntity.class);

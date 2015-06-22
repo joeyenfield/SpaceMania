@@ -7,10 +7,9 @@ import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 
 public abstract class CollectableEntity extends Entity {
 
-	float lifeTime = 10000;
-	
 	public CollectableEntity(EntityType type) {
 		super(type);
+		setLifeTime(10000);
 	}
 
 	@Override
@@ -18,11 +17,9 @@ public abstract class CollectableEntity extends Entity {
 		super.update(deltaTime);
 
 		float progress = getAge() / lifeTime;
-		if (progress > 1) {
-			setAlive(false);
-		}else if(progress > 0.8){
+		if (progress > 0.8) {
 			getColor().set(Color.ORANGE);
-		}else{
+		} else {
 			getColor().set(Color.GREEN).lerp(Color.YELLOW, progress);
 		}
 	}

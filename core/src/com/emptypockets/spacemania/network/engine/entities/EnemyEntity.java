@@ -7,6 +7,7 @@ public class EnemyEntity extends Entity{
 	public EnemyEntity() {
 		super(EntityType.Enemy_RANDOM);
 		setColor(Color.RED);
+		setRadius(25);
 	}
 	
 	

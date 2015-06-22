@@ -17,7 +17,7 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="default.svg"
-   inkscape:export-filename="C:\github\SpaceMania\resources\game\follow.png"
+   inkscape:export-filename="D:\projects\Empty Pockets\projects\SpaceMania\resources\game\follow.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -39,14 +39,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.9195959"
-     inkscape:cx="14.871791"
+     inkscape:cx="71.161951"
      inkscape:cy="53.230966"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      inkscape:window-width="1920"
-     inkscape:window-height="1018"
+     inkscape:window-height="1017"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -76,8 +76,8 @@
      transform="translate(0,-952.36223)"
      style="display:inline">
     <path
-       style="fill:none;fill-opacity:1;stroke:#808080;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
-       d="m 10,962.36223 c 40,39.99997 20,0 80,0 -40,39.99997 0,25 0,79.99997 -40,-40 -25,0 -80.000003,0 40.000003,-40 3e-6,-20 3e-6,-79.99997 z"
+       style="fill:none;fill-opacity:1;stroke:#808080;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 10,962.36223 80,0 0,79.99997 -80.000003,0 z"
        id="rect4136"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />

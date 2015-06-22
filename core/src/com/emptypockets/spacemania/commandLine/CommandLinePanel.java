@@ -141,7 +141,6 @@ public class CommandLinePanel extends Table implements ConsoleListener, Disposab
 
 	public void print(Console con, final String message) {
 		if (isVisible()){
-			System.out.println("Visible");
 			Gdx.app.postRunnable(new Runnable() {
 				@Override
 				public void run() {

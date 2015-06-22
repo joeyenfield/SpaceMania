@@ -41,7 +41,7 @@ public class DesktopLauncher {
 					client = test.screen.getClient().getCommand();
 				}
 			} while (client == null);
-			client.processCommand("start;set gridsize 128 128; set roomsize 2000;set gridrender 1;set particles 10000;");
+//			client.processCommand("start;set gridsize 128 128; set roomsize 2000;set gridrender 1;set particles 10000;");
 			// client.processCommand("connect emptypocketgames.noip.me");
 			// client.processCommand("login awsoem");
 			// client.processCommand("lobby");

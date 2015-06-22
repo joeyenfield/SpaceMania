@@ -17,7 +17,7 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="follow.svg"
-   inkscape:export-filename="C:\github\SpaceMania\resources\game\follow.png"
+   inkscape:export-filename="D:\projects\Empty Pockets\projects\SpaceMania\resources\game\follow.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -30,50 +30,6 @@
          offset="0"
          id="stop5603" />
     </linearGradient>
-    <filter
-       inkscape:label="Evanescent"
-       inkscape:menu="Blurs"
-       inkscape:menu-tooltip="Blur the contents of objects, preserving the outline and adding progressive transparency at edges"
-       style="color-interpolation-filters:sRGB;"
-       id="filter5607">
-      <feGaussianBlur
-         result="result6"
-         stdDeviation="3"
-         in="SourceGraphic"
-         id="feGaussianBlur5609" />
-      <feColorMatrix
-         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0 "
-         result="result7"
-         in="SourceGraphic"
-         id="feColorMatrix5611" />
-      <feComposite
-         operator="in"
-         in="result6"
-         in2="result7"
-         id="feComposite5613" />
-    </filter>
-    <filter
-       inkscape:label="Evanescent"
-       inkscape:menu="Blurs"
-       inkscape:menu-tooltip="Blur the contents of objects, preserving the outline and adding progressive transparency at edges"
-       style="color-interpolation-filters:sRGB"
-       id="filter5607-6">
-      <feGaussianBlur
-         result="result6"
-         stdDeviation="3"
-         in="SourceGraphic"
-         id="feGaussianBlur5609-2" />
-      <feColorMatrix
-         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0 "
-         result="result7"
-         in="SourceGraphic"
-         id="feColorMatrix5611-3" />
-      <feComposite
-         operator="in"
-         in="result6"
-         in2="result7"
-         id="feComposite5613-5" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -83,14 +39,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.9195959"
-     inkscape:cx="37.032013"
+     inkscape:cx="48.344185"
      inkscape:cy="45.647456"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      inkscape:window-width="1920"
-     inkscape:window-height="1018"
+     inkscape:window-height="1017"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -109,7 +65,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -120,7 +76,7 @@
      transform="translate(0,-952.36223)"
      style="display:inline">
     <path
-       style="fill:none;fill-opacity:1;stroke:#808080;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter5607)"
+       style="fill:none;fill-opacity:1;stroke:#808080;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
        d="m 10,962.36223 20.178977,0.0444 L 45,977.36223 l 10,0 15,-14.86824 20,-0.13176 0,20 -15,15 0,9.99997 15,15 0,20 -20,0 -15,-15 -10,0 -15,15 -20.000003,0 3e-6,-20 15,-15 0,-9.99997 -14.925773,-14.97456 z"
        id="rect4136"
        inkscape:connector-curvature="0"

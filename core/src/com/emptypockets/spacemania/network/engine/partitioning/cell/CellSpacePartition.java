@@ -1,7 +1,9 @@
 package com.emptypockets.spacemania.network.engine.partitioning.cell;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -99,7 +101,7 @@ public class CellSpacePartition implements EngineRegionListener {
 		return data;
 	}
 
-	public void filter(ArrayList<Entity> result, Class<?> type) {
+	public void filter(Set<Entity> result, Class<?> type) {
 		Iterator<Entity> entIterator = result.iterator();
 		while (entIterator.hasNext()) {
 			Entity ent = entIterator.next();
@@ -109,7 +111,7 @@ public class CellSpacePartition implements EngineRegionListener {
 		}
 	}
 
-	public void filter(ArrayList<Entity> result, EntityType type) {
+	public void filter(Set<Entity> result, EntityType type) {
 		Iterator<Entity> entIterator = result.iterator();
 		while (entIterator.hasNext()) {
 			Entity ent = entIterator.next();
@@ -119,29 +121,29 @@ public class CellSpacePartition implements EngineRegionListener {
 		}
 	}
 
-	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<Entity> result) {
+	public synchronized void getNearbyEntities(Entity entity, float distance, Set<Entity> result) {
 		searchNearbyEntities(entity.getPos(), entity.getRadius() + distance, result);
 	}
 
-	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<Entity> result, Class filterClass) {
+	public synchronized void getNearbyEntities(Entity entity, float distance, Set<Entity> result, Class filterClass) {
 		searchNearbyEntities(entity.getPos(), 2*(entity.getRadius() + distance), result, filterClass);
 	}
 
-	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<Entity> result, EntityType type) {
+	public synchronized void getNearbyEntities(Entity entity, float distance, Set<Entity> result, EntityType type) {
 		searchNearbyEntities(entity.getPos(), entity.getRadius() + distance, result, type);
 	}
 
-	public synchronized void searchNearbyEntities(Vector2 pos, float dist, ArrayList<Entity> result, Class filterClass) {
+	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<Entity> result, Class filterClass) {
 		searchNearbyEntities(pos, dist, result);
 		filter(result, filterClass);
 	}
 
-	public synchronized void searchNearbyEntities(Vector2 pos, float dist, ArrayList<Entity> result, EntityType type) {
+	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<Entity> result, EntityType type) {
 		searchNearbyEntities(pos, dist, result);
 		filter(result, type);
 	}
 
-	public synchronized void searchNearbyEntities(Vector2 pos, float dist, ArrayList<Entity> result) {
+	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<Entity> result) {
 
 		// Top Left
 		int cellMinX = getCellX(pos.x - dist);
@@ -171,7 +173,7 @@ public class CellSpacePartition implements EngineRegionListener {
 		}
 	}
 
-	public void getEntities(Rectangle viewport, ArrayList<Entity> result) {
+	public void getEntities(Rectangle viewport, Set<Entity> result) {
 		// Top Left
 		int cellMinX = getCellX(viewport.x);
 		int cellMinY = getCellY(viewport.y);
@@ -202,7 +204,7 @@ public class CellSpacePartition implements EngineRegionListener {
 		Entity result = null;
 		float minDist2 = 0;
 
-		ArrayList<Entity> entities = new ArrayList<Entity>();
+		Set<Entity> entities = new HashSet<Entity>();
 		searchNearbyEntities(entity.getPos(), maxDistance, entities);
 		for (Entity ent : entities) {
 			if (ent.getType() == type) {

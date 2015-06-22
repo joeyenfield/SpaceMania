@@ -1,6 +1,8 @@
 package com.emptypockets.spacemania.gui.renderer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -21,7 +23,6 @@ import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
 import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
-import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.entities.collect.ScoreEntity;
 import com.emptypockets.spacemania.network.engine.grid.GridSystem;
@@ -42,7 +43,8 @@ public class EngineRender {
 
 	TextureAtlas textureAtlas;
 	AtlasRegion playerRegion;
-	AtlasRegion followRegion;
+	AtlasRegion enemyFollowRegion;
+	AtlasRegion enemyRandomRegion;
 	AtlasRegion bulletRegion;
 	AtlasRegion sparkRegion;
 	AtlasRegion scoreRegion;
@@ -66,7 +68,7 @@ public class EngineRender {
 	public EngineRender() {
 		textureAtlas = new TextureAtlas("game/game.atlas");
 		for (Texture t : textureAtlas.getTextures()) {
-			t.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+			t.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		}
 		gridTextureRender = new GridTextureRenderer();
 		gridPathRender = new GridPathRenderer();
@@ -75,13 +77,14 @@ public class EngineRender {
 		entityBatch = new SpriteBatch();
 		backgroundBatch = new SpriteBatch();
 		particleBatch = new SpriteBatch();
-//
-//		particleBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-//		entityBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-//		backgroundBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+
+		particleBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+		entityBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+		backgroundBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
 		playerRegion = textureAtlas.findRegion("playership");
-		followRegion = textureAtlas.findRegion("follow");
+		enemyFollowRegion = textureAtlas.findRegion("enemy-follow");
+		enemyRandomRegion = textureAtlas.findRegion("enemy-random");
 		bulletRegion = textureAtlas.findRegion("bullet");
 		sparkRegion = textureAtlas.findRegion("spark");
 		scoreRegion = textureAtlas.findRegion("score");
@@ -129,7 +132,7 @@ public class EngineRender {
 		shapeRender.end();
 	}
 
-	public void renderEntity(OrthographicCamera camera, ArrayList<Entity> entities, SpriteBatch batch) {
+	public void renderEntity(OrthographicCamera camera, Set<Entity> entities, SpriteBatch batch) {
 		// Render Players
 		batch.begin();
 		for (Entity entity : entities) {
@@ -148,7 +151,10 @@ public class EngineRender {
 				} else if (entity instanceof EnemyEntity) {
 					switch (((EnemyEntity) entity).getType()) {
 					case Enemy_FOLLOW:
-						region = followRegion;
+						region = enemyFollowRegion;
+						break;
+					case Enemy_RANDOM:
+						region = enemyRandomRegion;
 						break;
 					default:
 						break;
@@ -206,9 +212,9 @@ public class EngineRender {
 		renderParticles(engine.getParticleSystem(), viewport, particleBatch);
 
 		// Entities
-		ArrayList<Entity> renderEntities = new ArrayList<Entity>();
+		Set<Entity> renderEntities = new HashSet<Entity>();
 		engine.getEntitySpatialPartition().getEntities(viewport, renderEntities);
-//		renderEntityDebug(camera, renderEntities);
+		// renderEntityDebug(camera, renderEntities);
 		renderEntity(camera, renderEntities, entityBatch);
 	}
 

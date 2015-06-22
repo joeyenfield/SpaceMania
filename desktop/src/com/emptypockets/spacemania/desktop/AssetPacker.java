@@ -3,6 +3,7 @@ package com.emptypockets.spacemania.desktop;
 import java.io.File;
 import java.io.IOException;
 
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 
@@ -12,6 +13,8 @@ public class AssetPacker {
 	        Settings settings = new Settings();
 	        settings.maxWidth = 512;
 	        settings.maxHeight = 512;
+	        settings.filterMin = TextureFilter.MipMap;
+	        settings.filterMag = TextureFilter.MipMap;
 	        
 	        File resource = new File("../resources");
 	        for(File file : resource.listFiles()){

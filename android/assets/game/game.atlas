@@ -2,7 +2,7 @@
 game.png
 size: 512,256
 format: RGBA8888
-filter: Nearest,Nearest
+filter: MipMap,MipMap
 repeat: none
 back
   rotate: false
@@ -25,16 +25,23 @@ default
   orig: 100, 100
   offset: 0, 0
   index: -1
-follow
+enemy-follow
   rotate: false
   xy: 306, 154
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-playership
+enemy-random
   rotate: false
   xy: 408, 154
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+playership
+  rotate: false
+  xy: 204, 52
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -48,7 +55,7 @@ score
   index: -1
 spark
   rotate: false
-  xy: 204, 142
+  xy: 306, 142
   size: 50, 10
   orig: 50, 10
   offset: 0, 0

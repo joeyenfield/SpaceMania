@@ -1,6 +1,7 @@
 package com.emptypockets.spacemania.network.server.engine;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.emptypockets.spacemania.holders.SingleProcessor;
@@ -33,7 +34,7 @@ public class ServerEngine extends Engine {
 	public void processCollissions() {
 		ArrayList<BulletEntity> bullets = getEntityManager().filterEntities(BulletEntity.class);
 
-		final ArrayList<Entity> enemys = new ArrayList<Entity>();
+		final HashSet<Entity> enemys = new HashSet<Entity>();
 		// Kill Enemys
 		for (BulletEntity bullet : bullets) {
 			enemys.clear();
@@ -53,7 +54,7 @@ public class ServerEngine extends Engine {
 		}
 		enemys.clear();
 
-		final ArrayList<Entity> collectable = new ArrayList<Entity>();
+		final HashSet<Entity> collectable = new HashSet<Entity>();
 		// Get Collectable
 		playerManager.process(new SingleProcessor<ServerPlayer>() {
 			@Override

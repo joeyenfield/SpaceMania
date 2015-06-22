@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 
 public class BulletEntity extends Entity {
 	PlayerEntity owner;
-
+	
 	public BulletEntity() {
 		super(EntityType.Bullet);
 		setColor(Color.ORANGE);
@@ -12,7 +12,10 @@ public class BulletEntity extends Entity {
 		setDamping(0);
 		setMaxVelocity(1000);
 		setBounceOffWalls(false);
+		setLifeTime(500);
 	}
+
+	
 
 	@Override
 	public void update(float deltaTime) {

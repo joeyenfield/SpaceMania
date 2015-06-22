@@ -2,6 +2,7 @@ package com.emptypockets.spacemania.network.engine.ai.manager;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.EntityManagerInterface;
 import com.emptypockets.spacemania.network.engine.ai.steering.Follow;
@@ -14,9 +15,9 @@ public class AiManager implements EntityManagerInterface {
 
 	HashMap<EnemyEntity, EntityAi> aiEntityList;
 	ServerEngine engine;
-	
+
 	public AiManager(ServerEngine engine) {
-		aiEntityList = new HashMap<EnemyEntity,EntityAi>();
+		aiEntityList = new HashMap<EnemyEntity, EntityAi>();
 		this.engine = engine;
 	}
 
@@ -27,7 +28,14 @@ public class AiManager implements EntityManagerInterface {
 				EntityAi ai;
 				switch (entity.getType()) {
 				case Enemy_FOLLOW:
-					ai = new FollowerEntityAi(engine,entity);
+					ai = new FollowerEntityAi(engine, entity);
+					entity.getState().setAng(MathUtils.random(360));
+					entity.getState().setAngVel(360);
+					break;
+				case Enemy_RANDOM:
+					ai = new RandomEntityAi(engine, entity);
+					entity.getState().setAng(MathUtils.random(360));
+					entity.getState().setAngVel(360);
 					break;
 				default:
 					throw new RuntimeException("Unknown Enemy");

@@ -32,7 +32,7 @@ public class AndroidLauncher extends AndroidApplication {
 						client = test.screen.getClient().getCommand();
 					}
 				} while (client == null);
-//				client.processCommand("start;set grid 0; set roomsize 5000;set particles 100;");
+				client.processCommand("connect 192.168.1.18;login user" + Math.random() + "; lobby;set grid 0;set particles 100;");
 			}
 		}).start();
 	}

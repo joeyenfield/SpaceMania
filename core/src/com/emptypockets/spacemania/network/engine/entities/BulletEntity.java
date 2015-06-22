@@ -7,8 +7,8 @@ public class BulletEntity extends Entity {
 
 	public BulletEntity() {
 		super(EntityType.Bullet);
-		setRadius(10);
 		setColor(Color.ORANGE);
+		setRadius(10);
 		setDamping(0);
 		setMaxVelocity(1000);
 		setBounceOffWalls(false);

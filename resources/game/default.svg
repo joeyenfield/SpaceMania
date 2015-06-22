@@ -16,8 +16,8 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="playerShiip.svg"
-   inkscape:export-filename="C:\github\SpaceMania\resources\game\playership.png"
+   sodipodi:docname="default.svg"
+   inkscape:export-filename="C:\github\SpaceMania\resources\game\follow.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -30,28 +30,6 @@
          offset="0"
          id="stop5603" />
     </linearGradient>
-    <filter
-       inkscape:label="Evanescent"
-       inkscape:menu="Blurs"
-       inkscape:menu-tooltip="Blur the contents of objects, preserving the outline and adding progressive transparency at edges"
-       style="color-interpolation-filters:sRGB;"
-       id="filter5607">
-      <feGaussianBlur
-         result="result6"
-         stdDeviation="3"
-         in="SourceGraphic"
-         id="feGaussianBlur5609" />
-      <feColorMatrix
-         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0 "
-         result="result7"
-         in="SourceGraphic"
-         id="feColorMatrix5611" />
-      <feComposite
-         operator="in"
-         in="result6"
-         in2="result7"
-         id="feComposite5613" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -61,20 +39,23 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.9195959"
-     inkscape:cx="25.40614"
-     inkscape:cy="48.109573"
+     inkscape:cx="14.871791"
+     inkscape:cy="53.230966"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      inkscape:window-width="1920"
      inkscape:window-height="1018"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
-     inkscape:window-maximized="1">
+     inkscape:window-maximized="1"
+     guidetolerance="10000">
     <inkscape:grid
        type="xygrid"
-       id="grid4139" />
+       id="grid4139"
+       snapvisiblegridlinesonly="true"
+       dotted="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -89,28 +70,16 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="Glow">
-    <path
-       style="display:inline;fill:none;fill-opacity:0.76328502;stroke:#808080;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.43961355;filter:url(#filter5607)"
-       d="m 9.9993917,10.000285 70.0000003,20 10,19.99997 -10,20 -70.0000003,20 30.0000003,-30 0,-19.99997 z"
-       id="rect4136-2"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccccc" />
-  </g>
-  <g
      inkscape:label="Body"
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-952.36223)"
-     style="display:inline"
-     sodipodi:insensitive="true">
+     style="display:inline">
     <path
-       style="fill:none;fill-opacity:1;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter5607)"
-       d="m 10,962.36223 70,20 10,19.99997 -10,20 -70,20 30,-30 0,-19.99997 z"
+       style="fill:none;fill-opacity:1;stroke:#808080;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
+       d="m 10,962.36223 c 40,39.99997 20,0 80,0 -40,39.99997 0,25 0,79.99997 -40,-40 -25,0 -80.000003,0 40.000003,-40 3e-6,-20 3e-6,-79.99997 z"
        id="rect4136"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccccc" />
+       sodipodi:nodetypes="ccccc" />
   </g>
 </svg>

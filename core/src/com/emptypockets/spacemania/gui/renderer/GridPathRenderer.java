@@ -83,8 +83,7 @@ public class GridPathRenderer {
 	public void render(GridSystem data, Rectangle viewport, ShapeRenderer render) {
 
 		render.begin(ShapeType.Filled);
-		Gdx.gl.glEnable(GL20.GL_BLEND);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+
 		for (Path p : paths) {
 			if (viewport.overlaps(p.getBounds())) {
 				renderPath(render, p);

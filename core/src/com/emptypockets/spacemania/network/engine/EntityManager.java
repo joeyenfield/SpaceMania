@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -51,10 +52,13 @@ public class EntityManager extends ObjectProcessor<Entity> {
 		case Enemy_FOLLOW:
 			entity = Pools.obtain(EnemyEntity.class);
 			entity.setType(EntityType.Enemy_FOLLOW);
+			entity.setColor(Color.CYAN);
+			entity.setRadius(20);
 			break;
 		case Enemy_RANDOM:
 			entity = Pools.obtain(EnemyEntity.class);
 			entity.setType(EntityType.Enemy_RANDOM);
+			entity.setColor(Color.MAGENTA);
 			break;
 		default:
 			throw new RuntimeException("Unknown Entity Type");
@@ -114,7 +118,7 @@ public class EntityManager extends ObjectProcessor<Entity> {
 	public synchronized void unregister(final EntityManagerInterface managerInterface) {
 		synchronized (entityMangerInterface) {
 			entityMangerInterface.remove(managerInterface);
-			//Silently remove all entites
+			// Silently remove all entites
 			process(new SingleProcessor<Entity>() {
 				@Override
 				public void process(Entity entity) {

@@ -16,7 +16,7 @@ public class PlayerEntity extends Entity {
 		super(EntityType.Player);
 		setColor(Color.GREEN);
 		setDamping(0);
-		setMaxVelocity(500);
+		setMaxVelocity(400);
 		setRadius(30);
 		setBounceOffWalls(false);
 	}
@@ -42,10 +42,10 @@ public class PlayerEntity extends Entity {
 			float alpha = 0.7f;
 
 			// // middle particle stream
-			 Vector2 velMid = baseVel.cpy();
-			 velMid.y += MathUtils.random();
-			 
-//			 engine.getParticleSystem().launchSpark(pos, vel, start, end);
+			Vector2 velMid = baseVel.cpy();
+			velMid.y += MathUtils.random();
+
+			// engine.getParticleSystem().launchSpark(pos, vel, start, end);
 			// GameRoot.ParticleManager.CreateParticle(Art.LineParticle, pos,
 			// Color.White * alpha, 60f, new Vector2(0.5f, 1),
 			// new ParticleState(velMid, ParticleType.Enemy));
@@ -85,7 +85,7 @@ public class PlayerEntity extends Entity {
 
 	public void addScore() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

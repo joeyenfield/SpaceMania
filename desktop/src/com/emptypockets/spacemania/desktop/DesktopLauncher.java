@@ -26,7 +26,9 @@ public class DesktopLauncher {
 			config.height = 800;
 			config.x = 0;
 			config.y = 100;
-
+//			config.foregroundFPS = 0;
+//			config.backgroundFPS = 0;
+//			config.vSyncEnabled = false;
 			MainGame test = new MainGame();
 			// ViewportDemo demo = new ViewportDemo();
 			new LwjglApplication(test, config);

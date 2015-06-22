@@ -86,11 +86,15 @@ public class ServerEngine extends Engine {
 	}
 
 	public void spawnEnemy() {
-		if (System.currentTimeMillis() - lastEnemy > 500 && getEntityManager().countType(EntityType.Enemy_FOLLOW) < 50) {
+		if (System.currentTimeMillis() - lastEnemy > 200) {
 			lastEnemy = System.currentTimeMillis();
-			for (int i = 0; i < 10; i++) {
+			if (getEntityManager().countType(EntityType.Enemy_FOLLOW) < 20) {
 				EnemyEntity entity = (EnemyEntity) getEntityManager().createEntity(EntityType.Enemy_FOLLOW);
-
+				entity.setPos(getRegion().x + getRegion().width * MathUtils.random(), getRegion().y + getRegion().height * MathUtils.random());
+				getEntityManager().addEntity(entity);
+			}
+			if (getEntityManager().countType(EntityType.Enemy_RANDOM) < 20) {
+				EnemyEntity entity = (EnemyEntity) getEntityManager().createEntity(EntityType.Enemy_RANDOM);
 				entity.setPos(getRegion().x + getRegion().width * MathUtils.random(), getRegion().y + getRegion().height * MathUtils.random());
 				getEntityManager().addEntity(entity);
 			}

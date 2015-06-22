@@ -1,0 +1,55 @@
+
+game.png
+size: 512,256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+back
+  rotate: false
+  xy: 2, 54
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+bullet
+  rotate: false
+  xy: 2, 2
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+default
+  rotate: false
+  xy: 204, 154
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+follow
+  rotate: false
+  xy: 306, 154
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+playership
+  rotate: false
+  xy: 408, 154
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+score
+  rotate: false
+  xy: 54, 2
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+spark
+  rotate: false
+  xy: 204, 142
+  size: 50, 10
+  orig: 50, 10
+  offset: 0, 0
+  index: -1

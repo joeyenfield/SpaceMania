@@ -123,7 +123,7 @@ public class CellSpacePartition {
 	}
 
 	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<Entity> result, Class filterClass) {
-		searchNearbyEntities(entity.getPos(), entity.getRadius() + distance, result, filterClass);
+		searchNearbyEntities(entity.getPos(), 2*(entity.getRadius() + distance), result, filterClass);
 	}
 
 	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<Entity> result, EntityType type) {

@@ -69,7 +69,7 @@ public class ClientEngine extends Engine {
 			@Override
 			public void process(Entity entity) {
 				if (entity instanceof BulletEntity)
-					gridManager.applyExplosion(entity.getPos(), explosiveForce, 80);
+					gridManager.applyExplosion(entity.getPos(), explosiveForce, 30);
 			}
 		});
 		gridManager.solve();

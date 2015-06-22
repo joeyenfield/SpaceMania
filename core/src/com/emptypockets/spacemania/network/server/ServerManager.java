@@ -49,7 +49,7 @@ public class ServerManager implements Disposable, Runnable {
 	long playerStateUpdateTime = 1000;
 	long lastplayerStateUpdate = 0;
 	
-	long roomDefaultBroadcastTime = 100;
+	long roomDefaultBroadcastTime = 80;
 
 	long desiredUpdatePeroid = 40;
 

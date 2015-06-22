@@ -4,6 +4,7 @@ import com.emptypockets.spacemania.network.engine.ai.steering.Flee;
 import com.emptypockets.spacemania.network.engine.ai.steering.Follow;
 import com.emptypockets.spacemania.network.engine.ai.steering.ProximityTargetSteering.ProximityType;
 import com.emptypockets.spacemania.network.engine.ai.steering.Steering;
+import com.emptypockets.spacemania.network.engine.ai.steering.Wander;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
@@ -12,7 +13,6 @@ public class FollowerEntityAi extends EntityAi {
 
 	Follow follow;
 	Flee flee;
-
 	Steering currentSteering;
 
 	Entity target;
@@ -27,6 +27,7 @@ public class FollowerEntityAi extends EntityAi {
 		follow.setMaxForce(400);
 		flee = new Flee();
 		flee.setMaxForce(4000);
+
 	}
 
 	@Override
@@ -38,6 +39,7 @@ public class FollowerEntityAi extends EntityAi {
 			getEntity().setMaxVelocity(400);
 			getEntity().setMaxForce(flee.getMaxForce());
 		} else {
+			
 			if (target == null || !target.isAlive()) {
 				target = engine.getEntityManager().pickRandom(EntityType.Player);
 				follow.setTarget(target);
@@ -46,7 +48,6 @@ public class FollowerEntityAi extends EntityAi {
 			getEntity().setMaxVelocity(200);
 			getEntity().setMaxForce(follow.getMaxForce());
 		}
-
 		currentSteering.update(getEngine(), getEntity());
 	}
 

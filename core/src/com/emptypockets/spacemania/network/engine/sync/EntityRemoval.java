@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 
 public class EntityRemoval implements Poolable {
 	int id;
-	Vector2 pos;
+	Vector2 pos = new Vector2();
 	boolean killed;
 	
 	public int getId() {
@@ -29,7 +29,7 @@ public class EntityRemoval implements Poolable {
 
 
 	public void setPos(Vector2 pos) {
-		this.pos = pos;
+		this.pos.set(pos);
 	}
 
 

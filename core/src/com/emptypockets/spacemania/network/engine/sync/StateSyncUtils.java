@@ -48,7 +48,7 @@ public class StateSyncUtils {
 		} else {
 			//			System.out.println("--------------------------------------SOFT");
 			// Soft fix
-			clientState.getPos().lerp(tempState.getPos(), 0.4f);
+			clientState.getPos().lerp(tempState.getPos(), 0.5f);
 		}
 		// System.out.println("Client-: "+clientState);
 

@@ -1,5 +1,7 @@
 package com.emptypockets.spacemania.network.engine;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
@@ -14,14 +16,31 @@ public class Engine implements Disposable {
 	CellSpacePartition entitySpatialPartition;
 	long startTime;
 	long lastUpdate;
-
+	ArrayList<EngineRegionListener> regionListeners;
+	
 	public Engine() {
 		float size = 4000;
 		entities = new EntityManager();
+		regionListeners = new ArrayList<EngineRegionListener>();
 		entitySpatialPartition = new CellSpacePartition();
 		entitySpatialPartition.create(20, 20);
+		addRegionListener(entitySpatialPartition);
 		setRegion(size);
 		start();
+	}
+	
+	public void addRegionListener(EngineRegionListener listener){
+		synchronized (regionListeners) {
+			regionListeners.add(listener);
+		}
+	}
+	
+	public void notifyRegionChanged(){
+		synchronized (regionListeners) {
+			for(EngineRegionListener list : regionListeners){
+				list.notifyRegionChanged(region);
+			}
+		}
 	}
 
 	public void setRegion(float size) {
@@ -30,7 +49,7 @@ public class Engine implements Disposable {
 
 	public void setRegion(float x, float y, float wide, float high) {
 		region.set(x, y, wide, high);
-		entitySpatialPartition.updateCellPositions(region);
+		notifyRegionChanged();
 	}
 
 	public EntityManager getEntityManager() {

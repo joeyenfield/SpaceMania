@@ -13,7 +13,7 @@ public class ClientSetCommand extends ClientCommand {
 		commands = new CommandLine(client.getConsole());
 		commands.registerCommand(new ClientSetGridSizeCommand(client));
 		commands.registerCommand(new ClientSetGridRenderCommand(client));
-		commands.registerCommand(new ClientSetGridDynamicCommand(client));
+		commands.registerCommand(new ClientSetGridCommand(client));
 		commands.registerCommand(new ClientSetParticlesCommand(client));
 		commands.registerCommand(new ClientSetRoomSizeCommand(client));
 	}

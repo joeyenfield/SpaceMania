@@ -90,10 +90,6 @@ public class EngineRender {
 		font = new BitmapFont();
 	}
 
-	public void initRender() {
-
-	}
-
 	public void renderSpatialPartionDebug(OrthographicCamera camera, CellSpacePartition partition) {
 		shapeRender.begin(ShapeRenderer.ShapeType.Filled);
 		Cell[][] cells = partition.getCells();
@@ -194,16 +190,13 @@ public class EngineRender {
 		// renderSpatialPartionDebug(camera,
 		// engine.getEntitySpatialPartition());
 		if (engine.getGridData().getRenderType() == GridSystem.RENDER_PATH) {
-			if (firstPathRender || engine.isRegionChanged()) {
-				gridPathRender.rebuild(engine.getGridData());
-				firstPathRender = false;
-			}
+			engine.getGridData().addListener(gridPathRender);
+			engine.getGridData().removeListener(gridTextureRender);
 			gridPathRender.updateBounds();
 			gridPathRender.render(engine.getGridData(), viewport, shapeRender);
 		} else {
-			if (engine.isRegionChanged() || !lastGridTextureRender) {
-				gridTextureRender.relayoutMesh();
-			}
+			engine.getGridData().addListener(gridTextureRender);
+			engine.getGridData().removeListener(gridPathRender);
 			// Render Grid
 			gridTextureRender.render(camera, engine);
 			lastGridTextureRender = true;

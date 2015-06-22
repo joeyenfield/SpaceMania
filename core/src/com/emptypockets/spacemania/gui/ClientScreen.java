@@ -35,7 +35,7 @@ import com.emptypockets.spacemania.network.engine.entities.Entity;
 
 public class ClientScreen extends StageScreen {
 	int minTouchSize = 60;
-	int insetSize = 10;
+	int insetSize = 50;
 	int touchPadSize = 200;
 
 	CommandLinePanel commandLinePanel;
@@ -45,8 +45,6 @@ public class ClientScreen extends StageScreen {
 
 	TextButton showConsole;
 	boolean alive;
-
-	boolean dynamicGrid = true;
 
 	EngineRender render;
 
@@ -248,15 +246,11 @@ public class ClientScreen extends StageScreen {
 
 	@Override
 	public void drawScreen(float delta) {
-		// GraphicsToolkit.draw2DAxis(shape, getScreenCamera(), 100,
-		// Color.WHITE);
 		if (client.getEngine() != null)
 			synchronized (client.getEngine()) {
 				Gdx.gl.glEnable(GL20.GL_BLEND);
 				Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 				render.render(getScreenCamera(), client.getEngine());
-
-				client.getEngine().setRegionChanged(false);
 				Gdx.gl.glDisable(GL20.GL_BLEND);
 			}
 	}

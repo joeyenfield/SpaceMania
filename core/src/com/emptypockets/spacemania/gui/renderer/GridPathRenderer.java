@@ -11,15 +11,19 @@ import com.badlogic.gdx.math.CatmullRomSpline;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.gui.renderer.path.Path;
+import com.emptypockets.spacemania.network.engine.EngineRegionListener;
 import com.emptypockets.spacemania.network.engine.grid.GridNode;
 import com.emptypockets.spacemania.network.engine.grid.GridSystem;
+import com.emptypockets.spacemania.network.engine.grid.GridSystemListener;
 import com.emptypockets.spacemania.network.engine.grid.spring.DualNodeLink;
 import com.emptypockets.spacemania.network.engine.grid.spring.NodeLink;
 
-public class GridPathRenderer {
-
+public class GridPathRenderer implements GridSystemListener{
 	ArrayList<Path> paths = new ArrayList<Path>();
 
+	public void init(){
+		
+	}
 	public void rebuild(GridSystem grid) {
 		paths.clear();
 		float alpha = 0.2f;
@@ -112,4 +116,10 @@ public class GridPathRenderer {
 		
 		render.setColor(Color.PURPLE);
 	}
+
+	@Override
+	public void gridChanged(GridSystem grid) {
+		this.rebuild(grid);
+	}
+
 }

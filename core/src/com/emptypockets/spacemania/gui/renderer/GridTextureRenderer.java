@@ -16,8 +16,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.client.ClientEngine;
+import com.emptypockets.spacemania.network.engine.EngineRegionListener;
+import com.emptypockets.spacemania.network.engine.grid.GridSystem;
+import com.emptypockets.spacemania.network.engine.grid.GridSystemListener;
 
-public class GridTextureRenderer {
+public class GridTextureRenderer implements GridSystemListener{
 	Texture texture;
 	String vertexShader;
 	String fragmentShader;
@@ -30,11 +33,12 @@ public class GridTextureRenderer {
 	int sizeX = 0;
 	int sizeY = 0;
 
-	Rectangle rect;
 
 	public GridTextureRenderer() {
+		init();
 	}
 
+	
 	private void createShader() {
 		vertexShader = Gdx.files.internal("shaders/vertex.glsl").readString();
 		fragmentShader = Gdx.files.internal("shaders/fragment.glsl").readString();
@@ -79,15 +83,23 @@ public class GridTextureRenderer {
 		return (int) (x * sizeY + y);
 	}
 	
-	public void relayoutMesh(){
+	public void rebuild(GridSystem system){
+		if(sizeX != system.getSizeX() || sizeY != system.getSizeY()){
+			this.sizeX = system.getSizeX();
+			this.sizeY = system.getSizeY();
+			init();
+		}
+		
+		
+		
 		Vector2 pos = new Vector2();
 		Vector2 uv = new Vector2();
 		for (int x = 0; x < sizeX; x++) {
 			for (int y = 0; y < sizeY; y++) {
 				float xf = x / (sizeX - 1f);
 				float yf = y / (sizeY - 1f);
-				pos.x = rect.x + rect.width * xf;
-				pos.y = rect.y + rect.height * yf;
+				pos.x = system.getSettings().bounds.x + system.getSettings().bounds.width * xf;
+				pos.y = system.getSettings().bounds.y + system.getSettings().bounds.height * yf;
 
 				uv.x = (pos.x / texture.getWidth());
 				uv.y = (pos.y / texture.getHeight());
@@ -104,9 +116,8 @@ public class GridTextureRenderer {
 			for (int y = 0; y < sizeY; y++) {
 				float xf = x / (sizeX - 1f);
 				float yf = y / (sizeY - 1f);
-				pos.x = rect.x + rect.width * xf;
-				pos.y = rect.y + rect.height * yf;
-
+				pos.x = xf;
+				pos.y = yf;
 				uv.x = (pos.x / texture.getWidth());
 				uv.y = (pos.y / texture.getHeight());
 				setData(x, y, pos, uv,MathUtils.random());
@@ -142,28 +153,11 @@ public class GridTextureRenderer {
 
 	}
 
+	public void init(){
+		createShader();
+		createMesh();
+	}
 	public void render(OrthographicCamera camera, ClientEngine engine) {
-		int desiredSizeX = sizeX;
-		int desiredSizeY = sizeY;
-
-		if (engine.isDynamicGrid()) {
-			if (desiredSizeX != engine.getGridData().getSizeX() || desiredSizeY != engine.getGridData().getSizeY()) {
-				desiredSizeX = engine.getGridData().getSizeX();
-				desiredSizeY = engine.getGridData().getSizeY();
-			}
-		} else {
-			desiredSizeX = 2;
-			desiredSizeY = 2;
-		}
-
-		if (this.sizeX != desiredSizeX || this.sizeY != desiredSizeY) {
-			this.sizeX = desiredSizeX;
-			this.sizeY = desiredSizeY;
-			this.rect = engine.getRegion();
-			createShader();
-			createMesh();
-		}
-
 		if (engine.isDynamicGrid()) {
 			for (short x = 0; x < sizeX; x++) {
 				for (short y = 0; y < sizeY; y++) {
@@ -183,5 +177,10 @@ public class GridTextureRenderer {
 		shaderProgram.setUniformi("u_texture", 0);
 		mesh.render(shaderProgram, GL20.GL_TRIANGLES);
 		shaderProgram.end();
+	}
+
+	@Override
+	public void gridChanged(GridSystem grid) {
+		rebuild(grid);
 	}
 }

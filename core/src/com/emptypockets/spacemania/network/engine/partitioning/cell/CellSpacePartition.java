@@ -7,12 +7,13 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.holders.SingleProcessor;
+import com.emptypockets.spacemania.network.engine.EngineRegionListener;
 import com.emptypockets.spacemania.network.engine.EntityManager;
 import com.emptypockets.spacemania.network.engine.IntersectorUtils;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 
-public class CellSpacePartition {
+public class CellSpacePartition implements EngineRegionListener {
 	int numX;
 	int numY;
 
@@ -222,6 +223,11 @@ public class CellSpacePartition {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public void notifyRegionChanged(Rectangle region) {
+		updateCellPositions(region);
 	}
 
 }

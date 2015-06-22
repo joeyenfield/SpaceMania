@@ -4,9 +4,9 @@ import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.commands.ClientCommand;
 import com.emptypockets.spacemania.network.engine.grid.GridSystem;
 
-public class ClientSetGridDynamicCommand extends ClientCommand {
+public class ClientSetGridCommand extends ClientCommand {
 
-	public ClientSetGridDynamicCommand(ClientManager client) {
+	public ClientSetGridCommand(ClientManager client) {
 		super("grid", client);
 		setDescription("Changes the grid - 0 (static), 1 (dynamic)");
 	}

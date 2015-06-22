@@ -11,19 +11,22 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.CatmullRomSpline;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.emptypockets.spacemania.gui.renderer.GridTextureRenderer;
+import com.emptypockets.spacemania.network.engine.EngineRegionListener;
 import com.emptypockets.spacemania.network.engine.grid.spring.DualNodeLink;
 import com.emptypockets.spacemania.network.engine.grid.spring.FixedNodeLink;
 import com.emptypockets.spacemania.network.engine.grid.spring.NodeLink;
 import com.emptypockets.spacemania.network.engine.grid.spring.NodeLinkSettings;
 
-public class GridSystem {
+public class GridSystem implements EngineRegionListener{
 
 	public static final int RENDER_TEXTURE = 1;
 	public static final int RENDER_PATH = 2;
 	public GridNode[][] nodes;
 	public ArrayList<NodeLink> links = new ArrayList<NodeLink>();
 	public GridSettings set;
-	
+	public ArrayList<GridSystemListener> listeners = new ArrayList<GridSystemListener>();
+
 	int renderType = RENDER_TEXTURE;
 	Vector2 tempSubSampleRec = new Vector2();
 	Object lock = new Object();
@@ -44,6 +47,7 @@ public class GridSystem {
 		for (NodeLink node : links) {
 			node.updateRestPos();
 		}
+		notifyListenersGridMoved();
 	}
 
 	public GridSettings getSettings() {
@@ -260,5 +264,40 @@ public class GridSystem {
 
 	public int getRenderType() {
 		return renderType;
+	}
+
+	@Override
+	public void notifyRegionChanged(Rectangle region) {
+		move(region);
+	}
+
+	
+	
+	public void notifyListenersGridMoved(){
+		synchronized (listeners) {
+			for(GridSystemListener list : listeners){
+				list.gridChanged(this);
+			}
+		}
+	}
+	
+	public void addListener(GridSystemListener listener){
+		synchronized (listeners) {
+			if(listeners.contains(listener)){
+				return;
+			}
+			listeners.add(listener);
+			listener.gridChanged(this);
+		}
+	}
+	
+	public void removeListener(GridSystemListener listener) {
+		synchronized (listeners) {
+			if(!listeners.contains(listener)){
+				return;
+			}
+			listeners.remove(listener);
+		}
+		
 	}
 }

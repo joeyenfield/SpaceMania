@@ -21,13 +21,13 @@ public class ClientEngine extends Engine {
 
 	int maxParticles = 500;
 	boolean dynamicGrid = true;
-	boolean regionChanged = false;
 	public ClientEngine() {
 		super();
 		particleSystem = new ParticleSystem();
 		particleSystem.setMaxParticles(maxParticles);
 		gridManager = new GridSystem();
 		gridManager.setup(gridSizeX, gridSizeY, getRegion());
+		addRegionListener(gridManager);
 		getEntityManager().register(particleSystem);
 	}
 
@@ -37,7 +37,6 @@ public class ClientEngine extends Engine {
 		if (gridManager != null) {
 			gridManager.move(getRegion());
 		}
-		regionChanged = true;
 	}
 
 	public GridSystem getGridData() {
@@ -88,15 +87,7 @@ public class ClientEngine extends Engine {
 		this.dynamicGrid = dynamicGrid;
 		if(dynamicGrid == false){
 			gridManager.setup(2, 2, getRegion());
-			gridManager.setRenderType(GridSystem.RENDER_TEXTURE);
+			gridManager.setRenderType(GridSystem.RENDER_PATH);
 		}
-	}
-
-	public boolean isRegionChanged() {
-		return regionChanged;
-	}
-
-	public void setRegionChanged(boolean change) {
-		regionChanged = change;
 	}
 }

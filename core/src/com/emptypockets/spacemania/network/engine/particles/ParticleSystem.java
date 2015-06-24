@@ -51,7 +51,7 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		return (float) getSize() / (float) maxParticles;
 	}
 
-	public void launchSpark(Vector2 pos, Vector2 vel, Color start, Color end) {
+	public void launchSpark(Vector2 pos, Vector2 vel, Color start, Color end, boolean randomAngle) {
 		if (hasMaxParticles()) {
 			return;
 		}
@@ -62,6 +62,11 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 			}
 		}
 		Particle spark = (Particle) getParticle();
+		if(randomAngle){
+			spark.setAngle(MathUtils.random(360));
+		}else{
+			spark.setUseVelAngle(true);
+		}
 		spark.start();
 		spark.getPos().set(pos);
 		spark.setupColor(start, end);
@@ -70,7 +75,7 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		add(spark);
 	}
 
-	public void launchSphere(Vector2 pos, int particleCount, Color start, Color end) {
+	public void launchSphere(Vector2 pos, int particleCount, Color start, Color end,boolean randomAngle) {
 		if (hasMaxParticles()) {
 			return;
 		}
@@ -98,7 +103,7 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 			}
 			angle.rotate(MathUtils.random(0.5f, 2) * angleStep);
 			vel.set(angle).scl(MathUtils.random(200, 500));
-			launchSpark(pos, vel, color1, color2);
+			launchSpark(pos, vel, color1, color2, randomAngle);
 		}
 		Pools.free(angle);
 		Pools.free(vel);
@@ -156,23 +161,26 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 
 	@Override
 	public void entityRemoved(Entity entity, boolean killed) {
-		if(!killed){
+		if(!killed || !entity.isExplodes()){
 			return;
 		}
 		if (entity instanceof CollectableEntity) {
 			return;
 		}
 		float multiplier = 1;
+		boolean randomAngle = true;
+		
 		if (entity instanceof PlayerEntity) {
 			multiplier = 100;
 		}else if(entity instanceof BulletEntity){
 			multiplier  = 0.2f;
+			randomAngle = false;
 		}
 		Color colorA = new Color(entity.getColor());
 		Color colorB = new Color(entity.getColor());
 		colorB.a = 0.4f;
 		colorA.a = 1f;
-		launchSphere(entity.getPos(), (int)(particleCountSphere * multiplier), colorA, colorB);
+		launchSphere(entity.getPos(), (int)(particleCountSphere * multiplier), colorA, colorB,randomAngle);
 
 		// if (dynamicGrid && !(entity instanceof BulletEntity))
 		// gridManager.applyExplosion(entity.getPos(), -10 * massSize, 800);

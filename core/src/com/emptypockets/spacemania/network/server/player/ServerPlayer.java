@@ -37,8 +37,8 @@ public class ServerPlayer implements Disposable {
 		clientPlayer = new ClientPlayer();
 		clientInput = new ClientInput();
 		entityManagerSync = new EntityManagerSync();
-		weapon = new SpreadWeapon();
 		weapon = new BasicWeapon();
+		weapon = new SpreadWeapon();
 		score = 0;
 	}
 

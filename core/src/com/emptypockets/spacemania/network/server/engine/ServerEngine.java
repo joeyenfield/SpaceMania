@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.ai.manager.AiManager;
@@ -22,6 +23,7 @@ public class ServerEngine extends Engine {
 	PlayerManager playerManager;
 
 	long lastEnemy = 0;
+	boolean spawning = true;
 
 	public ServerEngine(PlayerManager playerManager) {
 		super();
@@ -43,11 +45,17 @@ public class ServerEngine extends Engine {
 				EnemyEntity enemy = (EnemyEntity) ent;
 				if (bullet.contact(enemy)) {
 					bullet.setAlive(false);
+					bullet.setExplodes(true);
 					enemy.setAlive(false);
-					ScoreEntity score = (ScoreEntity) getEntityManager().createEntity(EntityType.Score);
-					score.setPos(bullet.getPos());
-					score.getVel().set(MathUtils.random(-score.getMaxVelocity(), score.getMaxVelocity()), MathUtils.random(-score.getMaxVelocity(), score.getMaxVelocity()));
-					getEntityManager().addEntity(score);
+					enemy.setExplodes(true);
+					for (int i = 0; i < 10; i++) {
+						ScoreEntity score = (ScoreEntity) getEntityManager().createEntity(EntityType.Score);
+						score.setPos(bullet.getPos());
+						score.getPos().add(MathUtils.random(-20, 20), MathUtils.random(-20, 20));
+						float scoreVel = score.getLaunchVel();
+						score.getVel().set(MathUtils.random(-scoreVel, scoreVel), MathUtils.random(-scoreVel, scoreVel));
+						getEntityManager().addEntity(score);
+					}
 					break ENEMY_LOOP;
 				}
 			}
@@ -56,6 +64,7 @@ public class ServerEngine extends Engine {
 
 		final HashSet<Entity> collectable = new HashSet<Entity>();
 		// Get Collectable
+		final Vector2 force = new Vector2();
 		playerManager.process(new SingleProcessor<ServerPlayer>() {
 			@Override
 			public void process(ServerPlayer player) {
@@ -63,12 +72,15 @@ public class ServerEngine extends Engine {
 				Entity ent = getEntityManager().getEntityById(id);
 				if (ent != null) {
 					collectable.clear();
-					getEntitySpatialPartition().getNearbyEntities(ent, ent.getLastMovementDist(), collectable, CollectableEntity.class);
 					PlayerEntity playerEntity = (PlayerEntity) ent;
+					getEntitySpatialPartition().getNearbyEntities(ent, playerEntity.getMagnetDistance(), collectable, CollectableEntity.class);
 					for (Entity col : collectable) {
 						CollectableEntity collect = (CollectableEntity) col;
 						if (collect.contact(playerEntity)) {
 							collect.collect(player);
+						} else {
+							force.set(playerEntity.getPos()).sub(col.getPos()).nor().setLength(col.getMaxForce());
+							collect.applyForce(force);
 						}
 					}
 
@@ -87,6 +99,8 @@ public class ServerEngine extends Engine {
 	}
 
 	public void spawnEnemy() {
+		if (!spawning)
+			return;
 		if (System.currentTimeMillis() - lastEnemy > 200) {
 			lastEnemy = System.currentTimeMillis();
 			if (getEntityManager().countType(EntityType.Enemy_FOLLOW) < 20) {

@@ -78,9 +78,11 @@ public class EngineRender {
 		backgroundBatch = new SpriteBatch();
 		particleBatch = new SpriteBatch();
 
-		particleBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-		entityBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-		backgroundBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+		int src = GL20.GL_SRC_ALPHA;
+		int dst = GL20.GL_ONE;
+		particleBatch.setBlendFunction(src,dst);
+		entityBatch.setBlendFunction(src,dst);
+		backgroundBatch.setBlendFunction(src,dst);
 
 		playerRegion = textureAtlas.findRegion("playership");
 		enemyFollowRegion = textureAtlas.findRegion("enemy-follow");
@@ -114,20 +116,19 @@ public class EngineRender {
 
 	}
 
-	public void renderEntityDebug(OrthographicCamera camera, ArrayList<Entity> entities) {
+	public void renderEntityDebug(OrthographicCamera camera, Set<Entity> entities) {
 		if (entities.size() == 0) {
 			return;
 		}
 		shapeRender.begin(ShapeRenderer.ShapeType.Line);
 		final Color c = new Color();
 		for (Entity entity : entities) {
-			// if (!(entity instanceof PlayerEntity) && !(entity instanceof
-			// BulletEntity) && !(entity.getType() == EntityType.Enemy_FOLLOW))
-			// {
 			c.set(entity.getColor());
 			shapeRender.setColor(c);
 			shapeRender.circle(entity.getState().getPos().x, entity.getState().getPos().y, entity.getRadius());
-			// }
+			if (entity instanceof PlayerEntity) {
+				shapeRender.circle(entity.getState().getPos().x, entity.getState().getPos().y, entity.getRadius() + ((PlayerEntity) entity).getMagnetDistance());
+			}
 		}
 		shapeRender.end();
 	}
@@ -172,6 +173,8 @@ public class EngineRender {
 	boolean firstPathRender = true;
 
 	public void render(OrthographicCamera camera, ClientEngine engine) {
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 		shapeRender.setProjectionMatrix(camera.combined);
 
 		entityBatch.setProjectionMatrix(camera.combined);
@@ -214,7 +217,7 @@ public class EngineRender {
 		// Entities
 		Set<Entity> renderEntities = new HashSet<Entity>();
 		engine.getEntitySpatialPartition().getEntities(viewport, renderEntities);
-		// renderEntityDebug(camera, renderEntities);
+//		renderEntityDebug(camera, renderEntities);
 		renderEntity(camera, renderEntities, entityBatch);
 	}
 
@@ -228,7 +231,7 @@ public class EngineRender {
 				}
 				transform.idt();
 				transform.translate(entity.getPos());
-				transform.rotate(entity.getVel().angle());
+				transform.rotate(entity.getAngle());
 				transform.translate(-entity.getRadius(), -entity.getRadius());
 				batch.setColor(entity.getCurrentColor());
 				float velScale = .05f;

@@ -9,6 +9,7 @@ import com.emptypockets.spacemania.network.client.ClientEngine;
 public class PlayerEntity extends Entity {
 	long lastExhaust = 0;
 	long exhaustTime = 500;
+	float magnetDistance = 100;
 	Color sideExhauseColor = new Color(200 / 256f, 38 / 256f, 9 / 256f, 1); // deep
 	Color midExhauseColor = new Color(255 / 256f, 187 / 256f, 30 / 256f, 1); // orange-yellow
 
@@ -86,6 +87,14 @@ public class PlayerEntity extends Entity {
 	public void addScore() {
 		// TODO Auto-generated method stub
 
+	}
+
+	public float getMagnetDistance() {
+		return magnetDistance;
+	}
+
+	public void setMagnetDistance(float magnetDistance) {
+		this.magnetDistance = magnetDistance;
 	}
 
 }

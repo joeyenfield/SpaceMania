@@ -126,7 +126,7 @@ public class CellSpacePartition implements EngineRegionListener {
 	}
 
 	public synchronized void getNearbyEntities(Entity entity, float distance, Set<Entity> result, Class filterClass) {
-		searchNearbyEntities(entity.getPos(), 2*(entity.getRadius() + distance), result, filterClass);
+		searchNearbyEntities(entity.getPos(), (entity.getRadius() + distance), result, filterClass);
 	}
 
 	public synchronized void getNearbyEntities(Entity entity, float distance, Set<Entity> result, EntityType type) {

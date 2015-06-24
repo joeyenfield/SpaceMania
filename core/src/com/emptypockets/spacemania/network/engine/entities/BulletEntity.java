@@ -10,9 +10,9 @@ public class BulletEntity extends Entity {
 		setColor(Color.ORANGE);
 		setRadius(10);
 		setDamping(0);
-		setMaxVelocity(1000);
+		setMaxVelocity(500);
 		setBounceOffWalls(false);
-		setLifeTime(500);
+		setLifeTime(2000);
 	}
 
 	

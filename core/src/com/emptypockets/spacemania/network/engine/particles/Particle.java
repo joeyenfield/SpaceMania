@@ -9,6 +9,9 @@ public class Particle implements Poolable {
 	Vector2 pos;
 	Vector2 vel;
 	Vector2 acl;
+	private float angle = 0;
+
+	boolean useVelAngle = true;
 
 	long startTime;
 	float progress;
@@ -51,6 +54,9 @@ public class Particle implements Poolable {
 		}
 		pos.x += vel.x * dt;
 		pos.y += vel.y * dt;
+		if (useVelAngle) {
+			angle = vel.angle();
+		}
 
 	}
 
@@ -78,6 +84,7 @@ public class Particle implements Poolable {
 
 	@Override
 	public void reset() {
+		useVelAngle = true;
 	}
 
 	public float getRadius() {
@@ -90,6 +97,19 @@ public class Particle implements Poolable {
 
 	public void setLifeTime(long lifeTime) {
 		this.lifeTime = lifeTime;
+	}
+
+	public float getAngle() {
+		return angle;
+	}
+
+	public void setAngle(float angle) {
+		this.angle = angle;
+		useVelAngle = false;
+	}
+
+	public void setUseVelAngle(boolean useVelAngle) {
+		this.useVelAngle = useVelAngle;
 	}
 
 }

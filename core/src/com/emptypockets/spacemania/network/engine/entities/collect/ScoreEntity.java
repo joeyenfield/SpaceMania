@@ -5,10 +5,14 @@ import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 
 public class ScoreEntity extends CollectableEntity {
+	float launchVel = 0;
 
 	public ScoreEntity() {
 		super(EntityType.Score);
-		setMaxVelocity(50);
+		setMaxVelocity(500);
+		setMaxForce(100000);
+		setRadius(12);
+		setLaunchVel(10);
 	}
 
 	@Override
@@ -21,6 +25,14 @@ public class ScoreEntity extends CollectableEntity {
 
 	public void setPos(Vector2 pos) {
 		getPos().set(pos);
+	}
+
+	public float getLaunchVel() {
+		return launchVel;
+	}
+
+	public void setLaunchVel(float launchVel) {
+		this.launchVel = launchVel;
 	}
 
 }

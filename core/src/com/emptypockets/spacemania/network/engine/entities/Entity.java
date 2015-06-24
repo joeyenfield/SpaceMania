@@ -11,7 +11,8 @@ public abstract class Entity implements Poolable {
 	EntityType type;
 
 	boolean alive = true;
-
+	boolean explodes = false;
+	
 	protected Color color;
 	float inverseMass = 1;
 	float radius = 15;
@@ -179,6 +180,7 @@ public abstract class Entity implements Poolable {
 	@Override
 	public void reset() {
 		alive = true;
+		explodes = false;
 	}
 
 	public void resetForce() {
@@ -224,5 +226,13 @@ public abstract class Entity implements Poolable {
 	public boolean intersects(Rectangle viewport) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public boolean isExplodes() {
+		return explodes;
+	}
+
+	public void setExplodes(boolean explodes) {
+		this.explodes = explodes;
 	}
 }

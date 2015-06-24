@@ -7,6 +7,7 @@ public class EntityRemoval implements Poolable {
 	int id;
 	Vector2 pos = new Vector2();
 	boolean killed;
+	boolean explodes;
 	
 	public int getId() {
 		return id;
@@ -40,5 +41,15 @@ public class EntityRemoval implements Poolable {
 
 	public void setKilled(boolean killed) {
 		this.killed = killed;
+	}
+
+
+	public boolean isExplodes() {
+		return explodes;
+	}
+
+
+	public void setExplodes(boolean explodes) {
+		this.explodes = explodes;
 	}
 }

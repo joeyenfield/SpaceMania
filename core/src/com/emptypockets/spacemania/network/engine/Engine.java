@@ -121,6 +121,7 @@ public class Engine implements Disposable {
 
 				if (hitWall && entity.getType() == EntityType.Bullet) {
 					entity.setAlive(false);
+					entity.setExplodes(true);
 				}
 			}
 		});

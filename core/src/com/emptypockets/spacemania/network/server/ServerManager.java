@@ -49,9 +49,9 @@ public class ServerManager implements Disposable, Runnable {
 	long playerStateUpdateTime = 1000;
 	long lastplayerStateUpdate = 0;
 	
-	long roomDefaultBroadcastTime = 80;
+	long roomDefaultBroadcastTime = 10;
 
-	long desiredUpdatePeroid = 40;
+	long desiredUpdatePeroid = 0;
 
 	public ServerManager(Console console) {
 		this.console = console;

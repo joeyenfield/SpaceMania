@@ -49,7 +49,7 @@ public class DesktopLauncher {
 			// client.processCommand("connect;login jenfield2; lobby");
 			// client.processCommand("lobby");
 			// client.processCommand("host rooms");
-//			 test.screen.getClient().getCommand().processCommand("connect 192.168.1.12;login user2;");
+			 test.screen.getClient().getCommand().processCommand("start; set grid 0; set roomsize 800;");
 
 			while (true) {
 				Scanner in = new Scanner(System.in);

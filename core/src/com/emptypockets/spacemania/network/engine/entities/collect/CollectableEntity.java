@@ -16,11 +16,11 @@ public abstract class CollectableEntity extends Entity {
 	public void update(float deltaTime) {
 		super.update(deltaTime);
 
-		float progress = getAge() / lifeTime;
-		if (progress > 0.8) {
-			getColor().set(Color.ORANGE);
+		float progress = getAge() / (float)lifeTime;
+		if (progress > 0.7) {
+			getColor().set(Color.RED);
 		} else {
-			getColor().set(Color.GREEN).lerp(Color.YELLOW, progress);
+			getColor().set(Color.GREEN).lerp(Color.RED, progress/0.7f);
 		}
 	}
 

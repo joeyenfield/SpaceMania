@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Logger;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLinePanel;
 import com.emptypockets.spacemania.gui.renderer.EngineRender;
@@ -32,6 +33,7 @@ import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.input.OnScreenInput;
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.plotter.DataLogger;
 
 public class ClientScreen extends StageScreen {
 	int minTouchSize = 60;
@@ -63,15 +65,13 @@ public class ClientScreen extends StageScreen {
 		clientInputProducer = new OnScreenInput();
 		setClearColor(Color.BLACK);
 
-		getClient().getCommand().pushHistory("connect 192.168.100.12;login user" + MathUtils.random(100) + ";lobby;");
+		getClient().getCommand().pushHistory("connect 192.168.1.2;login user" + MathUtils.random(100) + ";lobby;");
 		// getClient().getCommand().pushHistory("connect 192.168.43.100; login user"
 		// + MathUtils.random(100) + ";lobby;");
 		// getClient().getCommand().pushHistory("connect 192.168.1.8;login user"
 		// + MathUtils.random(100) + ";lobby;");
-		getClient().getCommand().pushHistory("set grid 1;set gridsize 128 128;set gridrender 1;");
-		getClient().getCommand().pushHistory("set grid 1;set gridsize 40 40;set gridrender 1;");
-		getClient().getCommand().pushHistory("set grid 1;set gridsize 40 40;set gridrender 0;");
-		getClient().getCommand().pushHistory("set grid 0;");
+		getClient().getCommand().pushHistory("start;set grid 1;set gridsize 128 128;set gridrender 1;set roomsize 800;set particles 10000");
+		getClient().getCommand().pushHistory("set grid 0;set particles 500");
 		getClient().getCommand().pushHistory("start");
 
 	}
@@ -261,16 +261,12 @@ public class ClientScreen extends StageScreen {
 
 	@Override
 	public void updateLogic(float delta) {
+		DataLogger.log("client-logic", 1);
 		super.updateLogic(delta);
-
-		if (client.getEngine() != null) {
-			synchronized (client.getEngine()) {
-				client.getEngine().update();
-			}
-		}
 
 		if (client.isLoggedIn()) {
 			clientInputProducer.update();
+			DataLogger.log("client-input-x", clientInputProducer.getInput().getMove().x);
 			client.sendInput(clientInputProducer.getInput());
 		}
 		client.update();

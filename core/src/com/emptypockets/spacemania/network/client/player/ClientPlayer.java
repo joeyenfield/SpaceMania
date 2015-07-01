@@ -10,7 +10,8 @@ public class ClientPlayer{
     int id;
     int ping;
     String username;
-
+    int entityId;
+    
     public int getId() {
         return id;
     }
@@ -34,6 +35,7 @@ public class ClientPlayer{
         id = player.getId();
         username = player.getUsername();
         ping = player.getPing();
+        entityId = player.getEntityId();
     }
     
     public void read(ClientPlayer player){

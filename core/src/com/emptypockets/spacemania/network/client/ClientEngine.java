@@ -21,9 +21,9 @@ public class ClientEngine extends Engine {
 
 	int maxParticles = 500;
 	boolean dynamicGrid = true;
-	
+
 	long lastServerUpdateTime = 0;
-	
+
 	public ClientEngine() {
 		super();
 		particleSystem = new ParticleSystem();
@@ -78,6 +78,12 @@ public class ClientEngine extends Engine {
 		gridManager.update();
 	}
 
+	@Override
+	public void update() {
+		super.update();
+		logEntity("client");
+	}
+
 	public ParticleSystem getParticleSystem() {
 		return particleSystem;
 	}
@@ -88,12 +94,11 @@ public class ClientEngine extends Engine {
 
 	public void setDynamicGrid(boolean dynamicGrid) {
 		this.dynamicGrid = dynamicGrid;
-		if(dynamicGrid == false){
+		if (dynamicGrid == false) {
 			gridManager.setup(2, 2, getRegion());
 			gridManager.setRenderType(GridSystem.RENDER_PATH);
 		}
 	}
-	
 
 	public long getLastServerUpdateTime() {
 		return lastServerUpdateTime;

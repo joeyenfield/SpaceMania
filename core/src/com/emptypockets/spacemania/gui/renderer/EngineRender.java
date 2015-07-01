@@ -80,9 +80,9 @@ public class EngineRender {
 
 		int src = GL20.GL_SRC_ALPHA;
 		int dst = GL20.GL_ONE;
-		particleBatch.setBlendFunction(src,dst);
-		entityBatch.setBlendFunction(src,dst);
-		backgroundBatch.setBlendFunction(src,dst);
+		particleBatch.setBlendFunction(src, dst);
+		entityBatch.setBlendFunction(src, dst);
+		backgroundBatch.setBlendFunction(src, dst);
 
 		playerRegion = textureAtlas.findRegion("playership");
 		enemyFollowRegion = textureAtlas.findRegion("enemy-follow");
@@ -196,8 +196,7 @@ public class EngineRender {
 			viewport.height *= -1;
 		}
 
-		// renderSpatialPartionDebug(camera,
-		// engine.getEntitySpatialPartition());
+//		renderSpatialPartionDebug(camera, engine.getEntitySpatialPartition());
 		if (engine.getGridData().getRenderType() == GridSystem.RENDER_PATH) {
 			engine.getGridData().addListener(gridPathRender);
 			engine.getGridData().removeListener(gridTextureRender);

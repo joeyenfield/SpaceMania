@@ -116,8 +116,7 @@ public class OrthoCamController implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        // TODO Auto-generated method stub
-        return false;
+    	return false;
     }
 
     @Override

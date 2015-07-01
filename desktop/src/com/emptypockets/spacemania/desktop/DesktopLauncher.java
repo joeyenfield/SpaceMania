@@ -1,22 +1,29 @@
 package com.emptypockets.spacemania.desktop;
 
 import java.awt.BorderLayout;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.LifecycleListener;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLine;
+import com.emptypockets.spacemania.plotter.DataLogger;
+import com.emptypockets.spacemania.plotter.PlotterViewer;
 import com.emptypockets.spacemania.utils.ErrorUtils;
 import com.esotericsoftware.minlog.Log;
 
 public class DesktopLauncher {
 
-	public static void main(String[] arg) throws InterruptedException {
+	public static void main(String[] arg) throws InterruptedException, FileNotFoundException, IOException {
 		try {
 			System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true");
 
@@ -26,38 +33,66 @@ public class DesktopLauncher {
 			config.height = 800;
 			config.x = 0;
 			config.y = 100;
-//			config.foregroundFPS = 0;
-//			config.backgroundFPS = 0;
-//			config.vSyncEnabled = false;
-			MainGame test = new MainGame();
-			// ViewportDemo demo = new ViewportDemo();
-			new LwjglApplication(test, config);
+
+			MainGame game = null;
+			ApplicationListener test;
+
+			int option = JOptionPane.showConfirmDialog(null, "Play Game (YES), View Data (NO), Exit (Cancel)", "Run Game", JOptionPane.YES_NO_CANCEL_OPTION);
+			if (option == JOptionPane.CANCEL_OPTION) {
+				return;
+			} else if (option == JOptionPane.OK_OPTION) {
+				DataLogger.clean();
+				game = new MainGame();
+				test = game;
+			} else {
+				test = new PlotterViewer();
+			}
+			new LwjglApplication(test, config).addLifecycleListener(new LifecycleListener() {
+				@Override
+				public void resume() {
+				}
+
+				@Override
+				public void pause() {
+				}
+
+				@Override
+				public void dispose() {
+					try {
+						DataLogger.write();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			;
 
 			// if (arg.length > 0) {
 			CommandLine client = null;
 			do {
 				Thread.sleep(100);
-				if (test != null && test.screen != null && test.screen.getClient() != null && test.screen.getClient().getCommand() != null) {
-					client = test.screen.getClient().getCommand();
+				if (game != null && game.screen != null && game.screen.getClient() != null && game.screen.getClient().getCommand() != null) {
+					client = game.screen.getClient().getCommand();
 				}
 			} while (client == null);
-//			client.processCommand("start;set gridsize 128 128; set roomsize 2000;set gridrender 1;set particles 10000;");
+			//
+			// client.processCommand("start;set gridsize 128 128; set roomsize 2000;set gridrender 1;set particles 10000;");
 			// client.processCommand("connect emptypocketgames.noip.me");
 			// client.processCommand("login awsoem");
 			// client.processCommand("lobby");
+			//
 			// client.processCommand("host start; connect;login server; lobby");
 			// client.processCommand("connect;login jenfield2; lobby");
 			// client.processCommand("lobby");
 			// client.processCommand("host rooms");
-			 test.screen.getClient().getCommand().processCommand("start; set grid 0; set roomsize 800;");
+			game.screen.getClient().getCommand().processCommand("start; set roomsize 500");
 
 			while (true) {
 				Scanner in = new Scanner(System.in);
 				while (true) {
-					test.screen.getClient().getCommand().processCommand(in.nextLine());
+					game.screen.getClient().getCommand().processCommand(in.nextLine());
 				}
 			}
-			// }
 		} catch (Throwable t) {
 			JTextArea textArea = new JTextArea();
 			textArea.append(ErrorUtils.getErrorMessage(t));

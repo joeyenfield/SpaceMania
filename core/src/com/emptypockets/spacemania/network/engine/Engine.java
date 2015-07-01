@@ -1,14 +1,18 @@
 package com.emptypockets.spacemania.network.engine;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.holders.SingleProcessor;
+import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePartition;
+import com.emptypockets.spacemania.plotter.DataLogger;
 
 public class Engine implements Disposable {
 	Rectangle region = new Rectangle();
@@ -17,7 +21,7 @@ public class Engine implements Disposable {
 	long startTime;
 	long lastUpdate;
 	ArrayList<EngineRegionListener> regionListeners;
-	
+
 	public Engine() {
 		float size = 4000;
 		entities = new EntityManager();
@@ -28,16 +32,16 @@ public class Engine implements Disposable {
 		setRegion(size);
 		start();
 	}
-	
-	public void addRegionListener(EngineRegionListener listener){
+
+	public void addRegionListener(EngineRegionListener listener) {
 		synchronized (regionListeners) {
 			regionListeners.add(listener);
 		}
 	}
-	
-	public void notifyRegionChanged(){
+
+	public void notifyRegionChanged() {
 		synchronized (regionListeners) {
-			for(EngineRegionListener list : regionListeners){
+			for (EngineRegionListener list : regionListeners) {
 				list.notifyRegionChanged(region);
 			}
 		}
@@ -155,4 +159,26 @@ public class Engine implements Disposable {
 		return entitySpatialPartition;
 	}
 
+	public void logEntity(String prefix) {
+		if (!DataLogger.isEnabled()) {
+			return;
+		}
+		DataLogger.log(prefix + "-time", getTime());
+		if(this instanceof ClientEngine){
+			DataLogger.log(prefix + "-lastServerTime", ((ClientEngine)this).getLastServerUpdateTime());
+		}
+		Iterator<Entity> iter = getEntityManager().getIterator();
+		while (iter.hasNext()) {
+			Entity ent = iter.next();
+			if (ent instanceof PlayerEntity) {
+				DataLogger.log(prefix + "-ent-" + ent.getId() + "-off-x", ent.getLastServerOffset().x);
+				DataLogger.log(prefix + "-ent-" + ent.getId() + "-off-y", ent.getLastServerOffset().y);
+
+				DataLogger.log(prefix + "-ent-" + ent.getId() + "-pos-x", ent.getPos().x);
+				DataLogger.log(prefix + "-ent-" + ent.getId() + "-pos-y", ent.getPos().y);
+				DataLogger.log(prefix + "-ent-" + ent.getId() + "-vel-x", ent.getVel().x);
+				DataLogger.log(prefix + "-ent-" + ent.getId() + "-vel-y", ent.getVel().y);
+			}
+		}
+	}
 }

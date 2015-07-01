@@ -13,6 +13,7 @@ import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityState;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 import com.emptypockets.spacemania.network.transport.ComsType;
+import com.emptypockets.spacemania.plotter.DataLogger;
 
 public class EntityManagerSync implements EntityManagerInterface, Poolable {
 	long time;
@@ -34,26 +35,27 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 
 	public void writeToEngine(final ClientEngine engine) {
 		if (syncTime) {
+
 			engine.setTime(time);
 			engine.setLastServerUpdateTime(time);
 		}
-		// Drop Old Packets
-		if (engine.getLastServerUpdateTime() > time) {
-			return;
-		}
+		// // Drop Old Packets
+		// if (engine.getLastServerUpdateTime() > time) {
+		// return;
+		// }
 		engine.setLastServerUpdateTime(time);
 		for (EntityAdd creation : newEntities) {
 			Entity entity = engine.getEntityManager().createEntity(creation.getType(), creation.getId());
-			creation.getEntityState().write(entity.getState());
+			creation.getEntityState().writeOnto(entity.getState());
 			engine.getEntityManager().addEntity(entity);
 		}
 
 		for (EntityRemoval removal : removedEntities) {
 			Entity entity = engine.getEntityManager().getEntityById(removal.getId());
-			
+
 			entity.getPos().set(removal.pos);
 			entity.setExplodes(removal.isExplodes());
-			
+
 			engine.getEntityManager().removeEntityById(removal.getId(), removal.killed);
 		}
 
@@ -62,7 +64,7 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 			@Override
 			public void process(Entity entity) {
 				EntityState serverState = entityStates.get(entity.getState().getId());
-				StateSyncUtils.updateState(time, serverState, engine.getEngineLastUpdateTime(), entity.getState());
+				StateSyncUtils.updateState(time, serverState, engine.getEngineLastUpdateTime(), entity, false);
 			}
 		});
 
@@ -135,6 +137,7 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 	}
 
 	public synchronized void broadcast(ServerPlayer player) {
+		DataLogger.log("server-sync", 2);
 		ClientEngineEntityManagerSyncPayload payload = Pools.obtain(ClientEngineEntityManagerSyncPayload.class);
 		payload.setSyncData(this);
 		payload.setComsType(ComsType.UDP);

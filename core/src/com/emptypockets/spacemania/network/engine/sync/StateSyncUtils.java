@@ -1,10 +1,11 @@
 package com.emptypockets.spacemania.network.engine.sync;
 
-import com.badlogic.gdx.utils.Pools;
+import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityState;
+import com.emptypockets.spacemania.plotter.DataLogger;
 
 public class StateSyncUtils {
-	public static float MAX_POS_DELTA = 400;
+	public static float MAX_POS_DELTA = 200;
 	public static float MAX_POS_DELTA_2 = MAX_POS_DELTA * MAX_POS_DELTA;
 
 	public static float MAX_ANGLE_DELTA = 3;
@@ -18,43 +19,22 @@ public class StateSyncUtils {
 	 * @param clientTime
 	 * @param clientState
 	 */
-	public static void updateState(long serverTime, EntityState serverState, long clientTime, EntityState clientState) {
+	public static void updateState(long serverTime, EntityState serverState, long clientTime, Entity entity, boolean force) {
 		long delta = (clientTime - serverTime);
-		float timeDelta = (delta) / 1000f;
-		EntityState tempState = Pools.obtain(EntityState.class);
-		serverState.write(tempState);
-		tempState.delta(timeDelta);
+		float timeDelta = -(delta) / 1000f;
+
+		serverState.delta(timeDelta);
 		// Set Velocity and Acl
-		clientState.getVel().set(tempState.getVel());
-		clientState.setAngVel(tempState.getAngVel());
+		entity.getState().getVel().set(serverState.getVel());
+		entity.getState().setAngVel(serverState.getAngVel());
 
-		// Only force low level positions when the entity is off by a given
-		// amount
-		float posDelta = clientState.getPos().dst2(tempState.getPos());
-
-//		System.out.println("\n");
-//		System.out.println("ServerT: " + serverTime);
-//		System.out.println("ClientT: " + clientTime);
-//		System.out.println("Server : " + serverState);
-//		System.out.println("Client : " + clientState);
-//		System.out.println("Temp   : " + tempState);
-//		System.out.println("DELTA  : " + Math.sqrt(posDelta));
-//		System.out.println("DELTA2 : " + posDelta);
-
-		if (posDelta > MAX_POS_DELTA_2) {
-//			System.out.println("--------------------------------------HARD");
-			// Hard Fix
-			clientState.getPos().set(tempState.getPos());
+		if (entity.getLastServerOffset().len2() > MAX_POS_DELTA_2) {
+			entity.getState().getPos().set(serverState.getPos());
 		} else {
-			//			System.out.println("--------------------------------------SOFT");
-			// Soft fix
-			clientState.getPos().lerp(tempState.getPos(), 0.5f);
+			entity.getLastServerOffset().set(serverState.getPos()).sub(entity.getPos());
+			DataLogger.log("ent-offset-server-x", entity.getLastServerOffset().x);
 		}
-		// System.out.println("Client-: "+clientState);
-
-		if (Math.abs(clientState.getAng() - tempState.getAng()) > MAX_ANGLE_DELTA) {
-			clientState.setAng(tempState.getAng());
-		}
-		Pools.free(tempState);
+		entity.getState().setAng(serverState.getAng());
 	}
+
 }

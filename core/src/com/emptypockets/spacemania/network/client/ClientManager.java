@@ -19,6 +19,7 @@ import com.emptypockets.spacemania.network.server.payloads.rooms.JoinLobyRequest
 import com.emptypockets.spacemania.network.server.payloads.rooms.JoinRoomRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.RequestRoomListPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.ResizeRoomPayload;
+import com.emptypockets.spacemania.plotter.DataLogger;
 
 import java.io.IOException;
 

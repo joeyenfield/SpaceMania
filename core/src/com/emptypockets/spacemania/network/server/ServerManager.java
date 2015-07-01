@@ -26,6 +26,7 @@ import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoomManager;
 import com.emptypockets.spacemania.network.transport.ComsType;
+import com.emptypockets.spacemania.plotter.DataLogger;
 import com.esotericsoftware.kryo.Kryo;
 
 public class ServerManager implements Disposable, Runnable {
@@ -48,10 +49,9 @@ public class ServerManager implements Disposable, Runnable {
 
 	long playerStateUpdateTime = 1000;
 	long lastplayerStateUpdate = 0;
-	
-	long roomDefaultBroadcastTime = 10;
 
-	long desiredUpdatePeroid = 0;
+	long roomDefaultBroadcastTime = 100;
+	long desiredUpdatePeroid = 20;
 
 	public ServerManager(Console console) {
 		this.console = console;
@@ -204,8 +204,8 @@ public class ServerManager implements Disposable, Runnable {
 		long startTime = 0;
 		long processingTime = 0;
 
-
 		while (alive) {
+			DataLogger.log("server-update", 1);
 			startTime = System.currentTimeMillis();
 			// Update All Pings
 			long delta = System.currentTimeMillis() - lastPingUpdate;
@@ -221,7 +221,7 @@ public class ServerManager implements Disposable, Runnable {
 				@Override
 				public void process(ServerRoom entity) {
 					entity.update();
-					if(entity.shouldBroadcast()){
+					if (entity.shouldBroadcast()) {
 						entity.broadcast();
 					}
 				}
@@ -247,7 +247,7 @@ public class ServerManager implements Disposable, Runnable {
 				if (processingTime < desiredUpdatePeroid) {
 					Thread.sleep(desiredUpdatePeroid - processingTime);
 				} else {
-					console.println("Server Running Behind : Update["+processingTime+"] - Update Time ["+desiredUpdatePeroid+"]"+getLobbyRoom().getEngine().getEntityManager().getSize());
+					console.println("Server Running Behind : Update[" + processingTime + "] - Update Time [" + desiredUpdatePeroid + "]" + getLobbyRoom().getEngine().getEntityManager().getSize());
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

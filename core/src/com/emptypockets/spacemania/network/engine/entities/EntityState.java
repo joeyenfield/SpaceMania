@@ -26,7 +26,7 @@ public class EntityState {
 	 * 
 	 * @param state
 	 */
-	public void write(EntityState state) {
+	public void writeOnto(EntityState state) {
 		state.pos.set(pos);
 		state.vel.set(vel);
 		state.ang = ang;

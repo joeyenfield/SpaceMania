@@ -13,6 +13,7 @@ import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.ClientConnection;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
+import com.emptypockets.spacemania.plotter.DataLogger;
 
 /**
  * Created by jenfield on 12/05/2015.
@@ -37,8 +38,8 @@ public class ServerPlayer implements Disposable {
 		clientPlayer = new ClientPlayer();
 		clientInput = new ClientInput();
 		entityManagerSync = new EntityManagerSync();
-		weapon = new BasicWeapon();
 		weapon = new SpreadWeapon();
+		weapon = new BasicWeapon();
 		score = 0;
 	}
 
@@ -161,7 +162,7 @@ public class ServerPlayer implements Disposable {
 		if (entity != null) {
 			// Process Movement
 			entity.getVel().set(clientInput.getMove()).limit2(1).scl(entity.getMaxVelocity());
-
+			DataLogger.log("server-input-x",clientInput.getMove().x);
 			// Processing Shooting
 			weapon.shoot(this, entity, engine);
 		}

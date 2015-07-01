@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.emptypockets.spacemania.network.engine.sync.StateSyncUtils;
+import com.emptypockets.spacemania.plotter.DataLogger;
 
 public abstract class Entity implements Poolable {
 	EntityState state;
@@ -12,7 +14,7 @@ public abstract class Entity implements Poolable {
 
 	boolean alive = true;
 	boolean explodes = false;
-	
+
 	protected Color color;
 	float inverseMass = 1;
 	float radius = 15;
@@ -31,6 +33,8 @@ public abstract class Entity implements Poolable {
 									// bounce off walls
 	protected long creationTime;
 	protected long lifeTime = 0;
+
+	Vector2 lastServerOffset = new Vector2();
 
 	public Entity(EntityType type) {
 		this.type = type;
@@ -128,6 +132,16 @@ public abstract class Entity implements Poolable {
 		forceAculumator.y = 0;
 		// Update the state
 		state.delta(deltaTime);
+
+		float dX = 0;
+		float dY = 0;
+		if (lastServerOffset.len2() > 1) {
+			dX = lastServerOffset.x * 0.1f;
+			dY = lastServerOffset.y * 0.1f;
+			lastServerOffset.x -= dX;
+			lastServerOffset.y -= dY;
+			getPos().add(dX, dY);
+		}
 		lastMovementDist = lastPosition.dst(getPos());
 
 		if (lifeTime != 0) {
@@ -235,4 +249,9 @@ public abstract class Entity implements Poolable {
 	public void setExplodes(boolean explodes) {
 		this.explodes = explodes;
 	}
+
+	public Vector2 getLastServerOffset() {
+		return lastServerOffset;
+	}
+
 }

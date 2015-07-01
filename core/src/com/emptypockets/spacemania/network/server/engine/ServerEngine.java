@@ -23,7 +23,7 @@ public class ServerEngine extends Engine {
 	PlayerManager playerManager;
 
 	long lastEnemy = 0;
-	boolean spawning = true;
+	boolean spawning = false;
 
 	public ServerEngine(PlayerManager playerManager) {
 		super();
@@ -48,7 +48,7 @@ public class ServerEngine extends Engine {
 					bullet.setExplodes(true);
 					enemy.setAlive(false);
 					enemy.setExplodes(true);
-					for (int i = 0; i < 10; i++) {
+					for (int i = 0; i < 2; i++) {
 						ScoreEntity score = (ScoreEntity) getEntityManager().createEntity(EntityType.Score);
 						score.setPos(bullet.getPos());
 						score.getPos().add(MathUtils.random(-20, 20), MathUtils.random(-20, 20));
@@ -103,12 +103,12 @@ public class ServerEngine extends Engine {
 			return;
 		if (System.currentTimeMillis() - lastEnemy > 200) {
 			lastEnemy = System.currentTimeMillis();
-			if (getEntityManager().countType(EntityType.Enemy_FOLLOW) < 20) {
+			if (getEntityManager().countType(EntityType.Enemy_FOLLOW) < 10) {
 				EnemyEntity entity = (EnemyEntity) getEntityManager().createEntity(EntityType.Enemy_FOLLOW);
 				entity.setPos(getRegion().x + getRegion().width * MathUtils.random(), getRegion().y + getRegion().height * MathUtils.random());
 				getEntityManager().addEntity(entity);
 			}
-			if (getEntityManager().countType(EntityType.Enemy_RANDOM) < 20) {
+			if (getEntityManager().countType(EntityType.Enemy_RANDOM) < 10) {
 				EnemyEntity entity = (EnemyEntity) getEntityManager().createEntity(EntityType.Enemy_RANDOM);
 				entity.setPos(getRegion().x + getRegion().width * MathUtils.random(), getRegion().y + getRegion().height * MathUtils.random());
 				getEntityManager().addEntity(entity);
@@ -123,5 +123,6 @@ public class ServerEngine extends Engine {
 		spawnEnemy();
 		updateAi();
 		super.update();
+		logEntity("server");
 	}
 }

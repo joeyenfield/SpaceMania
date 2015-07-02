@@ -161,7 +161,7 @@ public class ServerPlayer implements Disposable {
 		PlayerEntity entity = (PlayerEntity) engine.getEntityManager().getEntityById(entityId);
 		if (entity != null) {
 			// Process Movement
-			entity.getVel().set(clientInput.getMove()).limit2(1).scl(entity.getMaxVelocity());
+			entity.applyClientInput(clientInput);
 			DataLogger.log("server-input-x",clientInput.getMove().x);
 			// Processing Shooting
 			weapon.shoot(this, entity, engine);

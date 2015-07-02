@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.client.ClientEngine;
+import com.emptypockets.spacemania.network.client.input.ClientInput;
 
 public class PlayerEntity extends Entity {
 	long lastExhaust = 0;
@@ -22,6 +23,10 @@ public class PlayerEntity extends Entity {
 		setBounceOffWalls(false);
 	}
 
+	
+	public void applyClientInput(ClientInput input){
+		getVel().set(input.getMove()).limit2(1).scl(getMaxVelocity());
+	}
 	// TODO Auto-generated method stub
 	public void createExhaust(ClientEngine engine) {
 		if (getVel().len2() > 0.1f) {

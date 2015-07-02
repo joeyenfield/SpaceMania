@@ -11,6 +11,7 @@ public class MyPlayer extends ClientPlayer {
 		read((ClientPlayer)player);
 		entityId = player.getEntityId();
 	}
+	
 	public void setEntityId(int entityId) {
 		this.entityId = entityId;
 	}

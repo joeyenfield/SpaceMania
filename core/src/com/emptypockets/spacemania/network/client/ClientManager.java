@@ -1,15 +1,18 @@
 package com.emptypockets.spacemania.network.client;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
+import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.network.CommandService;
 import com.emptypockets.spacemania.network.client.exceptions.ClientNotConnectedException;
-import com.emptypockets.spacemania.network.client.input.ClientInput;
 import com.emptypockets.spacemania.network.client.player.MyPlayer;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
-import com.emptypockets.spacemania.network.engine.Engine;
+import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
 import com.emptypockets.spacemania.network.server.payloads.ServerClientInputUpdatePayload;
 import com.emptypockets.spacemania.network.server.payloads.authentication.LoginRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.authentication.LogoutRequestPayload;
@@ -21,23 +24,23 @@ import com.emptypockets.spacemania.network.server.payloads.rooms.RequestRoomList
 import com.emptypockets.spacemania.network.server.payloads.rooms.ResizeRoomPayload;
 import com.emptypockets.spacemania.plotter.DataLogger;
 
-import java.io.IOException;
-
 public class ClientManager implements Disposable {
 	CommandLine command;
 	ClientConnectionManager connection;
 
 	boolean loggedIn = false;
 	MyPlayer player;
+	ClientInputProducer inputProducer;
 	ClientRoom currentRoom;
 	ClientEngine engine;
 	private Console console;
 
-	public ClientManager() {
+	public ClientManager(ClientInputProducer clientInputProducer) {
 		setConsole(new Console("CLIENT : "));
 		command = new CommandLine(getConsole());
 		connection = new ClientConnectionManager(this);
 		CommandService.registerClientCommands(this);
+		this.inputProducer = clientInputProducer;
 	}
 
 	public void stop() {
@@ -46,15 +49,27 @@ public class ClientManager implements Disposable {
 	}
 
 	public void update() {
+		inputProducer.update();
+		connection.processRecievedPayloads();
 		// Update Room
+
+		//Update your player with your movement
+		if(player != null){
+			int playerId = player.getEntityId();
+			Entity ent = engine.getEntityManager().getEntityById(playerId);
+			if(ent instanceof PlayerEntity){
+				PlayerEntity player = (PlayerEntity)ent;
+				player.applyClientInput(inputProducer.getInput());
+				DataLogger.log("tmp-x",player.getVel().x);
+			}
+		}
+		
 		if (currentRoom != null) {
 			currentRoom.update();
 		}
 		if (engine != null) {
 			engine.update();
 		}
-
-		connection.processRecievedPayloads();
 		connection.processToSendPayloads();
 
 	}
@@ -210,9 +225,10 @@ public class ClientManager implements Disposable {
 		return engine;
 	}
 
-	public void sendInput(ClientInput clientInput) {
+	public void sendInput() {
+		DataLogger.log("client-input-x", inputProducer.getInput().getMove().x);
 		ServerClientInputUpdatePayload payload = Pools.obtain(ServerClientInputUpdatePayload.class);
-		payload.setInput(clientInput);
+		payload.setInput(inputProducer.getInput());
 		connection.send(payload);
 	}
 

@@ -61,8 +61,8 @@ public class ClientScreen extends StageScreen {
 	public ClientScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
 		setDrawEvents(true);
-		client = new ClientManager();
 		clientInputProducer = new OnScreenInput();
+		client = new ClientManager(clientInputProducer);
 		setClearColor(Color.BLACK);
 
 		getClient().getCommand().pushHistory("connect 192.168.1.2;login user" + MathUtils.random(100) + ";lobby;");
@@ -265,9 +265,7 @@ public class ClientScreen extends StageScreen {
 		super.updateLogic(delta);
 
 		if (client.isLoggedIn()) {
-			clientInputProducer.update();
-			DataLogger.log("client-input-x", clientInputProducer.getInput().getMove().x);
-			client.sendInput(clientInputProducer.getInput());
+			client.sendInput();
 		}
 		client.update();
 	}

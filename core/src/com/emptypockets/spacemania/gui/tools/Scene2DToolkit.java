@@ -40,6 +40,9 @@ public class Scene2DToolkit {
         }
     }
 
+    public static Skin skin(){
+    	return getToolkit().getSkin();
+    }
     public Skin getSkin() {
         if (skin == null) {
             synchronized (getClass()) {

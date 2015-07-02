@@ -19,6 +19,11 @@ import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
 import com.emptypockets.spacemania.plotter.data.timeseries.TimeSeriesDataset;
 import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDataGraph;
 import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDescription;
@@ -43,8 +48,16 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 	Vector2[] touchData = new Vector2[] { new Vector2(), new Vector2() };
 	Vector2[] touchGraphData = new Vector2[] { new Vector2(), new Vector2() };
 
+	Stage stage;
+
+	Actor dataList;
+
 	@Override
 	public void create() {
+		stage = new Stage();
+
+		stage.addActor(dataList);
+
 		shape = new ShapeRenderer();
 		sprite = new SpriteBatch();
 		font = new BitmapFont();
@@ -54,6 +67,7 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		cameraControl = new OrthoCamController(camera);
 
 		InputMultiplexer input = new InputMultiplexer();
+		input.addProcessor(stage);
 		input.addProcessor(new GestureDetector(this));
 		input.addProcessor(cameraControl);
 
@@ -69,8 +83,11 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 		int graphCount = 0;
 
-		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Pos Stuff", (Color) null, "client-ent-1-off-x", "ent-offset-server-x"));
+		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Offsets", (Color) null, "client-ent-1-off-x", "ent-offset-server-x"));
 		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Pos Stuff", (Color) null, "server-ent-1-pos-x", "client-ent-1-pos-x"));
+		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Vel", (Color) null, "server-ent-1-vel-x", "client-ent-1-vel-x"));
+		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Vel", (Color) null, "tmp-x", "client-ent-1-vel-x"));
+
 		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "client-input-x", getRandomColor()));
 		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "server-input-x", getRandomColor()));
 
@@ -87,7 +104,7 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 		int ticks = 0;
 		ticks++;
-		
+
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "client-logic", getRandomColor()));
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "server-update", getRandomColor()));
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "client-sync", getRandomColor()));
@@ -156,6 +173,7 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 	@Override
 	public void render() {
+		stage.act();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -219,18 +237,18 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 			}
 		}
-		
-		if(shown[0] && shown[1]){
+
+		if (shown[0] && shown[1]) {
 			sprite.begin();
 			sprite.enableBlending();
-			float dx = Math.abs(touchGraphData[0].x-touchGraphData[1].x);
-			float dy = Math.abs(touchGraphData[0].y-touchGraphData[1].y);
+			float dx = Math.abs(touchGraphData[0].x - touchGraphData[1].x);
+			float dy = Math.abs(touchGraphData[0].y - touchGraphData[1].y);
 			String message = " [ " + dx + " - " + dy + "]";
-			
+
 			float x = Math.min(touchData[0].x, touchData[1].x);
 			float y = Math.max(touchData[0].y, touchData[1].y);
-			
-			font.draw(sprite, message, x,y+50);
+
+			font.draw(sprite, message, x, y + 50);
 			sprite.end();
 		}
 		sprite.begin();
@@ -240,6 +258,8 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 			font.draw(sprite, message, graph.getScreenBounds().x, graph.getScreenBounds().y + graph.getScreenBounds().height);
 		}
 		sprite.end();
+
+		stage.draw();
 	}
 
 	@Override
@@ -251,6 +271,9 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		camera.viewportWidth = width;
 		camera.viewportHeight = height;
 		camera.update();
+
+		stage.getViewport().setScreenSize(width, height);
+		
 
 	}
 

@@ -18,9 +18,9 @@ public class LinePlotDataGraph {
 	Rectangle screenBounds;
 
 	HashMap<TimeSeriesDataset, LinePlotDescription> dataset = new HashMap<TimeSeriesDataset, LinePlotDescription>();
-	float xMin;
+	private float xMin;
 	float yMin;
-	float xMax;
+	private float xMax;
 	float yMax;
 	boolean drawBounds = true;
 	Color boundsColor = new Color(Color.WHITE);
@@ -37,19 +37,19 @@ public class LinePlotDataGraph {
 		for (TimeSeriesDataset data : dataset.keySet()) {
 			if (first) {
 				first = false;
-				xMin = data.getMinTime();
-				xMax = data.getMaxTime();
+				setxMin(data.getMinTime());
+				setxMax(data.getMaxTime());
 				yMin = data.getMinValue();
 				yMax = data.getMaxValue();
 			} else {
-				xMin = Math.min(data.getMinTime(), xMin);
-				xMax = Math.max(data.getMaxTime(), xMax);
+				setxMin(Math.min(data.getMinTime(), getxMin()));
+				setxMax(Math.max(data.getMaxTime(), getxMax()));
 				yMin = Math.min(data.getMinValue(), yMin);
 				yMax = Math.max(data.getMaxValue(), yMax);
 			}
 		}
-		if (xMin == xMax) {
-			xMin -= 0.01 * xMax;
+		if (getxMin() == getxMax()) {
+			setxMin(getxMin() - 0.01f * getxMax());
 		}
 
 		if (yMin == yMax) {
@@ -58,8 +58,8 @@ public class LinePlotDataGraph {
 	}
 
 	public void matchRange(LinePlotDataGraph graph) {
-		this.xMin = graph.xMin;
-		this.xMax = graph.xMax;
+		this.setxMin(graph.getxMin());
+		this.setxMax(graph.getxMax());
 		this.yMin = graph.yMin;
 		this.yMax = graph.yMax;
 	}
@@ -101,7 +101,7 @@ public class LinePlotDataGraph {
 			// Scale dataset
 			TimeSeriesPoint ts = dataset.getPoints().get(i);
 
-			point.x = (ts.time - xMin) / (xMax - xMin);
+			point.x = (ts.time - getxMin()) / (getxMax() - getxMin());
 			point.y = (ts.value - yMin) / (yMax - yMin);
 
 			// Map to screen
@@ -112,7 +112,7 @@ public class LinePlotDataGraph {
 	
 	public float screenToGraphX(float screen){
 		float pos = (screen-screenBounds.x)/(screenBounds.width);
-		pos = xMin+(xMax-xMin)*pos;
+		pos = getxMin()+(getxMax()-getxMin())*pos;
 		return pos;
 	}
 	
@@ -192,5 +192,31 @@ public class LinePlotDataGraph {
 
 	public String getName() {
 		return name;
+	}
+
+	public HashMap<TimeSeriesDataset, LinePlotDescription> getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(HashMap<TimeSeriesDataset, LinePlotDescription> dataset) {
+		this.dataset = dataset;
+	}
+
+	public void clearData() {
+		dataset.clear();
+	}
+
+	public void printState() {
+		System.out.println("X ["+getxMin()+","+getxMax()+"]  -  Y ["+yMin+","+yMax+"]");
+		System.out.println(dataset.size());
+		
+	}
+
+	public float getxMin() {
+		return xMin;
+	}
+
+	public float getxMax() {
+		return xMax;
 	}
 }

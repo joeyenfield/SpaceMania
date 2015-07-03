@@ -50,13 +50,9 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 	Stage stage;
 
-	Actor dataList;
-
 	@Override
 	public void create() {
 		stage = new Stage();
-
-		stage.addActor(dataList);
 
 		shape = new ShapeRenderer();
 		sprite = new SpriteBatch();
@@ -83,6 +79,8 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 		int graphCount = 0;
 
+		LinePlotDataGraph customGraph = createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Offsets", (Color) null, "client-ent-1-off-x", "ent-offset-server-x");
+		graphs.add(customGraph);
 		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Offsets", (Color) null, "client-ent-1-off-x", "ent-offset-server-x"));
 		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Pos Stuff", (Color) null, "server-ent-1-pos-x", "client-ent-1-pos-x"));
 		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Vel", (Color) null, "server-ent-1-vel-x", "client-ent-1-vel-x"));
@@ -105,10 +103,16 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		int ticks = 0;
 		ticks++;
 
+		
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "client-logic", getRandomColor()));
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "server-update", getRandomColor()));
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "client-sync", getRandomColor()));
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "server-sync", getRandomColor()));
+		
+		DataLoggerGraphManager manager = new DataLoggerGraphManager(stage,"Test", customGraph);
+		stage.addActor(manager);
+		manager.setBounds(100, 100, 200, 200);
+		manager.setVisible(true);
 	}
 
 	public LinePlotDataGraph createSpikeGraph(float x, float y, float sizeX, float sizeY, String name, Color color) {
@@ -279,7 +283,7 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 	@Override
 	public boolean touchDown(float x, float y, int pointer, int button) {
-		// TODO Auto-generated method stub
+		stage.setScrollFocus(null);
 		return false;
 	}
 

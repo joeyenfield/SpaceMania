@@ -22,7 +22,7 @@ public class ServerTesting extends RootTest {
 		assertEquals(0, server.getLoggedInCount());
 		assertEquals(1, server.getRoomCount());
 		
-		ClientManager clientA = new ClientManager();
+		ClientManager clientA = new ClientManager(null);
 		Thread clientAUpdater = createUpdater(clientA);
 		pause();
 		assertEquals(0, server.getConnectedCount());
@@ -75,7 +75,7 @@ public class ServerTesting extends RootTest {
 		/**
 		 * Second player connected
 		 */
-		ClientManager clientB = new ClientManager();
+		ClientManager clientB = new ClientManager(null);
 		Thread t = createUpdater(clientB);
 		clientB.connect("localhost", server.getTcpPort(), server.getUdpPort());
 		pause();

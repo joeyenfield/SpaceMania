@@ -29,8 +29,8 @@ public class DesktopLauncher {
 
 			Log.ERROR();
 			LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-			config.width = 1280;
-			config.height = 800;
+			config.width = 400;
+			config.height = 400;
 			config.x = 0;
 			config.y = 100;
 

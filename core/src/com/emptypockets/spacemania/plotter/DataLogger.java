@@ -12,8 +12,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.emptypockets.spacemania.plotter.data.timeseries.TimeSeriesDataset;
@@ -182,6 +185,11 @@ public class DataLogger {
 		return str.substring(0, pos);
 	}
 
+	public static List<String> getSortedData() {
+		ArrayList<String> result = new ArrayList<String>(getData());
+		Collections.sort(result);
+		return result;
+	}
 	public static Set<String> getData() {
 		try {
 			return getDataLogger().getDataLists();

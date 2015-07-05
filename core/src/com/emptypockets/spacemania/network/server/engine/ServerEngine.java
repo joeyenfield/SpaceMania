@@ -23,7 +23,7 @@ public class ServerEngine extends Engine {
 	PlayerManager playerManager;
 
 	long lastEnemy = 0;
-	boolean spawning = false;
+	boolean spawning = true;
 
 	public ServerEngine(PlayerManager playerManager) {
 		super();

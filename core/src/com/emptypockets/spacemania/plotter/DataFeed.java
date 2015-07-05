@@ -26,6 +26,7 @@ public class DataFeed {
 	public TimeSeriesDataset read() throws IOException {
 		dataset.reset();
 		DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+		dataset.setName(name);
 		long count = in.readLong();
 
 		for (int i = 0; i < count; i++) {

@@ -6,6 +6,7 @@ import java.util.Comparator;
 
 public class TimeSeriesDataset {
 
+	String name;
 	public float minValue;
 	public float maxValue;
 
@@ -95,5 +96,13 @@ public class TimeSeriesDataset {
 
 	public String printRange() {
 		return "Value : [" + minValue + "," + maxValue + "] Range [" + minTime + "," + maxTime + "]";
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

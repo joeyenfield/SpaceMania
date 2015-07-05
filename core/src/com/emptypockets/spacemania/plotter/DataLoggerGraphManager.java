@@ -2,24 +2,25 @@ package com.emptypockets.spacemania.plotter;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
+import com.emptypockets.spacemania.plotter.data.timeseries.TimeSeriesDataset;
 import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDataGraph;
 import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDescription;
+import com.emptypockets.spacemania.plotter.gui.LinePlotDescriptionPanel;
 
 public class DataLoggerGraphManager extends Window {
 	LinePlotDataGraph graph;
@@ -27,22 +28,27 @@ public class DataLoggerGraphManager extends Window {
 	Button hideButton;
 
 	Button applyButton;
-	HashMap<String, CheckBox> buttons;
-	HashMap<String, CheckBox> lineDraw;
-	HashMap<String, CheckBox> shapeDraw;
-	HashMap<String, CheckBox> spikeDraw;
-	HashMap<String, TextField> colors;
+	HashMap<String, LinePlotDescriptionPanel> buttons;
+
 	Stage stage;
+
 	public DataLoggerGraphManager(Stage stage, String title, LinePlotDataGraph graph) {
 		super(title, Scene2DToolkit.getToolkit().getSkin());
-		buttons = new HashMap<String, CheckBox>();
+		buttons = new HashMap<String, LinePlotDescriptionPanel>();
 		this.graph = graph;
 		this.stage = stage;
 		createPanel();
+		
 	}
 
 	public void updateUI() {
-
+		for(String key : buttons.keySet()){
+			buttons.get(key).resetValues();
+		}
+		for(TimeSeriesDataset data : graph.getDataset().keySet()){
+			LinePlotDescription desc = graph.getDataset().get(data);
+			buttons.get(desc.getName()).readValues(desc);
+		}
 	}
 
 	public void createPanel() {
@@ -60,7 +66,12 @@ public class DataLoggerGraphManager extends Window {
 		hideButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				setVisible(false);
+				if (getHeight() == Gdx.graphics.getHeight()) {
+					setHeight(getTitleTable().getHeight());
+					setY(Gdx.graphics.getHeight()-getHeight());
+				} else {
+					setHeight(Gdx.graphics.getHeight());
+				}
 				stage.setScrollFocus(null);
 			}
 		});
@@ -68,15 +79,13 @@ public class DataLoggerGraphManager extends Window {
 
 		Table table = new Table();
 		for (final String name : DataLogger.getSortedData()) {
-			final CheckBox checkbox = new CheckBox(name, skin);
+			final LinePlotDescriptionPanel checkbox = new LinePlotDescriptionPanel(skin, name);
 			buttons.put(name, checkbox);
-			
-			
 			table.row();
-			table.add(checkbox).fillX();
+			table.add(checkbox).left().fillX().expandX();
 		}
 		ScrollPane scroll = new ScrollPane(table);
-
+		
 		applyButton = new TextButton("Apply", skin);
 		applyButton.addListener(new ClickListener() {
 			@Override
@@ -87,7 +96,7 @@ public class DataLoggerGraphManager extends Window {
 		row();
 		add(applyButton).fillX();
 		row();
-		add(scroll).fill().expand();
+		add(scroll).left().fill().expand();
 	}
 
 	public void apply() {
@@ -97,23 +106,20 @@ public class DataLoggerGraphManager extends Window {
 		xMax = graph.getxMax();
 		graph.clearData();
 		for (String name : buttons.keySet()) {
-			Button button = buttons.get(name);
-			if (button.isChecked()) {
-				LinePlotDescription plotDescription = new LinePlotDescription();
-				plotDescription.setDrawLine(true);
-				plotDescription.setDrawPoint(true);
-				plotDescription.setSpike(false);
-				plotDescription.setLineColor(Color.RED);
-				plotDescription.setPointColor(Color.RED);
-				plotDescription.setName(name);
-
-				graph.addLineDataset(DataLogger.read(name), plotDescription);
+			LinePlotDescriptionPanel button = buttons.get(name);
+			if (button.isEnabled()) {
+				graph.addLineDataset(DataLogger.read(name), button.createDescription());
 			}
 		}
 		graph.fitRange();
 		graph.setxMin(xMin);
 		graph.setxMax(xMax);
-		
+
 		graph.updateLayout();
+	}
+
+	public void setGraph(LinePlotDataGraph graph) {
+		this.graph = graph;
+		updateUI();
 	}
 }

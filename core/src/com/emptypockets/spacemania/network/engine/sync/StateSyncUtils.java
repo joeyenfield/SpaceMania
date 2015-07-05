@@ -23,7 +23,7 @@ public class StateSyncUtils {
 		long delta = (clientTime - serverTime);
 		float timeDelta = -(delta) / 1000f;
 
-		serverState.delta(timeDelta);
+//		serverState.delta(timeDelta);
 		// Set Velocity and Acl
 		entity.getState().getVel().set(serverState.getVel());
 		entity.getState().setAngVel(serverState.getAngVel());

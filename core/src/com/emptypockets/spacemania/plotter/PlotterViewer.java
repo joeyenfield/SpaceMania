@@ -19,11 +19,8 @@ import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.emptypockets.spacemania.plotter.data.timeseries.TimeSeriesDataset;
 import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDataGraph;
 import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDescription;
@@ -49,10 +46,11 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 	Vector2[] touchGraphData = new Vector2[] { new Vector2(), new Vector2() };
 
 	Stage stage;
+	DataLoggerGraphManager manager;
 
 	@Override
 	public void create() {
-		stage = new Stage();
+		stage = new Stage(new ScreenViewport());
 
 		shape = new ShapeRenderer();
 		sprite = new SpriteBatch();
@@ -109,9 +107,8 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "client-sync", getRandomColor()));
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "server-sync", getRandomColor()));
 		
-		DataLoggerGraphManager manager = new DataLoggerGraphManager(stage,"Test", customGraph);
+		manager = new DataLoggerGraphManager(stage,"Test", customGraph);
 		stage.addActor(manager);
-		manager.setBounds(100, 100, 200, 200);
 		manager.setVisible(true);
 	}
 
@@ -276,7 +273,9 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		camera.viewportHeight = height;
 		camera.update();
 
-		stage.getViewport().setScreenSize(width, height);
+		stage.getViewport().update(width, height, true);
+
+		manager.setBounds(0, height,500, 10);
 		
 
 	}
@@ -304,13 +303,30 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		if (count > 1) {
 			touchData[value].x = 0;
 			touchData[value].y = 0;
+			selectGraph(x, y);
 		}
+		
+		
 		return false;
 	}
 
 	@Override
 	public boolean longPress(float x, float y) {
-		// TODO Auto-generated method stub
+		System.out.println(x+" - "+y);
+		return selectGraph(x, y);
+	}
+	
+	public boolean selectGraph(float x, float y){
+		mapPos.x = x;
+		mapPos.y = y;
+		mapPos.z = 0;
+		camera.unproject(mapPos);
+		
+		for (LinePlotDataGraph graph : graphs) {
+			if (graph.getScreenBounds().contains(mapPos.x, mapPos.y)) {
+				manager.setGraph(graph);
+			}
+		}
 		return false;
 	}
 

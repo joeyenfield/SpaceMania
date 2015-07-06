@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.gui.renderer;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -9,23 +8,27 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.client.ClientEngine;
-import com.emptypockets.spacemania.network.engine.EngineRegionListener;
 import com.emptypockets.spacemania.network.engine.grid.GridSystem;
 import com.emptypockets.spacemania.network.engine.grid.GridSystemListener;
 
-public class GridTextureRenderer implements GridSystemListener{
+public class GridTextureRenderer implements GridSystemListener {
+	Texture starfieldDeepTexture;
+	Texture starfieldParalaxTexture;
 	Texture texture;
+
 	String vertexShader;
 	String fragmentShader;
 	ShaderProgram shaderProgram;
 	Mesh mesh;
+	Rectangle world = new Rectangle();
+
+	SpriteBatch batch;
 	float[] vertData;
 	short[] idxData;
 	int pixSize = 5;
@@ -33,20 +36,27 @@ public class GridTextureRenderer implements GridSystemListener{
 	int sizeX = 0;
 	int sizeY = 0;
 
+	float imageScale = 10;
 
 	public GridTextureRenderer() {
 		init();
 	}
 
-	
 	private void createShader() {
 		vertexShader = Gdx.files.internal("shaders/vertex.glsl").readString();
 		fragmentShader = Gdx.files.internal("shaders/fragment.glsl").readString();
 		shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
-		texture = new Texture("back.png");
+		starfieldDeepTexture = new Texture("starfield-deep.png");
+		starfieldParalaxTexture = new Texture("starfield-paralax.png");
+		texture = new Texture("starfield.png");
+		batch = new SpriteBatch();
+
+		starfieldDeepTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		starfieldParalaxTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		texture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 	}
 
-	public void setData(int x, int y, Vector2 pos,Vector2 uv, float alpha) {
+	public void setData(int x, int y, Vector2 pos, Vector2 uv, float alpha) {
 		setData(x, y, pos.x, pos.y, uv.x, uv.y, alpha);
 	}
 
@@ -55,7 +65,7 @@ public class GridTextureRenderer implements GridSystemListener{
 		vertData[pos] = p.x;
 		vertData[pos + 1] = p.y;
 	}
-	
+
 	public void setWeight(int x, int y, float weight) {
 		int pos = getVertPos(x, y);
 		vertData[pos + 4] = weight;
@@ -82,16 +92,14 @@ public class GridTextureRenderer implements GridSystemListener{
 	private int getVert(int x, int y) {
 		return (int) (x * sizeY + y);
 	}
-	
-	public void rebuild(GridSystem system){
-		if(sizeX != system.getSizeX() || sizeY != system.getSizeY()){
+
+	public void rebuild(GridSystem system) {
+		if (sizeX != system.getSizeX() || sizeY != system.getSizeY()) {
 			this.sizeX = system.getSizeX();
 			this.sizeY = system.getSizeY();
 			init();
 		}
-		
-		
-		
+
 		Vector2 pos = new Vector2();
 		Vector2 uv = new Vector2();
 		for (int x = 0; x < sizeX; x++) {
@@ -101,9 +109,9 @@ public class GridTextureRenderer implements GridSystemListener{
 				pos.x = system.getSettings().bounds.x + system.getSettings().bounds.width * xf;
 				pos.y = system.getSettings().bounds.y + system.getSettings().bounds.height * yf;
 
-				uv.x = (pos.x / texture.getWidth());
-				uv.y = (pos.y / texture.getHeight());
-				setData(x, y, pos, uv,MathUtils.random());
+				uv.x = (pos.x / starfieldDeepTexture.getWidth());
+				uv.y = (pos.y / starfieldDeepTexture.getHeight());
+				setData(x, y, pos, uv, 1f);
 			}
 		}
 	}
@@ -118,9 +126,9 @@ public class GridTextureRenderer implements GridSystemListener{
 				float yf = y / (sizeY - 1f);
 				pos.x = xf;
 				pos.y = yf;
-				uv.x = (pos.x / texture.getWidth());
-				uv.y = (pos.y / texture.getHeight());
-				setData(x, y, pos, uv,MathUtils.random());
+				uv.x = (pos.x / starfieldDeepTexture.getWidth());
+				uv.y = (pos.y / starfieldDeepTexture.getHeight());
+				setData(x, y, pos, uv, 1f);
 			}
 		}
 
@@ -142,45 +150,79 @@ public class GridTextureRenderer implements GridSystemListener{
 			mesh.dispose();
 		}
 		// Create a mesh out of two triangles rendered clockwise without indices
-		mesh = new Mesh(true, sizeX * sizeY, idxData.length, 
-				new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE), 
-				new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"),
-				new VertexAttribute(VertexAttributes.Usage.Generic, 1, "a_alpha")
-				);
+		mesh = new Mesh(true, sizeX * sizeY, idxData.length, new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE), new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"), new VertexAttribute(VertexAttributes.Usage.Generic, 1, "a_alpha"));
 
 		mesh.setVertices(vertData);
 		mesh.setIndices(idxData);
 
 	}
 
-	public void init(){
+	public void init() {
 		createShader();
 		createMesh();
 	}
+
 	public void render(OrthographicCamera camera, ClientEngine engine) {
 		if (engine.isDynamicGrid()) {
 			for (short x = 0; x < sizeX; x++) {
 				for (short y = 0; y < sizeY; y++) {
 					setPos(x, y, engine.getGridData().getNodePos(x, y));
-					setWeight(x,y, 0.3f);
+					setWeight(x, y, 1f);
 				}
 				mesh.setVertices(vertData);
 			}
 		}
-		Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
-		Gdx.gl20.glEnable(GL20.GL_BLEND);
-		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-		texture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		texture.bind();
-		shaderProgram.begin();
-		shaderProgram.setUniformMatrix("u_projTrans", camera.combined);
-		shaderProgram.setUniformi("u_texture", 0);
-		mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-		shaderProgram.end();
+
+		// Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
+		// Gdx.gl20.glEnable(GL20.GL_BLEND);
+		// Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_srONE);
+		//
+		batch.setProjectionMatrix(camera.combined);
+		float offsetX = 0.1f;
+		float offsetY = 0.1f;
+		boolean basic = true;
+		if (basic) {
+			batch.begin();
+			batch.disableBlending();
+			batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+			batch.draw(starfieldDeepTexture, world.x, world.y, world.width, world.height, offsetX, offsetY, offsetX + world.width / starfieldDeepTexture.getWidth(), offsetY + world.height / starfieldDeepTexture.getHeight());
+			batch.end();
+		} else {
+
+			texture.bind();
+			shaderProgram.begin();
+
+			Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
+			Gdx.gl20.glEnable(GL20.GL_BLEND);
+			Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+
+			shaderProgram.setUniformMatrix("u_projTrans", camera.combined);
+			shaderProgram.setUniformi("u_texture", 0);
+			mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+			shaderProgram.end();
+		}
+
+		float fx = ((camera.position.x / starfieldDeepTexture.getWidth()) / 10);
+		float fy = ((camera.position.y / starfieldDeepTexture.getHeight()) / 10);
+		offsetX += fx;
+		offsetY += fy;
+		batch.begin();
+		batch.enableBlending();
+		batch.setColor(1, 1, 1, 1);
+		batch.draw(starfieldParalaxTexture, world.x, world.y, world.width, world.height, offsetX, offsetY, offsetX + world.width / starfieldParalaxTexture.getWidth(), offsetY + world.height / starfieldParalaxTexture.getHeight());
+
+		offsetX += fx + 0.5;
+		offsetY += fy + 0.3;
+		batch.setColor(1, 1, 1, 1);
+		batch.draw(starfieldParalaxTexture, world.x, world.y, world.width, world.height, offsetX, offsetY, offsetX + world.width / starfieldParalaxTexture.getWidth(), offsetY + world.height / starfieldParalaxTexture.getHeight());
+
+		batch.end();
+
 	}
 
 	@Override
 	public void gridChanged(GridSystem grid) {
 		rebuild(grid);
+		world.set(grid.getSettings().bounds);
 	}
 }

@@ -136,8 +136,8 @@ public abstract class Entity implements Poolable {
 		float dX = 0;
 		float dY = 0;
 		if (lastServerOffset.len2() > 1) {
-			dX = lastServerOffset.x * 0.1f;
-			dY = lastServerOffset.y * 0.1f;
+			dX = lastServerOffset.x * 0.2f;
+			dY = lastServerOffset.y * 0.2f;
 			lastServerOffset.x -= dX;
 			lastServerOffset.y -= dY;
 			getPos().add(dX, dY);

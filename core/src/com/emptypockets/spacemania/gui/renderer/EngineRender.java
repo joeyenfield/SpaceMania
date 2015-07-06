@@ -1,6 +1,5 @@
 package com.emptypockets.spacemania.gui.renderer;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -196,7 +195,8 @@ public class EngineRender {
 			viewport.height *= -1;
 		}
 
-//		renderSpatialPartionDebug(camera, engine.getEntitySpatialPartition());
+		// renderSpatialPartionDebug(camera,
+		// engine.getEntitySpatialPartition());
 		if (engine.getGridData().getRenderType() == GridSystem.RENDER_PATH) {
 			engine.getGridData().addListener(gridPathRender);
 			engine.getGridData().removeListener(gridTextureRender);
@@ -216,8 +216,19 @@ public class EngineRender {
 		// Entities
 		Set<Entity> renderEntities = new HashSet<Entity>();
 		engine.getEntitySpatialPartition().getEntities(viewport, renderEntities);
-//		renderEntityDebug(camera, renderEntities);
+		// renderEntityDebug(camera, renderEntities);
 		renderEntity(camera, renderEntities, entityBatch);
+
+		// renderEntities.clear();
+		// if (ServerManager.manager != null) {
+		// ServerManager manager = ServerManager.manager;
+		// manager.getLobbyRoom().getEngine().getEntitySpatialPartition().getEntities(viewport,
+		// renderEntities);
+		// engine.getEntitySpatialPartition().getEntities(viewport,
+		// renderEntities);
+		// renderEntity(camera, renderEntities, entityBatch);
+		// }
+
 	}
 
 	public void renderParticles(ParticleSystem particleSystem, final Rectangle viewport, final SpriteBatch batch) {

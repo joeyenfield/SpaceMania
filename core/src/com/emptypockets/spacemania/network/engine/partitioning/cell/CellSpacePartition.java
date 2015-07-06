@@ -55,7 +55,7 @@ public class CellSpacePartition implements EngineRegionListener {
 		}
 	}
 
-	public void rebuild(EntityManager entityManger) {
+	public synchronized void rebuild(EntityManager entityManger) {
 		for (int x = 0; x < numX; x++) {
 			for (int y = 0; y < numY; y++) {
 				data[x][y].clear();
@@ -173,7 +173,7 @@ public class CellSpacePartition implements EngineRegionListener {
 		}
 	}
 
-	public void getEntities(Rectangle viewport, Set<Entity> result) {
+	public synchronized void getEntities(Rectangle viewport, Set<Entity> result) {
 		// Top Left
 		int cellMinX = getCellX(viewport.x);
 		int cellMinY = getCellY(viewport.y);

@@ -10,7 +10,7 @@ import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 
 public class BasicWeapon extends Weapon {
 	long lastShootTime = 0;
-	long shootInterval = 300;
+	long shootInterval = 150;
 
 	public void shoot(ServerPlayer player, PlayerEntity entity, ServerEngine engine) {
 		ClientInput input = player.getClientInput();

@@ -42,18 +42,20 @@ public class ServerManager implements Disposable, Runnable {
 	PlayerManager playerManager;
 	ServerRoomManager roomManager;
 
+	public static ServerManager manager;
 	Thread thread;
 
-	long pingUpdateTime = 30000;
+	long pingUpdateTime = 5000;
 	long lastPingUpdate = 0;
 
 	long playerStateUpdateTime = 1000;
 	long lastplayerStateUpdate = 0;
 
 	long roomDefaultBroadcastTime = 100;
-	long desiredUpdatePeroid = 20;
+	long desiredUpdatePeroid = 50;
 
 	public ServerManager(Console console) {
+		manager = this;
 		this.console = console;
 		command = new CommandLine(console);
 		CommandService.registerServerCommands(this);

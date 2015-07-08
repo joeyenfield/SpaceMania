@@ -85,7 +85,7 @@ public class DesktopLauncher {
 			// client.processCommand("connect;login jenfield2; lobby");
 			// client.processCommand("lobby");
 			// client.processCommand("host rooms");
-			game.screen.getClient().getCommand().processCommand("start; set roomsize 1000;set grid 1; set gridrender 0 set grid size 100 100");
+			game.screen.getClient().getCommand().processCommand("start; set roomsize 2000;set grid 1; set gridrender 0 set grid size 2 2");
 
 			while (true) {
 				Scanner in = new Scanner(System.in);

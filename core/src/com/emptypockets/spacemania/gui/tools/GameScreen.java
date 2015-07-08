@@ -15,10 +15,7 @@ import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.emptypockets.spacemania.MainGame;
-import com.emptypockets.spacemania.utils.OrthoCamController;
 import com.emptypockets.spacemania.utils.event.EventRecorder;
 
 public abstract class GameScreen implements Screen, GestureListener, InputProcessor {
@@ -137,6 +134,29 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 		screenCamera.viewportWidth = width;
 		screenCamera.viewportHeight = height;
+
+		int minX = 800;
+		int minY = 800;
+
+		boolean needsScale = true;
+		float scaleX = 1;
+		float scaleY = 1;
+
+		if (screenCamera.viewportWidth < minX) {
+			scaleX = minX / screenCamera.viewportWidth;
+			needsScale = true;
+		}
+
+		if (screenCamera.viewportHeight < minY) {
+			scaleY = minY / screenCamera.viewportHeight;
+			needsScale = true;
+		}
+
+		if (needsScale) {
+			float scale = Math.max(scaleX, scaleY);
+			screenCamera.viewportWidth *= scale;
+			screenCamera.viewportHeight *= scale;
+		}
 		screenCamera.update();
 	}
 

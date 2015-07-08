@@ -9,9 +9,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -24,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.utils.Logger;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLinePanel;
 import com.emptypockets.spacemania.gui.renderer.EngineRender;
@@ -55,8 +51,8 @@ public class ClientScreen extends StageScreen {
 	float playerBoundsBorderX = 0.3f;
 	float playerBoundsBorderY = 0.4f;
 	Rectangle playerBounds = new Rectangle();
-	Vector3 screenLow = new Vector3();
-	Vector3 screenHigh = new Vector3();
+	Vector3 playerPositionFixTemp = new Vector3();
+	Vector3 playerOffsetFixTemp = new Vector3();
 
 	public ClientScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
@@ -70,7 +66,8 @@ public class ClientScreen extends StageScreen {
 		// + MathUtils.random(100) + ";lobby;");
 		// getClient().getCommand().pushHistory("connect 192.168.1.8;login user"
 		// + MathUtils.random(100) + ";lobby;");
-		getClient().getCommand().pushHistory("start;set grid 1;set gridsize 128 128;set gridrender 1;set roomsize 800;set particles 10000");
+		getClient().getCommand().pushHistory("start;set grid 1;set gridsize 128 128;set gridrender 0;set roomsize 2000;set particles 1000");
+		getClient().getCommand().pushHistory("start;set grid 1;set gridsize 2 2;set gridrender 0;set roomsize 2000;set particles 1000");
 		getClient().getCommand().pushHistory("set grid 0;set particles 500");
 		getClient().getCommand().pushHistory("start");
 
@@ -205,40 +202,46 @@ public class ClientScreen extends StageScreen {
 					/*
 					 * Fix player into bounds
 					 */
-					screenLow.x = getScreenCamera().viewportWidth * (1 - playerBoundsBorderX);
-					screenLow.y = getScreenCamera().viewportHeight * (1 - playerBoundsBorderY);
-					screenHigh.x = getScreenCamera().viewportWidth * playerBoundsBorderX;
-					screenHigh.y = getScreenCamera().viewportHeight * (playerBoundsBorderY);
-					getScreenCamera().unproject(screenLow);
-					getScreenCamera().unproject(screenHigh);
-					playerBounds.set(screenHigh.x, screenHigh.y, screenLow.x - screenHigh.x, screenLow.y - screenHigh.y);
-					if (playerBounds.width < 0) {
-						playerBounds.x += playerBounds.width;
-						playerBounds.width *= -1;
-					}
-					if (playerBounds.height < 0) {
-						playerBounds.y += playerBounds.height;
-						playerBounds.height *= -1;
+					playerPositionFixTemp.x = (ent.getPos().x);
+					playerPositionFixTemp.y = (ent.getPos().y);
+
+					//Map Player into screen
+					screenCamera.project(playerPositionFixTemp);
+					
+					//Normalise
+					playerPositionFixTemp.x /= Gdx.graphics.getWidth();
+					playerPositionFixTemp.y /= Gdx.graphics.getHeight();
+
+					if (playerPositionFixTemp.x < playerBoundsBorderX) {
+						// Move Left
+						playerOffsetFixTemp.x = playerPositionFixTemp.x - playerBoundsBorderX;
+					} else if (playerPositionFixTemp.x > (1 - playerBoundsBorderX)) {
+						// Move Right
+						playerOffsetFixTemp.x = playerPositionFixTemp.x - (1 - playerBoundsBorderX);
+					} else {
+						playerOffsetFixTemp.x = 0;
 					}
 
-					Vector2 pos = ent.getPos();
-					if (!playerBounds.contains(pos)) {
-						float x = 0;
-						float y = 0;
-
-						if (pos.x < playerBounds.x) {
-							x = pos.x - playerBounds.x;
-						} else if (pos.x > playerBounds.x + playerBounds.width) {
-							x = pos.x - (playerBounds.x + playerBounds.width);
-						}
-
-						if (pos.y < playerBounds.y) {
-							y = pos.y - playerBounds.y;
-						} else if (pos.y > playerBounds.y + playerBounds.height) {
-							y = pos.y - (playerBounds.y + playerBounds.height);
-						}
-						getScreenCamera().translate(x, y);
+					if (playerPositionFixTemp.y < playerBoundsBorderY) {
+						// Move Left
+						playerOffsetFixTemp.y = playerPositionFixTemp.y - playerBoundsBorderY;
+					} else if (playerPositionFixTemp.y > (1 - playerBoundsBorderY)) {
+						// Move Right
+						playerOffsetFixTemp.y = playerPositionFixTemp.y - (1 - playerBoundsBorderY);
+					} else {
+						playerOffsetFixTemp.y = 0;
 					}
+					
+					//Denormalise
+					playerOffsetFixTemp.x *= Gdx.graphics.getWidth();
+					playerOffsetFixTemp.y *= Gdx.graphics.getHeight();
+					screenCamera.unproject(playerOffsetFixTemp);
+
+					//Get Distance
+					playerPositionFixTemp.x = 0;
+					playerPositionFixTemp.y = 0;
+					screenCamera.unproject(playerPositionFixTemp);
+					screenCamera.translate(playerOffsetFixTemp.x - playerPositionFixTemp.x, -(playerOffsetFixTemp.y - playerPositionFixTemp.y));
 				}
 			}
 		}

@@ -1,18 +1,5 @@
 
 game.png
-size: 512,512
-format: RGBA8888
-filter: MipMap,MipMap
-repeat: none
-starfield
-  rotate: false
-  xy: 2, 2
-  size: 500, 500
-  orig: 500, 500
-  offset: 0, 0
-  index: -1
-
-game2.png
 size: 512,256
 format: RGBA8888
 filter: MipMap,MipMap
@@ -33,30 +20,30 @@ bullet
   index: -1
 default
   rotate: false
-  xy: 204, 154
+  xy: 334, 154
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 enemy-follow
   rotate: false
-  xy: 306, 154
+  xy: 204, 24
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 enemy-random
   rotate: false
-  xy: 408, 154
+  xy: 334, 52
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 playership
   rotate: false
-  xy: 204, 52
-  size: 100, 100
-  orig: 100, 100
+  xy: 204, 126
+  size: 128, 128
+  orig: 128, 128
   offset: 0, 0
   index: -1
 score
@@ -68,7 +55,7 @@ score
   index: -1
 spark
   rotate: false
-  xy: 306, 142
+  xy: 436, 244
   size: 50, 10
   orig: 50, 10
   offset: 0, 0

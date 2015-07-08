@@ -19,7 +19,7 @@ public class PlayerEntity extends Entity {
 		setColor(Color.GREEN);
 		setDamping(0);
 		setMaxVelocity(400);
-		setRadius(20);
+		setRadius(25);
 		setBounceOffWalls(false);
 	}
 

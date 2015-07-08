@@ -52,7 +52,7 @@ public class ClientConnectionManager extends Listener implements Disposable{
     private void setupClientConnection() {
         synchronized (clientConnectionLock) {
             disconnect();
-            connection = new Client(10* 1024 * 1024, 10 * 1024 * 1024);
+            connection = new Client(1* 1024 * 1024, 1 * 1024 * 1024);
             connection.start();
             connection.addListener(this);
             NetworkProtocall.register(connection.getKryo());

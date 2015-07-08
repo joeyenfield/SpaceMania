@@ -36,7 +36,7 @@ public class GridTextureRenderer implements GridSystemListener {
 	int sizeX = 0;
 	int sizeY = 0;
 
-	float imageScale = 10;
+	boolean highQuality = true;
 
 	public GridTextureRenderer() {
 		init();
@@ -46,9 +46,17 @@ public class GridTextureRenderer implements GridSystemListener {
 		vertexShader = Gdx.files.internal("shaders/vertex.glsl").readString();
 		fragmentShader = Gdx.files.internal("shaders/fragment.glsl").readString();
 		shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
-		starfieldDeepTexture = new Texture("starfield-deep.png");
-		starfieldParalaxTexture = new Texture("starfield-paralax.png");
-		texture = new Texture("starfield.png");
+
+		if (highQuality) {
+			starfieldDeepTexture = new Texture("background.png");
+			starfieldParalaxTexture = new Texture("starfield-b-2048.png");
+			texture = new Texture("starfield-b-2048.png");
+		} else {
+			starfieldDeepTexture = new Texture("starfield-256.png");
+			starfieldParalaxTexture = new Texture("starfield-b-256.png");
+			texture = new Texture("starfield-256.png");
+
+		}
 		batch = new SpriteBatch();
 
 		starfieldDeepTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
@@ -181,13 +189,15 @@ public class GridTextureRenderer implements GridSystemListener {
 		float offsetX = 0.1f;
 		float offsetY = 0.1f;
 		boolean basic = true;
-		if (basic) {
-			batch.begin();
+
+		batch.begin();
+		if (highQuality) {
 			batch.disableBlending();
-			batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-			batch.draw(starfieldDeepTexture, world.x, world.y, world.width, world.height, offsetX, offsetY, offsetX + world.width / starfieldDeepTexture.getWidth(), offsetY + world.height / starfieldDeepTexture.getHeight());
-			batch.end();
-		} else {
+		}
+		batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+		batch.draw(starfieldDeepTexture, world.x, world.y, world.width, world.height, offsetX, offsetY, offsetX + world.width / starfieldDeepTexture.getWidth(), offsetY + world.height / starfieldDeepTexture.getHeight());
+		batch.end();
+		if (!basic) {
 
 			texture.bind();
 			shaderProgram.begin();
@@ -224,5 +234,13 @@ public class GridTextureRenderer implements GridSystemListener {
 	public void gridChanged(GridSystem grid) {
 		rebuild(grid);
 		world.set(grid.getSettings().bounds);
+		
+		float extraX = Gdx.graphics.getWidth()*2;
+		float extraY = Gdx.graphics.getHeight()*2;
+		
+		world.x -=extraX;
+		world.y -=extraY;
+		world.width+=2*extraX;
+		world.height+=2*extraY;
 	}
 }

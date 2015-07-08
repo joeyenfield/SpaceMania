@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -135,6 +136,7 @@ public class EngineRender {
 	public void renderEntity(OrthographicCamera camera, Set<Entity> entities, SpriteBatch batch) {
 		// Render Players
 		batch.begin();
+		batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 		for (Entity entity : entities) {
 			if (entity.isAlive()) {
 				transform.idt();
@@ -145,6 +147,7 @@ public class EngineRender {
 				batch.setColor(entity.getColor());
 				AtlasRegion region = defaultRegion;
 				if ((entity instanceof PlayerEntity)) {
+					batch.setColor(Color.WHITE);
 					region = playerRegion;
 				} else if (entity instanceof BulletEntity) {
 					region = bulletRegion;
@@ -172,8 +175,6 @@ public class EngineRender {
 	boolean firstPathRender = true;
 
 	public void render(OrthographicCamera camera, ClientEngine engine) {
-		Gdx.gl.glEnable(GL20.GL_BLEND);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 		shapeRender.setProjectionMatrix(camera.combined);
 
 		entityBatch.setProjectionMatrix(camera.combined);
@@ -219,6 +220,10 @@ public class EngineRender {
 		// renderEntityDebug(camera, renderEntities);
 		renderEntity(camera, renderEntities, entityBatch);
 
+		shapeRender.begin(ShapeType.Line);
+		shapeRender.setColor(Color.WHITE);
+		shapeRender.rect(engine.getRegion().x, engine.getRegion().y, engine.getRegion().width,engine.getRegion().height);
+		shapeRender.end();
 		// renderEntities.clear();
 		// if (ServerManager.manager != null) {
 		// ServerManager manager = ServerManager.manager;

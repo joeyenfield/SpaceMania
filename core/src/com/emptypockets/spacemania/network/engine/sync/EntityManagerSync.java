@@ -140,7 +140,7 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 		DataLogger.log("server-sync", 2);
 		ClientEngineEntityManagerSyncPayload payload = Pools.obtain(ClientEngineEntityManagerSyncPayload.class);
 		payload.setSyncData(this);
-		payload.setComsType(ComsType.UDP);
+		payload.setComsType(ComsType.TCP);
 		player.send(payload);
 		Pools.free(payload);
 		cleanAfterSends();

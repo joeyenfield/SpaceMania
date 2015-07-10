@@ -8,9 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.client.ClientEngine;
@@ -18,17 +16,13 @@ import com.emptypockets.spacemania.network.engine.grid.GridSystem;
 import com.emptypockets.spacemania.network.engine.grid.GridSystemListener;
 
 public class GridTextureRenderer implements GridSystemListener {
-	Texture starfieldDeepTexture;
-	Texture starfieldParalaxTexture;
-	Texture texture;
-
+	Texture gridTexture;
 	String vertexShader;
 	String fragmentShader;
 	ShaderProgram shaderProgram;
 	Mesh mesh;
 	Rectangle world = new Rectangle();
 
-	SpriteBatch batch;
 	float[] vertData;
 	short[] idxData;
 	int pixSize = 5;
@@ -47,21 +41,8 @@ public class GridTextureRenderer implements GridSystemListener {
 		fragmentShader = Gdx.files.internal("shaders/fragment.glsl").readString();
 		shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
 
-		if (highQuality) {
-			starfieldDeepTexture = new Texture("background.png");
-			starfieldParalaxTexture = new Texture("starfield-b-2048.png");
-			texture = new Texture("starfield-b-2048.png");
-		} else {
-			starfieldDeepTexture = new Texture("starfield-256.png");
-			starfieldParalaxTexture = new Texture("starfield-b-256.png");
-			texture = new Texture("starfield-256.png");
-
-		}
-		batch = new SpriteBatch();
-
-		starfieldDeepTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		starfieldParalaxTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		texture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		gridTexture = new Texture("back.png");
+		gridTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 	}
 
 	public void setData(int x, int y, Vector2 pos, Vector2 uv, float alpha) {
@@ -117,8 +98,8 @@ public class GridTextureRenderer implements GridSystemListener {
 				pos.x = system.getSettings().bounds.x + system.getSettings().bounds.width * xf;
 				pos.y = system.getSettings().bounds.y + system.getSettings().bounds.height * yf;
 
-				uv.x = (pos.x / starfieldDeepTexture.getWidth());
-				uv.y = (pos.y / starfieldDeepTexture.getHeight());
+				uv.x = (pos.x / gridTexture.getWidth());
+				uv.y = (pos.y / gridTexture.getHeight());
 				setData(x, y, pos, uv, 1f);
 			}
 		}
@@ -134,8 +115,8 @@ public class GridTextureRenderer implements GridSystemListener {
 				float yf = y / (sizeY - 1f);
 				pos.x = xf;
 				pos.y = yf;
-				uv.x = (pos.x / starfieldDeepTexture.getWidth());
-				uv.y = (pos.y / starfieldDeepTexture.getHeight());
+				uv.x = (pos.x / gridTexture.getWidth());
+				uv.y = (pos.y / gridTexture.getHeight());
 				setData(x, y, pos, uv, 1f);
 			}
 		}
@@ -158,7 +139,8 @@ public class GridTextureRenderer implements GridSystemListener {
 			mesh.dispose();
 		}
 		// Create a mesh out of two triangles rendered clockwise without indices
-		mesh = new Mesh(true, sizeX * sizeY, idxData.length, new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE), new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"), new VertexAttribute(VertexAttributes.Usage.Generic, 1, "a_alpha"));
+		mesh = new Mesh(true, sizeX * sizeY, idxData.length, new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE), new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"), new VertexAttribute(
+				VertexAttributes.Usage.Generic, 1, "a_alpha"));
 
 		mesh.setVertices(vertData);
 		mesh.setIndices(idxData);
@@ -175,72 +157,27 @@ public class GridTextureRenderer implements GridSystemListener {
 			for (short x = 0; x < sizeX; x++) {
 				for (short y = 0; y < sizeY; y++) {
 					setPos(x, y, engine.getGridData().getNodePos(x, y));
-					setWeight(x, y, 1f);
+					setWeight(x, y, .5f);
 				}
 				mesh.setVertices(vertData);
 			}
 		}
+		gridTexture.bind();
+		shaderProgram.begin();
 
-		// Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
-		// Gdx.gl20.glEnable(GL20.GL_BLEND);
-		// Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_srONE);
-		//
-		batch.setProjectionMatrix(camera.combined);
-		float offsetX = 0.1f;
-		float offsetY = 0.1f;
-		boolean basic = true;
+		Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
-		batch.begin();
-		if (highQuality) {
-			batch.disableBlending();
-		}
-		batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-		batch.draw(starfieldDeepTexture, world.x, world.y, world.width, world.height, offsetX, offsetY, offsetX + world.width / starfieldDeepTexture.getWidth(), offsetY + world.height / starfieldDeepTexture.getHeight());
-		batch.end();
-		if (!basic) {
-
-			texture.bind();
-			shaderProgram.begin();
-
-			Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
-			Gdx.gl20.glEnable(GL20.GL_BLEND);
-			Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-
-			shaderProgram.setUniformMatrix("u_projTrans", camera.combined);
-			shaderProgram.setUniformi("u_texture", 0);
-			mesh.render(shaderProgram, GL20.GL_TRIANGLES);
-			shaderProgram.end();
-		}
-
-		float fx = ((camera.position.x / starfieldDeepTexture.getWidth()) / 10);
-		float fy = ((camera.position.y / starfieldDeepTexture.getHeight()) / 10);
-		offsetX += fx;
-		offsetY += fy;
-		batch.begin();
-		batch.enableBlending();
-		batch.setColor(1, 1, 1, 1);
-		batch.draw(starfieldParalaxTexture, world.x, world.y, world.width, world.height, offsetX, offsetY, offsetX + world.width / starfieldParalaxTexture.getWidth(), offsetY + world.height / starfieldParalaxTexture.getHeight());
-
-		offsetX += fx + 0.5;
-		offsetY += fy + 0.3;
-		batch.setColor(1, 1, 1, 1);
-		batch.draw(starfieldParalaxTexture, world.x, world.y, world.width, world.height, offsetX, offsetY, offsetX + world.width / starfieldParalaxTexture.getWidth(), offsetY + world.height / starfieldParalaxTexture.getHeight());
-
-		batch.end();
-
+		shaderProgram.setUniformMatrix("u_projTrans", camera.combined);
+		shaderProgram.setUniformi("u_texture", 0);
+		mesh.render(shaderProgram, GL20.GL_TRIANGLES);
+		shaderProgram.end();
 	}
 
 	@Override
 	public void gridChanged(GridSystem grid) {
 		rebuild(grid);
 		world.set(grid.getSettings().bounds);
-		
-		float extraX = Gdx.graphics.getWidth()*2;
-		float extraY = Gdx.graphics.getHeight()*2;
-		
-		world.x -=extraX;
-		world.y -=extraY;
-		world.width+=2*extraX;
-		world.height+=2*extraY;
 	}
 }

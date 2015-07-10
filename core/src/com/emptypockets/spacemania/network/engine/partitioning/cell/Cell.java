@@ -6,20 +6,20 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 
-public class Cell {
+public class Cell<ENT extends PartitionEntity> {
 	Rectangle bounds;
-	ArrayList<Entity> entities;
+	ArrayList<ENT> entities;
 
 	public Cell() {
 		bounds = new Rectangle();
-		entities = new ArrayList<Entity>();
+		entities = new ArrayList<ENT>();
 	}
 
 	public void clear() {
 		entities.clear();
 	}
 
-	public void addEntity(Entity entity) {
+	public void addEntity(ENT entity) {
 		entities.add(entity);
 	}
 
@@ -27,7 +27,7 @@ public class Cell {
 		return bounds;
 	}
 
-	public ArrayList<? extends Entity> getEntities() {
+	public ArrayList<? extends ENT> getEntities() {
 		return entities;
 	}
 

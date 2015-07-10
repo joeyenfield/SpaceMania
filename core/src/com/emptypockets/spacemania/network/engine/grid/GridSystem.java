@@ -20,6 +20,7 @@ import com.emptypockets.spacemania.network.engine.grid.spring.NodeLinkSettings;
 
 public class GridSystem implements EngineRegionListener{
 
+	public static final int RENDER_OFF = 0;
 	public static final int RENDER_TEXTURE = 1;
 	public static final int RENDER_PATH = 2;
 	public GridNode[][] nodes;

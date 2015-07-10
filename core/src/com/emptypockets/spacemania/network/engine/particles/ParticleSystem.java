@@ -1,15 +1,19 @@
 package com.emptypockets.spacemania.network.engine.particles;
 
+import java.util.Set;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
+import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
 import com.emptypockets.spacemania.holders.CleanerProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
@@ -20,14 +24,17 @@ import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.entities.collect.CollectableEntity;
+import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePartition;
 import com.emptypockets.spacemania.utils.ColorUtils;
 
 public class ParticleSystem extends ArrayListProcessor<Particle> implements EntityManagerInterface {
-
-	int particleCountSphere = 50;
-	int maxParticles = 10000;
+	int particleCountSphere = Constants.DEFAULT_PARTICLES_SPHERE;
+	int maxParticles = Constants.DEFAULT_PARTICLES;
+	CellSpacePartition<Particle> partition;
 
 	public ParticleSystem() {
+		partition = new CellSpacePartition<Particle>();
+		partition.create(Constants.PARTICLE_SYTEM_PARTITION_X, Constants.PARTICLE_SYTEM_PARTITION_Y);
 	}
 
 	private void clearDead() {
@@ -51,31 +58,11 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		return (float) getSize() / (float) maxParticles;
 	}
 
-	public void launchSpark(Vector2 pos, Vector2 vel, Color start, Color end, boolean randomAngle) {
-		if (hasMaxParticles()) {
-			return;
-		}
-		float fillFract = fillFraction();
-		if (fillFract > 0.5f) {
-			if (MathUtils.random() < fillFract) {
-				return;
-			}
-		}
-		Particle spark = (Particle) getParticle();
-		if(randomAngle){
-			spark.setAngle(MathUtils.random(360));
-		}else{
-			spark.setUseVelAngle(true);
-		}
-		spark.start();
-		spark.getPos().set(pos);
-		spark.setupColor(start, end);
-		spark.getVel().set(vel);
-		spark.setLifeTime(MathUtils.random(3000, 5000));
-		add(spark);
+	private Particle getParticle() {
+		return Pools.obtain(Particle.class);
 	}
 
-	public void launchSphere(Vector2 pos, int particleCount, Color start, Color end,boolean randomAngle) {
+	public void launchSparkSphere(Vector2 pos, int particleCount, Color start, Color end, boolean randomAngle) {
 		if (hasMaxParticles()) {
 			return;
 		}
@@ -114,8 +101,50 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		}
 	}
 
-	private Particle getParticle() {
-		return Pools.obtain(Particle.class);
+	public void launchSpark(Vector2 pos, Vector2 vel, Color start, Color end, boolean randomAngle) {
+		if (hasMaxParticles()) {
+			return;
+		}
+		float fillFract = fillFraction();
+		if (fillFract > 0.5f) {
+			if (MathUtils.random() < fillFract) {
+				return;
+			}
+		}
+		Particle spark = (Particle) getParticle();
+		if (randomAngle) {
+			spark.setAngle(MathUtils.random(360));
+		} else {
+			spark.setUseVelAngle(true);
+		}
+		spark.start();
+		spark.getPos().set(pos);
+		spark.setupColor(start, end);
+		spark.getVel().set(vel);
+		spark.setScaleY(.3f, .3f);
+		spark.setScaleX(.5f, 0.001f);
+		spark.setLifeTime(MathUtils.random(3000, 5000));
+		spark.setScaleInterpolation(Interpolation.fade);
+		
+		add(spark);
+	}
+
+	public void launchSmoke(Vector2 pos, Vector2 vel, Color start, Color end) {
+		if (hasMaxParticles()) {
+			return;
+		}
+		Particle spark = (Particle) getParticle();
+		spark.setType(ParticleType.SMOKE);
+		spark.setAngle(MathUtils.random(360));
+		spark.start();
+		spark.getPos().set(pos);
+		spark.setupColor(start, end);
+		spark.getVel().set(vel);
+		spark.setScaleInterpolation(Interpolation.sineOut);
+		spark.setScaleX(.01f, 1);
+		spark.setScaleY(.01f, 1);
+		spark.setLifeTime(3000);
+		add(spark);
 	}
 
 	public synchronized void update(final ClientEngine engine, final float dt) {
@@ -146,10 +175,11 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 			}
 		});
 		clearDead();
+		partition.rebuild(this);
 	}
 
-	public void drawPlayerTrail(PlayerEntity player) {
-		// player.createExhaust(this);
+	public void drawPlayerTrail(ClientEngine engine, PlayerEntity player) {
+		player.createExhaust(engine, this);
 
 	}
 
@@ -161,7 +191,7 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 
 	@Override
 	public void entityRemoved(Entity entity, boolean killed) {
-		if(!killed || !entity.isExplodes()){
+		if (!killed || !entity.isExplodes()) {
 			return;
 		}
 		if (entity instanceof CollectableEntity) {
@@ -169,18 +199,18 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		}
 		float multiplier = 1;
 		boolean randomAngle = true;
-		
+
 		if (entity instanceof PlayerEntity) {
 			multiplier = 100;
-		}else if(entity instanceof BulletEntity){
-			multiplier  = 0.2f;
+		} else if (entity instanceof BulletEntity) {
+			multiplier = 0.2f;
 			randomAngle = false;
 		}
 		Color colorA = new Color(entity.getColor());
 		Color colorB = new Color(entity.getColor());
 		colorB.a = 0.4f;
 		colorA.a = 1f;
-		launchSphere(entity.getPos(), (int)(particleCountSphere * multiplier), colorA, colorB,randomAngle);
+		launchSparkSphere(entity.getPos(), (int) (particleCountSphere * multiplier), colorA, colorB, randomAngle);
 
 		// if (dynamicGrid && !(entity instanceof BulletEntity))
 		// gridManager.applyExplosion(entity.getPos(), -10 * massSize, 800);
@@ -188,5 +218,13 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 
 	public void setMaxParticles(int maxParticles) {
 		this.maxParticles = maxParticles;
+	}
+
+	public void getEntities(Rectangle viewport, Set<Particle> renderEntities) {
+		partition.getEntities(viewport, renderEntities);
+	}
+
+	public CellSpacePartition<Particle> getPartition() {
+		return partition;
 	}
 }

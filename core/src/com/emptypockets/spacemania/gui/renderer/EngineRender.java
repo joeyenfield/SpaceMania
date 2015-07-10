@@ -1,5 +1,6 @@
 package com.emptypockets.spacemania.gui.renderer;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,10 +36,7 @@ import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePar
  * Created by jenfield on 10/05/2015.
  */
 public class EngineRender {
-	SpriteBatch entityBatch;
-	SpriteBatch particleBatch;
-	SpriteBatch backgroundBatch;
-
+	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRender;
 
 	TextureAtlas textureAtlas;
@@ -46,9 +44,12 @@ public class EngineRender {
 	AtlasRegion enemyFollowRegion;
 	AtlasRegion enemyRandomRegion;
 	AtlasRegion bulletRegion;
-	AtlasRegion sparkRegion;
 	AtlasRegion scoreRegion;
 	AtlasRegion defaultRegion;
+
+	AtlasRegion sparkRegion;
+	AtlasRegion smokeRegion;
+	AtlasRegion debrisRegion;
 
 	Affine2 transform = new Affine2();
 
@@ -58,6 +59,7 @@ public class EngineRender {
 
 	GridTextureRenderer gridTextureRender;
 	GridPathRenderer gridPathRender;
+	BackgroundRenderer backgroundRender;
 
 	Vector3 screenStart = new Vector3();
 	Vector3 screenEnd = new Vector3();
@@ -67,28 +69,30 @@ public class EngineRender {
 
 	public EngineRender() {
 		textureAtlas = new TextureAtlas("game/game.atlas");
+
 		for (Texture t : textureAtlas.getTextures()) {
 			t.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		}
+
 		gridTextureRender = new GridTextureRenderer();
 		gridPathRender = new GridPathRenderer();
 		shapeRender = new ShapeRenderer();
+		backgroundRender = new BackgroundRenderer();
 
-		entityBatch = new SpriteBatch();
-		backgroundBatch = new SpriteBatch();
-		particleBatch = new SpriteBatch();
+		spriteBatch = new SpriteBatch();
 
 		int src = GL20.GL_SRC_ALPHA;
 		int dst = GL20.GL_ONE;
-		particleBatch.setBlendFunction(src, dst);
-		entityBatch.setBlendFunction(src, dst);
-		backgroundBatch.setBlendFunction(src, dst);
+		spriteBatch.setBlendFunction(src, dst);
 
 		playerRegion = textureAtlas.findRegion("playership");
 		enemyFollowRegion = textureAtlas.findRegion("enemy-follow");
 		enemyRandomRegion = textureAtlas.findRegion("enemy-random");
 		bulletRegion = textureAtlas.findRegion("bullet");
 		sparkRegion = textureAtlas.findRegion("spark");
+		smokeRegion = textureAtlas.findRegion("smoke");
+		debrisRegion = textureAtlas.findRegion("debris");
+
 		scoreRegion = textureAtlas.findRegion("score");
 		defaultRegion = textureAtlas.findRegion("default");
 
@@ -177,9 +181,8 @@ public class EngineRender {
 	public void render(OrthographicCamera camera, ClientEngine engine) {
 		shapeRender.setProjectionMatrix(camera.combined);
 
-		entityBatch.setProjectionMatrix(camera.combined);
-		particleBatch.setProjectionMatrix(camera.combined);
-		backgroundBatch.setProjectionMatrix(camera.combined);
+		spriteBatch.setProjectionMatrix(camera.combined);
+		spriteBatch.setProjectionMatrix(camera.combined);
 
 		screenStart.set(0, 0, 0);
 		screenEnd.set(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0);
@@ -196,34 +199,48 @@ public class EngineRender {
 			viewport.height *= -1;
 		}
 
-		// renderSpatialPartionDebug(camera,
-		// engine.getEntitySpatialPartition());
+		/**
+		 * Render Background
+		 */
+		backgroundRender.render(camera, engine);
+
+		/**
+		 * Render Grid
+		 */
+		// renderSpatialPartionDebug(camera, engine.getEntitySpatialPartition());
 		if (engine.getGridData().getRenderType() == GridSystem.RENDER_PATH) {
 			engine.getGridData().addListener(gridPathRender);
 			engine.getGridData().removeListener(gridTextureRender);
 			gridPathRender.updateBounds();
 			gridPathRender.render(engine.getGridData(), viewport, shapeRender);
-		} else {
+		} else if (engine.getGridData().getRenderType() == GridSystem.RENDER_TEXTURE) {
 			engine.getGridData().addListener(gridTextureRender);
 			engine.getGridData().removeListener(gridPathRender);
 			// Render Grid
 			gridTextureRender.render(camera, engine);
 			lastGridTextureRender = true;
+		} else {
+			shapeRender.begin(ShapeType.Line);
+			shapeRender.setColor(Color.WHITE);
+			shapeRender.rect(engine.getRegion().x, engine.getRegion().y, engine.getRegion().width, engine.getRegion().height);
+			shapeRender.end();
 		}
 
-		// Particles
-		renderParticles(engine.getParticleSystem(), viewport, particleBatch);
+		/**
+		 * Render Particles
+		 */
+		Set<Particle> particles = new HashSet<Particle>();
+		engine.getParticleSystem().getEntities(viewport, particles);
+		renderParticles(particles, spriteBatch);
 
-		// Entities
+		/**
+		 * Render Entities
+		 */
 		Set<Entity> renderEntities = new HashSet<Entity>();
 		engine.getEntitySpatialPartition().getEntities(viewport, renderEntities);
 		// renderEntityDebug(camera, renderEntities);
-		renderEntity(camera, renderEntities, entityBatch);
+		renderEntity(camera, renderEntities, spriteBatch);
 
-		shapeRender.begin(ShapeType.Line);
-		shapeRender.setColor(Color.WHITE);
-		shapeRender.rect(engine.getRegion().x, engine.getRegion().y, engine.getRegion().width,engine.getRegion().height);
-		shapeRender.end();
 		// renderEntities.clear();
 		// if (ServerManager.manager != null) {
 		// ServerManager manager = ServerManager.manager;
@@ -231,28 +248,46 @@ public class EngineRender {
 		// renderEntities);
 		// engine.getEntitySpatialPartition().getEntities(viewport,
 		// renderEntities);
-		// renderEntity(camera, renderEntities, entityBatch);
+		// renderEntity(camera, renderEntities, batch);
 		// }
 
 	}
 
-	public void renderParticles(ParticleSystem particleSystem, final Rectangle viewport, final SpriteBatch batch) {
+	public void renderParticles(Set<Particle> particles, final SpriteBatch batch) {
 		batch.begin();
-		particleSystem.process(new SingleProcessor<Particle>() {
-			@Override
-			public void process(Particle entity) {
-				if (entity.isDead() || !viewport.contains(entity.getPos())) {
-					return;
+		for (Particle entity : particles) {
+			if (!entity.isDead()) {
+
+				AtlasRegion region = sparkRegion;
+				float sizeX = 1;
+				float sizeY = 1;
+
+				switch (entity.getType()) {
+				case DEBRIS:
+					region = debrisRegion;
+					break;
+				case SMOKE:
+					region = smokeRegion;
+					break;
+				case SPARK:
+					region = sparkRegion;
+					break;
+				default:
+					region = sparkRegion;
+					break;
 				}
+
+				sizeX = region.getRegionWidth() * entity.getCurrentScaleX();
+				sizeY = region.getRegionHeight() * entity.getCurrentScaleY();
+
 				transform.idt();
 				transform.translate(entity.getPos());
 				transform.rotate(entity.getAngle());
-				transform.translate(-entity.getRadius(), -entity.getRadius());
+				transform.translate(-sizeX / 2, -sizeY / 2);
 				batch.setColor(entity.getCurrentColor());
-				float velScale = .05f;
-				batch.draw(sparkRegion, entity.getVel().len() * velScale, 3, transform);
+				batch.draw(region, sizeX, sizeY, transform);
 			}
-		});
+		}
 		batch.end();
 	}
 }

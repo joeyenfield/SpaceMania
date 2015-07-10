@@ -5,10 +5,11 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.emptypockets.spacemania.network.engine.partitioning.cell.PartitionEntity;
 import com.emptypockets.spacemania.network.engine.sync.StateSyncUtils;
 import com.emptypockets.spacemania.plotter.DataLogger;
 
-public abstract class Entity implements Poolable {
+public abstract class Entity implements Poolable,PartitionEntity{
 	EntityState state;
 	EntityType type;
 

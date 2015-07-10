@@ -2,6 +2,7 @@ package com.emptypockets.spacemania.network.client;
 
 import java.util.ArrayList;
 
+import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
@@ -19,7 +20,7 @@ public class ClientEngine extends Engine {
 	int gridSizeX = 30;
 	int gridSizeY = 30;
 
-	int maxParticles = 500;
+	int maxParticles = Constants.DEFAULT_PARTICLES;
 	boolean dynamicGrid = true;
 
 	long lastServerUpdateTime = 0;
@@ -28,10 +29,13 @@ public class ClientEngine extends Engine {
 		super();
 		particleSystem = new ParticleSystem();
 		particleSystem.setMaxParticles(maxParticles);
+		
 		gridManager = new GridSystem();
 		gridManager.setup(gridSizeX, gridSizeY, getRegion());
-		addRegionListener(gridManager);
+		
 		getEntityManager().register(particleSystem);
+		addRegionListener(gridManager);
+		addRegionListener(particleSystem.getPartition());
 	}
 
 	@Override
@@ -54,7 +58,7 @@ public class ClientEngine extends Engine {
 		ArrayList<PlayerEntity> players = getEntityManager().filterEntities(PlayerEntity.class);
 
 		for (PlayerEntity player : players) {
-			particleSystem.drawPlayerTrail(player);
+			particleSystem.drawPlayerTrail(this, player);
 		}
 
 		particleSystem.update(this, deltaTime);

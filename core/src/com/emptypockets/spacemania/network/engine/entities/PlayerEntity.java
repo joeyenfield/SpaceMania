@@ -6,13 +6,14 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.client.input.ClientInput;
+import com.emptypockets.spacemania.network.engine.particles.ParticleSystem;
 
 public class PlayerEntity extends Entity {
 	long lastExhaust = 0;
-	long exhaustTime = 500;
+	long exhaustTime = 50;
 	float magnetDistance = 100;
-	Color sideExhauseColor = new Color(200 / 256f, 38 / 256f, 9 / 256f, 1); // deep
-	Color midExhauseColor = new Color(255 / 256f, 187 / 256f, 30 / 256f, 1); // orange-yellow
+	Color smokeStart = new Color(1,1,1, 0.5f); // deep
+	Color smokeEnd = new Color(.1f,.1f,.1f, 0.1f); // orange-yellow
 
 	public PlayerEntity() {
 		super(EntityType.Player);
@@ -23,61 +24,24 @@ public class PlayerEntity extends Entity {
 		setBounceOffWalls(false);
 	}
 
-	
-	public void applyClientInput(ClientInput input){
+	public void applyClientInput(ClientInput input) {
 		getVel().set(input.getMove()).limit2(1).scl(getMaxVelocity());
 	}
+
 	// TODO Auto-generated method stub
-	public void createExhaust(ClientEngine engine) {
+	public void createExhaust(ClientEngine engine, ParticleSystem particleSys) {
 		if (getVel().len2() > 0.1f) {
 			// set up some variables
-
-			Quaternion rot = new Quaternion();
-			rot.setEulerAngles(0f, 0f, getVel().angle());
-
-			float t = engine.getTime();
-			// The primary velocity of the particles is 3 pixels/frame in the
-			// direction opposite to which the ship is travelling.
-			Vector2 baseVel = getVel().cpy().scl(-3);
-			// Calculate the sideways velocity for the two side streams. The
-			// direction is perpendicular to the ship's velocity and the
-			// magnitude varies sinusoidally.
-			Vector2 perpVel = new Vector2(baseVel.y, -baseVel.x);
-			perpVel.scl((0.6f * (float) MathUtils.sin(t * 10)));
-
-			float alpha = 0.7f;
-
-			// // middle particle stream
-			Vector2 velMid = baseVel.cpy();
-			velMid.y += MathUtils.random();
-
-			// engine.getParticleSystem().launchSpark(pos, vel, start, end);
-			// GameRoot.ParticleManager.CreateParticle(Art.LineParticle, pos,
-			// Color.White * alpha, 60f, new Vector2(0.5f, 1),
-			// new ParticleState(velMid, ParticleType.Enemy));
-			// GameRoot.ParticleManager.CreateParticle(Art.Glow, pos, midColor *
-			// alpha, 60f, new Vector2(0.5f, 1),
-			// new ParticleState(velMid, ParticleType.Enemy));
-			//
-			// // side particle streams
-			// Vector2 vel1 = baseVel + perpVel + rand.NextVector2(0, 0.3f);
-			// Vector2 vel2 = baseVel - perpVel + rand.NextVector2(0, 0.3f);
-			// GameRoot.ParticleManager.CreateParticle(Art.LineParticle, pos,
-			// Color.White * alpha, 60f, new Vector2(0.5f, 1),
-			// new ParticleState(vel1, ParticleType.Enemy));
-			// GameRoot.ParticleManager.CreateParticle(Art.LineParticle, pos,
-			// Color.White * alpha, 60f, new Vector2(0.5f, 1),
-			// new ParticleState(vel2, ParticleType.Enemy));
-			//
-			// GameRoot.ParticleManager.CreateParticle(Art.Glow, pos, sideColor
-			// * alpha, 60f, new Vector2(0.5f, 1),
-			// new ParticleState(vel1, ParticleType.Enemy));
-			// GameRoot.ParticleManager.CreateParticle(Art.Glow, pos, sideColor
-			// * alpha, 60f, new Vector2(0.5f, 1),
-			// new ParticleState(vel2, ParticleType.Enemy));
-		}
-		if (System.currentTimeMillis() - lastExhaust > exhaustTime) {
-			lastExhaust = System.currentTimeMillis();
+			if (System.currentTimeMillis() - lastExhaust > exhaustTime) {
+				lastExhaust = System.currentTimeMillis();
+				Vector2 baseVel = getVel().cpy().scl(-.1f);
+				
+				particleSys.launchSmoke(getPos(), baseVel, smokeStart, smokeEnd);
+//				baseVel.rotate(-20);
+//				particleSys.launchSmoke(getPos(), baseVel, smokeStart, smokeEnd);
+//				baseVel.rotate(40);
+//				particleSys.launchSmoke(getPos(), baseVel, smokeStart, smokeEnd);
+			}
 		}
 	}
 

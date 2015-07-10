@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.ai.manager.AiManager;
@@ -23,7 +24,6 @@ public class ServerEngine extends Engine {
 	PlayerManager playerManager;
 
 	long lastEnemy = 0;
-	boolean spawning = true;
 
 	public ServerEngine(PlayerManager playerManager) {
 		super();
@@ -99,16 +99,16 @@ public class ServerEngine extends Engine {
 	}
 
 	public void spawnEnemy() {
-		if (!spawning)
+		if (!Constants.ENTITY_SPAWN)
 			return;
-		if (System.currentTimeMillis() - lastEnemy > 200) {
+		if (System.currentTimeMillis() - lastEnemy > Constants.ENTITY_SPAWN_TIME) {
 			lastEnemy = System.currentTimeMillis();
-			if (getEntityManager().countType(EntityType.Enemy_FOLLOW) < 40) {
+			if (getEntityManager().countType(EntityType.Enemy_FOLLOW) <  Constants.ENTITY_SPAWN_FOLLOW_COUNT) {
 				EnemyEntity entity = (EnemyEntity) getEntityManager().createEntity(EntityType.Enemy_FOLLOW);
 				entity.setPos(getRegion().x + getRegion().width * MathUtils.random(), getRegion().y + getRegion().height * MathUtils.random());
 				getEntityManager().addEntity(entity);
 			}
-			if (getEntityManager().countType(EntityType.Enemy_RANDOM) < 40) {
+			if (getEntityManager().countType(EntityType.Enemy_RANDOM) <  Constants.ENTITY_SPAWN_RANDOM_COUNT) {
 				EnemyEntity entity = (EnemyEntity) getEntityManager().createEntity(EntityType.Enemy_RANDOM);
 				entity.setPos(getRegion().x + getRegion().width * MathUtils.random(), getRegion().y + getRegion().height * MathUtils.random());
 				getEntityManager().addEntity(entity);

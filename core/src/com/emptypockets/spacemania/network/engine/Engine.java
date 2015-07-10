@@ -6,6 +6,7 @@ import java.util.Iterator;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
+import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
@@ -17,25 +18,25 @@ import com.emptypockets.spacemania.plotter.DataLogger;
 public class Engine implements Disposable {
 	Rectangle region = new Rectangle();
 	EntityManager entities;
-	CellSpacePartition entitySpatialPartition;
+	CellSpacePartition<Entity> entitySpatialPartition;
 	long startTime;
 	long lastUpdate;
 	ArrayList<EngineRegionListener> regionListeners;
 
 	public Engine() {
-		float size = 4000;
 		entities = new EntityManager();
 		regionListeners = new ArrayList<EngineRegionListener>();
-		entitySpatialPartition = new CellSpacePartition();
-		entitySpatialPartition.create(20, 20);
+		entitySpatialPartition = new CellSpacePartition<Entity>();
+		entitySpatialPartition.create(Constants.ENTITY_SYTEM_PARTITION_X, Constants.ENTITY_SYTEM_PARTITION_Y);
 		addRegionListener(entitySpatialPartition);
-		setRegion(size);
+		setRegion(Constants.DEFAULT_ROOM_SIZE);
 		start();
 	}
 
 	public void addRegionListener(EngineRegionListener listener) {
 		synchronized (regionListeners) {
 			regionListeners.add(listener);
+			listener.notifyRegionChanged(region);
 		}
 	}
 
@@ -62,6 +63,10 @@ public class Engine implements Disposable {
 
 	public long getTime() {
 		return System.currentTimeMillis() - startTime;
+	}
+	
+	public float getTimeInSec(){
+		return getTime()/1000f;
 	}
 
 	public long getEngineLastUpdateTime() {

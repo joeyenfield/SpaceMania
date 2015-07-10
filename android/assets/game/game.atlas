@@ -18,6 +18,20 @@ bullet
   orig: 50, 50
   offset: 0, 0
   index: -1
+debris
+  rotate: false
+  xy: 106, 42
+  size: 50, 10
+  orig: 50, 10
+  offset: 0, 0
+  index: -1
+spark
+  rotate: false
+  xy: 106, 42
+  size: 50, 10
+  orig: 50, 10
+  offset: 0, 0
+  index: -1
 default
   rotate: false
   xy: 334, 154
@@ -53,10 +67,10 @@ score
   orig: 50, 50
   offset: 0, 0
   index: -1
-spark
+smoke
   rotate: false
-  xy: 436, 244
-  size: 50, 10
-  orig: 50, 10
+  xy: 436, 190
+  size: 64, 64
+  orig: 64, 64
   offset: 0, 0
   index: -1

@@ -1,6 +1,5 @@
 package com.emptypockets.spacemania.network.engine.partitioning.cell;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -8,14 +7,14 @@ import java.util.Set;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.emptypockets.spacemania.holders.ObjectProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.engine.EngineRegionListener;
-import com.emptypockets.spacemania.network.engine.EntityManager;
 import com.emptypockets.spacemania.network.engine.IntersectorUtils;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 
-public class CellSpacePartition implements EngineRegionListener {
+public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRegionListener {
 	int numX;
 	int numY;
 
@@ -24,7 +23,7 @@ public class CellSpacePartition implements EngineRegionListener {
 	float startX = 0;
 	float startY = 0;
 
-	Cell[][] data;
+	Cell<ENT>[][] data;
 
 	public CellSpacePartition() {
 		create(0, 0);
@@ -55,16 +54,15 @@ public class CellSpacePartition implements EngineRegionListener {
 		}
 	}
 
-	public synchronized void rebuild(EntityManager entityManger) {
+	public synchronized void rebuild(ObjectProcessor<ENT> entityManger) {
 		for (int x = 0; x < numX; x++) {
 			for (int y = 0; y < numY; y++) {
 				data[x][y].clear();
 			}
 		}
-
-		entityManger.process(new SingleProcessor<Entity>() {
+		entityManger.process(new SingleProcessor<ENT>() {
 			@Override
-			public void process(Entity entity) {
+			public void process(ENT entity) {
 				Vector2 pos = entity.getPos();
 
 				// Top Left
@@ -101,49 +99,49 @@ public class CellSpacePartition implements EngineRegionListener {
 		return data;
 	}
 
-	public void filter(Set<Entity> result, Class<?> type) {
-		Iterator<Entity> entIterator = result.iterator();
+	public void filter(Set<ENT> result, Class<?> type) {
+		Iterator<ENT> entIterator = result.iterator();
 		while (entIterator.hasNext()) {
-			Entity ent = entIterator.next();
+			ENT ent = entIterator.next();
 			if (!type.isAssignableFrom(ent.getClass())) {
 				entIterator.remove();
 			}
 		}
 	}
 
-	public void filter(Set<Entity> result, EntityType type) {
-		Iterator<Entity> entIterator = result.iterator();
+	public void filter(Set<ENT> result, EntityType type) {
+		Iterator<ENT> entIterator = result.iterator();
 		while (entIterator.hasNext()) {
-			Entity ent = entIterator.next();
+			Entity ent = (Entity)entIterator.next();
 			if (!(type == ent.getType())) {
 				entIterator.remove();
 			}
 		}
 	}
 
-	public synchronized void getNearbyEntities(Entity entity, float distance, Set<Entity> result) {
+	public synchronized void getNearbyEntities(Entity entity, float distance, Set<ENT> result) {
 		searchNearbyEntities(entity.getPos(), entity.getRadius() + distance, result);
 	}
 
-	public synchronized void getNearbyEntities(Entity entity, float distance, Set<Entity> result, Class filterClass) {
+	public synchronized void getNearbyEntities(Entity entity, float distance, Set<ENT> result, Class filterClass) {
 		searchNearbyEntities(entity.getPos(), (entity.getRadius() + distance), result, filterClass);
 	}
 
-	public synchronized void getNearbyEntities(Entity entity, float distance, Set<Entity> result, EntityType type) {
+	public synchronized void getNearbyEntities(Entity entity, float distance, Set<ENT> result, EntityType type) {
 		searchNearbyEntities(entity.getPos(), entity.getRadius() + distance, result, type);
 	}
 
-	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<Entity> result, Class filterClass) {
+	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<ENT> result, Class filterClass) {
 		searchNearbyEntities(pos, dist, result);
 		filter(result, filterClass);
 	}
 
-	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<Entity> result, EntityType type) {
+	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<ENT> result, EntityType type) {
 		searchNearbyEntities(pos, dist, result);
 		filter(result, type);
 	}
 
-	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<Entity> result) {
+	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<ENT> result) {
 
 		// Top Left
 		int cellMinX = getCellX(pos.x - dist);
@@ -160,7 +158,8 @@ public class CellSpacePartition implements EngineRegionListener {
 					if (cell.containedInCircle(pos, dist)) {
 						result.addAll(cell.getEntities());
 					} else {
-						for (Entity ent : cell.getEntities()) {
+						for (Object entObj : cell.getEntities()) {
+							ENT ent = (ENT)entObj;
 							float dist2 = (dist + ent.getRadius());
 							dist2 = dist2 * dist2;
 							if (ent.getPos().dst2(pos) < dist2) {
@@ -173,7 +172,7 @@ public class CellSpacePartition implements EngineRegionListener {
 		}
 	}
 
-	public synchronized void getEntities(Rectangle viewport, Set<Entity> result) {
+	public synchronized void getEntities(Rectangle viewport, Set<ENT> result) {
 		// Top Left
 		int cellMinX = getCellX(viewport.x);
 		int cellMinY = getCellY(viewport.y);
@@ -189,7 +188,8 @@ public class CellSpacePartition implements EngineRegionListener {
 					if (viewport.contains(viewport)) {
 						result.addAll(cell.getEntities());
 					} else {
-						for (Entity ent : cell.getEntities()) {
+						for (Object entObj : cell.getEntities()) {
+							ENT ent = (ENT)entObj;
 							if (IntersectorUtils.intersects(viewport, ent.getPos(), ent.getRadius())) {
 								result.add(ent);
 							}
@@ -204,9 +204,10 @@ public class CellSpacePartition implements EngineRegionListener {
 		Entity result = null;
 		float minDist2 = 0;
 
-		Set<Entity> entities = new HashSet<Entity>();
+		Set<ENT> entities = new HashSet<ENT>();
 		searchNearbyEntities(entity.getPos(), maxDistance, entities);
-		for (Entity ent : entities) {
+		for (ENT entObj : entities) {
+			Entity ent = (Entity)entObj;
 			if (ent.getType() == type) {
 				// Check within Distance
 				// Check within FOV

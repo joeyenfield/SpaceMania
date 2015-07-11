@@ -1,13 +1,7 @@
 package com.emptypockets.spacemania.network.server.rooms.messages;
 
-import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomChatMessage;
-import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomMessage;
-import com.emptypockets.spacemania.network.server.player.ServerPlayer;
-
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Formatter;
+import com.emptypockets.spacemania.utils.PoolsManager;
 
 /**
  * Created by jenfield on 16/05/2015.
@@ -43,7 +37,7 @@ public class ServerRoomChatMessage extends ServerRoomMessage<ClientRoomChatMessa
 
     @Override
     public ClientRoomChatMessage createClientMessage() {
-        ClientRoomChatMessage result = Pools.obtain(ClientRoomChatMessage.class);
+        ClientRoomChatMessage result = PoolsManager.obtain(ClientRoomChatMessage.class);
         result.setMessage(getMessage());
         result.setMessageTime(timestamp);
         result.setUsername(username);

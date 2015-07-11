@@ -1,8 +1,6 @@
 package com.emptypockets.spacemania.network.client.rooms.messages;
 
-import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.network.client.ClientManager;
-import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 
 /**

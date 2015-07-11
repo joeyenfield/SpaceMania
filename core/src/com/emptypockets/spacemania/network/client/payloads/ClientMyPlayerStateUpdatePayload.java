@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.network.client.payloads;
 
 import com.emptypockets.spacemania.network.client.ClientManager;
-import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.client.player.MyPlayer;
 
 public class ClientMyPlayerStateUpdatePayload extends ClientPayload {

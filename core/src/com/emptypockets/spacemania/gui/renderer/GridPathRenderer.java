@@ -2,20 +2,15 @@ package com.emptypockets.spacemania.gui.renderer;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.CatmullRomSpline;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.gui.renderer.path.Path;
-import com.emptypockets.spacemania.network.engine.EngineRegionListener;
 import com.emptypockets.spacemania.network.engine.grid.GridNode;
 import com.emptypockets.spacemania.network.engine.grid.GridSystem;
 import com.emptypockets.spacemania.network.engine.grid.GridSystemListener;
-import com.emptypockets.spacemania.network.engine.grid.spring.DualNodeLink;
 import com.emptypockets.spacemania.network.engine.grid.spring.NodeLink;
 
 public class GridPathRenderer implements GridSystemListener{

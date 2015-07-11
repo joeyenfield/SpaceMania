@@ -2,7 +2,6 @@ package com.emptypockets.spacemania.network.client.commands.settings;
 
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.commands.ClientCommand;
-import com.emptypockets.spacemania.network.engine.grid.GridSystem;
 
 public class ClientSetGridCommand extends ClientCommand {
 

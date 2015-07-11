@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.network.server.engine;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -25,6 +24,9 @@ public class ServerEngine extends Engine {
 
 	long lastEnemy = 0;
 
+	ArrayList<BulletEntity> bullets = new ArrayList<BulletEntity>();
+	ArrayList<Entity> entities = new ArrayList<Entity>();
+	
 	public ServerEngine(PlayerManager playerManager) {
 		super();
 		aiManager = new AiManager(this);
@@ -34,14 +36,13 @@ public class ServerEngine extends Engine {
 	}
 
 	public void processCollissions() {
-		ArrayList<BulletEntity> bullets = getEntityManager().filterEntities(BulletEntity.class);
+		 getEntityManager().filterEntities(BulletEntity.class,bullets);
 
-		final HashSet<Entity> enemys = new HashSet<Entity>();
 		// Kill Enemys
 		for (BulletEntity bullet : bullets) {
-			enemys.clear();
-			getEntitySpatialPartition().getNearbyEntities(bullet, bullet.getLastMovementDist() * 2, enemys, EnemyEntity.class);
-			ENEMY_LOOP: for (Entity ent : enemys) {
+			entities.clear();
+			getEntitySpatialPartition().getNearbyEntities(bullet, bullet.getLastMovementDist() * 2, entities, EnemyEntity.class);
+			ENEMY_LOOP: for (Entity ent : entities) {
 				EnemyEntity enemy = (EnemyEntity) ent;
 				if (bullet.contact(enemy)) {
 					bullet.setAlive(false);
@@ -60,9 +61,9 @@ public class ServerEngine extends Engine {
 				}
 			}
 		}
-		enemys.clear();
+		bullets.clear();
+		entities.clear();
 
-		final HashSet<Entity> collectable = new HashSet<Entity>();
 		// Get Collectable
 		final Vector2 force = new Vector2();
 		playerManager.process(new SingleProcessor<ServerPlayer>() {
@@ -71,10 +72,10 @@ public class ServerEngine extends Engine {
 				int id = player.getEntityId();
 				Entity ent = getEntityManager().getEntityById(id);
 				if (ent != null) {
-					collectable.clear();
+					entities.clear();
 					PlayerEntity playerEntity = (PlayerEntity) ent;
-					getEntitySpatialPartition().getNearbyEntities(ent, playerEntity.getMagnetDistance(), collectable, CollectableEntity.class);
-					for (Entity col : collectable) {
+					getEntitySpatialPartition().getNearbyEntities(ent, playerEntity.getMagnetDistance(), entities, CollectableEntity.class);
+					for (Entity col : entities) {
 						CollectableEntity collect = (CollectableEntity) col;
 						if (collect.contact(playerEntity)) {
 							collect.collect(player);
@@ -87,7 +88,7 @@ public class ServerEngine extends Engine {
 				}
 			}
 		});
-
+		entities.clear();
 	}
 
 	public void updateAi() {

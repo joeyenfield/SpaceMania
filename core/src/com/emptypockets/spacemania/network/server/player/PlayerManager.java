@@ -1,13 +1,13 @@
 package com.emptypockets.spacemania.network.server.player;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.holders.ObjectProcessor;
 import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by jenfield on 12/05/2015.

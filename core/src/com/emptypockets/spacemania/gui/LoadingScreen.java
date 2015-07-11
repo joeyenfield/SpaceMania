@@ -2,7 +2,6 @@ package com.emptypockets.spacemania.gui;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.gui.tools.GameScreen;
-import com.emptypockets.spacemania.gui.tools.LoadingBar;
 
 public class LoadingScreen extends GameScreen {
 

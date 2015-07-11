@@ -1,12 +1,12 @@
 package com.emptypockets.spacemania.network.client.payloads.rooms;
 
-import com.badlogic.gdx.utils.Pools;
+import java.util.ArrayList;
+
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomMessage;
-
-import java.util.ArrayList;
+import com.emptypockets.spacemania.utils.PoolsManager;
 
 /**
  * Created by jenfield on 15/05/2015.
@@ -42,7 +42,7 @@ public class ClientRoomMessagesPayload extends ClientPayload {
         roomId = -1;
         for(ClientRoomMessage message : messages){
             Class<? extends ClientRoomMessage> messageClass= message.getClass();
-            Pools.free(message);
+            PoolsManager.free(message);
         }
         messages.clear();
     }

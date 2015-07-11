@@ -1,11 +1,8 @@
 package com.emptypockets.spacemania.network.client.commands.rooms;
 
 
-import com.badlogic.gdx.utils.Pools;
-import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.commands.ClientCommand;
-import com.emptypockets.spacemania.network.server.payloads.rooms.CreateRoomRequestPayload;
 
 public class ClientCreateRoomCommand extends ClientCommand {
 

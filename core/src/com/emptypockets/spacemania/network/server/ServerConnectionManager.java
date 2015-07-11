@@ -1,6 +1,8 @@
 package com.emptypockets.spacemania.network.server;
 
-import com.emptypockets.spacemania.console.Console;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import com.emptypockets.spacemania.network.NetworkProperties;
 import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 import com.emptypockets.spacemania.network.transport.NetworkProtocall;
@@ -8,9 +10,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Created by jenfield on 14/05/2015.

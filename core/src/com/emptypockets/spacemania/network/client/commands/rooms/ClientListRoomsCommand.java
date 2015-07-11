@@ -2,8 +2,6 @@ package com.emptypockets.spacemania.network.client.commands.rooms;
 
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.commands.ClientCommand;
-import com.emptypockets.spacemania.network.server.ClientConnection;
-import com.emptypockets.spacemania.network.server.ServerManager;
 
 /**
  * Created by jenfield on 16/05/2015.

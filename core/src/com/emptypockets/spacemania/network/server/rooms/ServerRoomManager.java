@@ -1,12 +1,11 @@
 package com.emptypockets.spacemania.network.server.rooms;
 
-import com.emptypockets.spacemania.console.Console;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import com.emptypockets.spacemania.holders.ObjectProcessor;
 import com.emptypockets.spacemania.network.server.ServerManager;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
-
-import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Created by jenfield on 13/05/2015.

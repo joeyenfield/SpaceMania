@@ -12,7 +12,7 @@ public class Constants {
 	public static final int ENTITY_SYTEM_PARTITION_Y = 20;
 	public static final float DEFAULT_ROOM_SIZE = 1000;
 
-	public static final boolean ENTITY_SPAWN = false;
+	public static final boolean ENTITY_SPAWN = true;
 	public static final int ENTITY_SPAWN_TIME = 200;
 
 	public static final int ENTITY_SPAWN_FOLLOW_COUNT = 10;

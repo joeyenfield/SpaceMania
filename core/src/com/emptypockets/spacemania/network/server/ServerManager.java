@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.holders.SingleProcessor;
@@ -14,12 +13,8 @@ import com.emptypockets.spacemania.network.client.payloads.NotifyClientPayload;
 import com.emptypockets.spacemania.network.client.payloads.authentication.LoginFailedResponsePayload;
 import com.emptypockets.spacemania.network.client.payloads.authentication.LoginSuccessResponsePayload;
 import com.emptypockets.spacemania.network.client.payloads.authentication.LogoutSuccessPayload;
-import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineEntityManagerSyncPayload;
 import com.emptypockets.spacemania.network.client.payloads.rooms.JoinRoomSuccessPayload;
 import com.emptypockets.spacemania.network.client.player.MyPlayer;
-import com.emptypockets.spacemania.network.engine.EngineState;
-import com.emptypockets.spacemania.network.engine.entities.Entity;
-import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;
 import com.emptypockets.spacemania.network.server.player.PlayerManager;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
@@ -27,6 +22,7 @@ import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoomManager;
 import com.emptypockets.spacemania.network.transport.ComsType;
 import com.emptypockets.spacemania.plotter.DataLogger;
+import com.emptypockets.spacemania.utils.PoolsManager;
 import com.esotericsoftware.kryo.Kryo;
 
 public class ServerManager implements Disposable, Runnable {
@@ -263,15 +259,15 @@ public class ServerManager implements Disposable, Runnable {
 		playerManager.process(new SingleProcessor<ServerPlayer>() {
 			@Override
 			public void process(ServerPlayer entity) {
-				ClientMyPlayerStateUpdatePayload payload = Pools.obtain(ClientMyPlayerStateUpdatePayload.class);
+				ClientMyPlayerStateUpdatePayload payload = PoolsManager.obtain(ClientMyPlayerStateUpdatePayload.class);
 
 				MyPlayer player = new MyPlayer();
 				player.read(entity);
 				player.setEntityId(entity.getEntityId());
 
 				payload.setMyPlayer(player);
-				entity.send(payload);
-				Pools.free(payload);
+				entity.send(payload, ComsType.UDP);
+				PoolsManager.free(payload);
 			}
 		});
 	}
@@ -285,9 +281,9 @@ public class ServerManager implements Disposable, Runnable {
 		room.getPlayerManager().process(new SingleProcessor<ServerPlayer>() {
 			@Override
 			public void process(ServerPlayer entity) {
-				NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
+				NotifyClientPayload payload = PoolsManager.obtain(NotifyClientPayload.class);
 				payload.setMessage("Room is closed - Returning to lobby.");
-				entity.send(payload);
+				entity.send(payload, ComsType.TCP);
 				players.add(entity);
 			}
 		});
@@ -306,11 +302,10 @@ public class ServerManager implements Disposable, Runnable {
 
 			if (newRoom != null) {
 				if (currentRoom != null && currentRoom.equals(newRoom)) {
-					NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
+					NotifyClientPayload payload = PoolsManager.obtain(NotifyClientPayload.class);
 					payload.setMessage("You are already connected to this room");
-					payload.setComsType(ComsType.TCP);
-					clientConnection.send(payload);
-					Pools.free(payload);
+					clientConnection.send(payload, ComsType.TCP);
+					PoolsManager.free(payload);
 				} else {
 					try {
 
@@ -332,38 +327,34 @@ public class ServerManager implements Disposable, Runnable {
 						newRoom.joinRoom(player);
 						player.setCurrentRoom(newRoom);
 
-						JoinRoomSuccessPayload payload = Pools.obtain(JoinRoomSuccessPayload.class);
+						JoinRoomSuccessPayload payload = PoolsManager.obtain(JoinRoomSuccessPayload.class);
 						payload.setRoom(newRoom.getClientRoom());
-						payload.setComsType(ComsType.TCP);
 						synchronized (player.getEntityManagerSync()) {
 							payload.setInitialSync(player.getEntityManagerSync());
-							clientConnection.send(payload);
+							clientConnection.send(payload, ComsType.TCP);
 							player.getEntityManagerSync().cleanAfterSends();
 						}
 
-						Pools.free(payload);
+						PoolsManager.free(payload);
 
 					} catch (TooManyPlayersException e) {
-						NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
+						NotifyClientPayload payload = PoolsManager.obtain(NotifyClientPayload.class);
 						payload.setMessage("Could not connect to room as it was full");
-						payload.setComsType(ComsType.TCP);
-						clientConnection.send(payload);
-						Pools.free(payload);
+						clientConnection.send(payload, ComsType.TCP);
+						PoolsManager.free(payload);
 					}
 				}
 			} else {
-				NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
+				NotifyClientPayload payload = PoolsManager.obtain(NotifyClientPayload.class);
 				payload.setMessage("No room found with name [" + roomName + "]");
-				payload.setComsType(ComsType.TCP);
-				clientConnection.send(payload);
-				Pools.free(payload);
+				clientConnection.send(payload, ComsType.TCP);
+				PoolsManager.free(payload);
 			}
 		} else {
-			NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
+			NotifyClientPayload payload = PoolsManager.obtain(NotifyClientPayload.class);
 			payload.setMessage("You are not logged in, please login first");
-			payload.setComsType(ComsType.TCP);
-			clientConnection.send(payload);
-			Pools.free(payload);
+			clientConnection.send(payload, ComsType.TCP);
+			PoolsManager.free(payload);
 		}
 	}
 
@@ -403,7 +394,7 @@ public class ServerManager implements Disposable, Runnable {
 			} else {
 				NotifyClientPayload payload = new NotifyClientPayload();
 				payload.setMessage("You must be logged in to create a room");
-				clientConnection.send(payload);
+				clientConnection.send(payload, ComsType.TCP);
 			}
 		} else {
 			console.println("Room Creation failed");
@@ -418,12 +409,12 @@ public class ServerManager implements Disposable, Runnable {
 			} else {
 				NotifyClientPayload payload = new NotifyClientPayload();
 				payload.setMessage("You are not in any room");
-				clientConnection.send(payload);
+				clientConnection.send(payload, ComsType.TCP);
 			}
 		} else {
 			NotifyClientPayload payload = new NotifyClientPayload();
 			payload.setMessage("You must be logged in to chat");
-			clientConnection.send(payload);
+			clientConnection.send(payload, ComsType.TCP);
 		}
 	}
 
@@ -437,11 +428,10 @@ public class ServerManager implements Disposable, Runnable {
 			}
 		});
 
-		NotifyClientPayload payload = Pools.obtain(NotifyClientPayload.class);
+		NotifyClientPayload payload = PoolsManager.obtain(NotifyClientPayload.class);
 		payload.setMessage(roomList.toString());
-		payload.setComsType(ComsType.TCP);
-		clientConnection.send(payload);
-		Pools.free(payload);
+		clientConnection.send(payload, ComsType.TCP);
+		PoolsManager.free(payload);
 	}
 
 	public void login(ClientConnection clientConnection, String username, String password) {
@@ -502,7 +492,7 @@ public class ServerManager implements Disposable, Runnable {
 		} else {
 			NotifyClientPayload payload = new NotifyClientPayload();
 			payload.setMessage("You are not logged in");
-			clientConnection.send(payload);
+			clientConnection.send(payload, ComsType.TCP);
 		}
 		return false;
 	}
@@ -514,7 +504,7 @@ public class ServerManager implements Disposable, Runnable {
 			} else {
 				NotifyClientPayload payload = new NotifyClientPayload();
 				payload.setMessage("You are not in any room");
-				clientConnection.send(payload);
+				clientConnection.send(payload, ComsType.TCP);
 			}
 		}
 		return false;

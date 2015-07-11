@@ -2,21 +2,12 @@ package com.emptypockets.spacemania.network.engine.grid;
 
 import java.util.ArrayList;
 
-import sun.security.util.Length;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.CatmullRomSpline;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.gui.renderer.GridTextureRenderer;
 import com.emptypockets.spacemania.network.engine.EngineRegionListener;
 import com.emptypockets.spacemania.network.engine.grid.spring.DualNodeLink;
 import com.emptypockets.spacemania.network.engine.grid.spring.FixedNodeLink;
 import com.emptypockets.spacemania.network.engine.grid.spring.NodeLink;
-import com.emptypockets.spacemania.network.engine.grid.spring.NodeLinkSettings;
 
 public class GridSystem implements EngineRegionListener{
 

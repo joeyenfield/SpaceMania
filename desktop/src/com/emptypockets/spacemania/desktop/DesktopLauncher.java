@@ -3,6 +3,9 @@ package com.emptypockets.spacemania.desktop;
 import java.awt.BorderLayout;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -16,6 +19,8 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLine;
+import com.emptypockets.spacemania.network.IpManager;
+import com.emptypockets.spacemania.network.IpManagerInterface;
 import com.emptypockets.spacemania.plotter.DataLogger;
 import com.emptypockets.spacemania.plotter.PlotterViewer;
 import com.emptypockets.spacemania.utils.ErrorUtils;
@@ -25,6 +30,29 @@ public class DesktopLauncher {
 
 	public static void main(String[] arg) throws InterruptedException, FileNotFoundException, IOException {
 		try {
+			IpManager.setIpFinder(new IpManagerInterface() {
+
+				@Override
+				public String[] getIpaddress() {
+					ArrayList<String> result = new ArrayList<String>();
+					InetAddress localhost;
+					try {
+						localhost = InetAddress.getLocalHost();
+						// Just in case this host has multiple IP addresses....
+						InetAddress[] allMyIps = InetAddress.getAllByName(localhost.getCanonicalHostName());
+						if (allMyIps != null && allMyIps.length > 1) {
+							for (int i = 0; i < allMyIps.length; i++) {
+								result.add(allMyIps[i].getHostAddress());
+
+							}
+						}
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return result.toArray(new String[0]);
+				}
+			});
 			System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true");
 
 			Log.ERROR();
@@ -85,7 +113,7 @@ public class DesktopLauncher {
 			// client.processCommand("connect;login jenfield2; lobby");
 			// client.processCommand("lobby");
 			// client.processCommand("host rooms");
-			game.screen.getClient().getCommand().processCommand("start; set roomsize 4000;set grid 1; set gridrender 1; set gridsize 2 2");
+			// game.screen.getClient().getCommand().processCommand("start; set roomsize 4000;set grid 1; set gridrender 1; set gridsize 2 2");
 
 			while (true) {
 				Scanner in = new Scanner(System.in);

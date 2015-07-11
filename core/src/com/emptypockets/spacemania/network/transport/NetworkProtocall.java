@@ -8,7 +8,6 @@ import org.objenesis.instantiator.ObjectInstantiator;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.network.client.input.ClientInput;
 import com.emptypockets.spacemania.network.client.payloads.ClientMyPlayerStateUpdatePayload;
 import com.emptypockets.spacemania.network.client.payloads.NotifyClientPayload;
@@ -40,49 +39,60 @@ import com.emptypockets.spacemania.network.server.payloads.rooms.JoinLobyRequest
 import com.emptypockets.spacemania.network.server.payloads.rooms.JoinRoomRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.RequestRoomListPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.ResizeRoomPayload;
+import com.emptypockets.spacemania.utils.PoolsManager;
 import com.esotericsoftware.kryo.Kryo;
 
 public class NetworkProtocall {
 	public static void register(Kryo kryo) {
-		kryo.register(ArrayList.class);
-		kryo.register(HashMap.class);
-		kryo.register(HashSet.class);
-		kryo.register(Vector2.class);
-		kryo.register(Rectangle.class);
-		kryo.register(ComsType.class);
-		kryo.register(ClientPlayer.class);
-		kryo.register(ClientRoom.class);
+		register(kryo,ArrayList.class);
+		register(kryo,HashMap.class);
+		register(kryo,HashSet.class);
+		register(kryo,Vector2.class);
+		register(kryo,Rectangle.class);
+		register(kryo,ComsType.class);
+		register(kryo,ClientPlayer.class);
+		register(kryo,ClientRoom.class);
 
-		kryo.register(ClientRoomPlayerJoinMessage.class);
-		kryo.register(ClientRoomPlayerLeaveMessage.class);
-		kryo.register(ClientRoomChatMessage.class);
+		register(kryo,ClientRoomPlayerJoinMessage.class);
+		register(kryo,ClientRoomPlayerLeaveMessage.class);
+		register(kryo,ClientRoomChatMessage.class);
 
-		kryo.register(RequestRoomListPayload.class);
-		kryo.register(ChatMessagePayload.class);
-		kryo.register(JoinRoomRequestPayload.class);
-		kryo.register(LoginFailedResponsePayload.class);
-		kryo.register(LoginSuccessResponsePayload.class);
-		kryo.register(LogoutSuccessPayload.class);
-		kryo.register(NotifyClientPayload.class);
-		kryo.register(JoinLobyRequestPayload.class);
-		kryo.register(JoinRoomSuccessPayload.class);
-		kryo.register(ClientRoomMessagesPayload.class);
-		kryo.register(CreateRoomRequestPayload.class);
-		kryo.register(LoginRequestPayload.class);
-		kryo.register(LogoutRequestPayload.class);
-		kryo.register(ClientEngineEntityManagerSyncPayload.class);
-		kryo.register(ClientMyPlayerStateUpdatePayload.class);
-		kryo.register(ClientEngineStatePayload.class);
-		kryo.register(EngineState.class);
-		kryo.register(EntityManagerSync.class);
-		kryo.register(EntityState.class);
-		kryo.register(EntityRemoval.class);
-		kryo.register(EntityAdd.class);
-		kryo.register(EntityType.class);
-		kryo.register(ServerClientInputUpdatePayload.class);
-		kryo.register(ClientInput.class);
-		kryo.register(MyPlayer.class);
+		register(kryo,RequestRoomListPayload.class);
+		register(kryo,ChatMessagePayload.class);
+		register(kryo,JoinRoomRequestPayload.class);
+		register(kryo,LoginFailedResponsePayload.class);
+		register(kryo,LoginSuccessResponsePayload.class);
+		register(kryo,LogoutSuccessPayload.class);
+		register(kryo,NotifyClientPayload.class);
+		register(kryo,JoinLobyRequestPayload.class);
+		register(kryo,JoinRoomSuccessPayload.class);
+		register(kryo,ClientRoomMessagesPayload.class);
+		register(kryo,CreateRoomRequestPayload.class);
+		register(kryo,LoginRequestPayload.class);
+		register(kryo,LogoutRequestPayload.class);
+		register(kryo,ClientEngineEntityManagerSyncPayload.class);
+		register(kryo,ClientMyPlayerStateUpdatePayload.class);
+		register(kryo,ClientEngineStatePayload.class);
+		register(kryo,EngineState.class);
+		register(kryo,EntityManagerSync.class);
+		register(kryo,EntityState.class);
+		register(kryo,EntityRemoval.class);
+		register(kryo,EntityAdd.class);
+		register(kryo,EntityType.class);
+		register(kryo,ServerClientInputUpdatePayload.class);
+		register(kryo,ClientInput.class);
+		register(kryo,MyPlayer.class);
 
-		kryo.register(ResizeRoomPayload.class);
+		register(kryo,ResizeRoomPayload.class);
+	}
+
+	public static <T> void register(Kryo kryo, final Class<T> classType) {
+		kryo.register(classType).setInstantiator(new ObjectInstantiator<T>() {
+
+			@Override
+			public T newInstance() {
+				return PoolsManager.obtain(classType);
+			}
+		});
 	}
 }

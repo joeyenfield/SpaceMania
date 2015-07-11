@@ -1,14 +1,13 @@
 package com.emptypockets.spacemania.network.client.commands.connection;
 
-import com.emptypockets.spacemania.console.Console;
+import java.net.InetAddress;
+import java.util.List;
+
 import com.emptypockets.spacemania.network.NetworkProperties;
 import com.emptypockets.spacemania.network.client.ClientConnectionManager;
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.NetworkDiscoveryInterface;
 import com.emptypockets.spacemania.network.client.commands.ClientCommand;
-
-import java.net.InetAddress;
-import java.util.List;
 
 public class ClientSearchCommand extends ClientCommand {
 

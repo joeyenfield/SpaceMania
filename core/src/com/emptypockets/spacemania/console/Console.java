@@ -1,7 +1,5 @@
 package com.emptypockets.spacemania.console;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
 import com.emptypockets.spacemania.utils.ErrorUtils;

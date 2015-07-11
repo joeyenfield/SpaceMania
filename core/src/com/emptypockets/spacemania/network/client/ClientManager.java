@@ -3,7 +3,6 @@ package com.emptypockets.spacemania.network.client;
 import java.io.IOException;
 
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.input.ClientInputProducer;
@@ -22,7 +21,9 @@ import com.emptypockets.spacemania.network.server.payloads.rooms.JoinLobyRequest
 import com.emptypockets.spacemania.network.server.payloads.rooms.JoinRoomRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.RequestRoomListPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.ResizeRoomPayload;
+import com.emptypockets.spacemania.network.transport.ComsType;
 import com.emptypockets.spacemania.plotter.DataLogger;
+import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class ClientManager implements Disposable {
 	CommandLine command;
@@ -80,7 +81,7 @@ public class ClientManager implements Disposable {
 		request.setUsername(username);
 		request.setPassword(password);
 		try {
-			connection.send(request);
+			connection.send(request, ComsType.TCP);
 		} catch (ClientNotConnectedException e) {
 			getConsole().println("Not connected");
 		}
@@ -90,7 +91,7 @@ public class ClientManager implements Disposable {
 		getConsole().println("Sending Logout Request to server");
 		LogoutRequestPayload request = new LogoutRequestPayload();
 		try {
-			connection.send(request);
+			connection.send(request, ComsType.TCP);
 		} catch (ClientNotConnectedException e) {
 			getConsole().println("Not connected");
 		}
@@ -182,7 +183,7 @@ public class ClientManager implements Disposable {
 		engine.start();
 		getConsole().println("Joining :  Lobby");
 		JoinLobyRequestPayload request = new JoinLobyRequestPayload();
-		connection.send(request);
+		connection.send(request, ComsType.TCP);
 	}
 
 	public void joinRoom(String name) {
@@ -191,26 +192,26 @@ public class ClientManager implements Disposable {
 		getConsole().println("Joining Room : " + name);
 		JoinRoomRequestPayload payload = new JoinRoomRequestPayload();
 		payload.setRoomName(name);
-		connection.send(payload);
+		connection.send(payload, ComsType.TCP);
 	}
 
 	public void createRoom(String roomName) {
 		getConsole().println("Creating Room : " + roomName);
-		CreateRoomRequestPayload createRoom = Pools.obtain(CreateRoomRequestPayload.class);
+		CreateRoomRequestPayload createRoom = PoolsManager.obtain(CreateRoomRequestPayload.class);
 		createRoom.setRoomName(roomName);
-		connection.send(createRoom);
+		connection.send(createRoom, ComsType.TCP);
 	}
 
 	public void sendChatMessage(String message) {
-		ChatMessagePayload payload = Pools.obtain(ChatMessagePayload.class);
+		ChatMessagePayload payload = PoolsManager.obtain(ChatMessagePayload.class);
 		payload.setMessage(message);
-		connection.send(payload);
+		connection.send(payload, ComsType.TCP);
 	}
 
 	public void requestServerRooms() {
 		getConsole().println("Requesting Rooms");
-		RequestRoomListPayload payload = Pools.obtain(RequestRoomListPayload.class);
-		connection.send(payload);
+		RequestRoomListPayload payload = PoolsManager.obtain(RequestRoomListPayload.class);
+		connection.send(payload, ComsType.TCP);
 	}
 
 	public Console getConsole() {
@@ -227,14 +228,14 @@ public class ClientManager implements Disposable {
 
 	public void sendInput() {
 		DataLogger.log("client-input-x", inputProducer.getInput().getMove().x);
-		ServerClientInputUpdatePayload payload = Pools.obtain(ServerClientInputUpdatePayload.class);
+		ServerClientInputUpdatePayload payload = PoolsManager.obtain(ServerClientInputUpdatePayload.class);
 		payload.setInput(inputProducer.getInput());
-		connection.send(payload);
+		connection.send(payload, ComsType.UDP);
 	}
 
 	public void resizeRoom(int size) {
-		ResizeRoomPayload payload = Pools.obtain(ResizeRoomPayload.class);
+		ResizeRoomPayload payload = PoolsManager.obtain(ResizeRoomPayload.class);
 		payload.setRoomSize(size);
-		connection.send(payload);
+		connection.send(payload, ComsType.TCP);
 	}
 }

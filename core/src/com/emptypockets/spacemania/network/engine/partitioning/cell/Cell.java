@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.network.engine.entities.Entity;
 
 public class Cell<ENT extends PartitionEntity> {
 	Rectangle bounds;

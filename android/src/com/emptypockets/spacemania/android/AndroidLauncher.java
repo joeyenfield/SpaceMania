@@ -6,11 +6,21 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLine;
+import com.emptypockets.spacemania.network.IpManager;
+import com.emptypockets.spacemania.network.IpManagerInterface;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		IpManager.setIpFinder(new IpManagerInterface() {
+			@Override
+			public String[] getIpaddress() {
+				// TODO Auto-generated method stub
+				return new String[]{Utils.getIPAddress(true)};
+			}
+		});
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 
 		final MainGame test = new MainGame();
@@ -32,7 +42,7 @@ public class AndroidLauncher extends AndroidApplication {
 						client = test.screen.getClient().getCommand();
 					}
 				} while (client == null);
-				client.processCommand("start;set grid 1; set gridrender 1; set gridsize 2 2");
+//				client.processCommand("start;set grid 1; set gridrender 1; set gridsize 2 2");
 			}
 		}).start();
 	}

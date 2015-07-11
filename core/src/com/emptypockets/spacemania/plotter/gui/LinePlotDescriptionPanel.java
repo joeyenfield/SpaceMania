@@ -1,7 +1,5 @@
 package com.emptypockets.spacemania.plotter.gui;
 
-import java.awt.Checkbox;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;

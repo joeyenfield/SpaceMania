@@ -1,8 +1,6 @@
 package com.emptypockets.spacemania.network.client.payloads.authentication;
 
-import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.network.client.ClientManager;
-import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.client.player.MyPlayer;
 

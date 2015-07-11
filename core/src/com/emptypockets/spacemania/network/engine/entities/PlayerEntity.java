@@ -1,8 +1,6 @@
 package com.emptypockets.spacemania.network.engine.entities;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.client.input.ClientInput;
@@ -10,10 +8,10 @@ import com.emptypockets.spacemania.network.engine.particles.ParticleSystem;
 
 public class PlayerEntity extends Entity {
 	long lastExhaust = 0;
-	long exhaustTime = 50;
+	long exhaustTime = 25;
 	float magnetDistance = 100;
-	Color smokeStart = new Color(1,1,1, 0.5f); // deep
-	Color smokeEnd = new Color(.1f,.1f,.1f, 0.1f); // orange-yellow
+	Color smokeStart = new Color(1,1,1, 0.3f); // deep
+	Color smokeEnd = new Color(.1f,.1f,.1f, 0.01f); // orange-yellow
 
 	public PlayerEntity() {
 		super(EntityType.Player);
@@ -35,12 +33,9 @@ public class PlayerEntity extends Entity {
 			if (System.currentTimeMillis() - lastExhaust > exhaustTime) {
 				lastExhaust = System.currentTimeMillis();
 				Vector2 baseVel = getVel().cpy().scl(-.1f);
-				
 				particleSys.launchSmoke(getPos(), baseVel, smokeStart, smokeEnd);
-//				baseVel.rotate(-20);
-//				particleSys.launchSmoke(getPos(), baseVel, smokeStart, smokeEnd);
-//				baseVel.rotate(40);
-//				particleSys.launchSmoke(getPos(), baseVel, smokeStart, smokeEnd);
+				baseVel.scl(.3f);
+				particleSys.launchSmoke(getPos(), baseVel, smokeStart, smokeEnd);
 			}
 		}
 	}

@@ -1,18 +1,12 @@
 package com.emptypockets.spacemania.network.engine.particles;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
 import com.emptypockets.spacemania.holders.CleanerProcessor;
@@ -21,33 +15,39 @@ import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.engine.EntityManagerInterface;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
-import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.entities.collect.CollectableEntity;
 import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePartition;
 import com.emptypockets.spacemania.utils.ColorUtils;
+import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class ParticleSystem extends ArrayListProcessor<Particle> implements EntityManagerInterface {
 	int particleCountSphere = Constants.DEFAULT_PARTICLES_SPHERE;
 	int maxParticles = Constants.DEFAULT_PARTICLES;
 	CellSpacePartition<Particle> partition;
-
-	public ParticleSystem() {
+	ClientEngine engine;
+	public ParticleSystem(ClientEngine engine) {
 		partition = new CellSpacePartition<Particle>();
 		partition.create(Constants.PARTICLE_SYTEM_PARTITION_X, Constants.PARTICLE_SYTEM_PARTITION_Y);
+		this.engine=engine;
 	}
 
+	CleanerProcessor<Particle> deadCleanerProcessor;
+
 	private void clearDead() {
-		process(new CleanerProcessor<Particle>() {
-			@Override
-			public boolean shouldRemove(Particle entity) {
-				boolean dead = entity.isDead();
-				if (dead) {
-					Pools.free(entity);
+		if (deadCleanerProcessor == null) {
+			deadCleanerProcessor = new CleanerProcessor<Particle>() {
+				@Override
+				public boolean shouldRemove(Particle entity) {
+					boolean dead = entity.isDead();
+					if (dead) {
+						PoolsManager.free(entity);
+					}
+					return dead;
 				}
-				return dead;
-			}
-		});
+			};
+		}
+		process(deadCleanerProcessor);
 	}
 
 	public boolean hasMaxParticles() {
@@ -59,7 +59,7 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 	}
 
 	private Particle getParticle() {
-		return Pools.obtain(Particle.class);
+		return PoolsManager.obtain(Particle.class);
 	}
 
 	public void launchSparkSphere(Vector2 pos, int particleCount, Color start, Color end, boolean randomAngle) {
@@ -70,16 +70,16 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		Color color1 = null;
 		Color color2 = null;
 		if (start == null && end == null) {
-			color1 = Pools.obtain(Color.class);
-			color2 = Pools.obtain(Color.class);
+			color1 = PoolsManager.obtain(Color.class);
+			color2 = PoolsManager.obtain(Color.class);
 		} else {
 			color1 = start;
 			color2 = end;
 		}
 		float angleStep = 360f / (particleCount);
 
-		Vector2 angle = Pools.obtain(Vector2.class).set(1, 0);
-		Vector2 vel = Pools.obtain(Vector2.class);
+		Vector2 angle = PoolsManager.obtain(Vector2.class).set(1, 0);
+		Vector2 vel = PoolsManager.obtain(Vector2.class);
 		for (int i = 0; i < particleCount; i++) {
 			if (start == null && end == null) {
 				float hue1 = MathUtils.random(2, 6);
@@ -92,12 +92,12 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 			vel.set(angle).scl(MathUtils.random(200, 500));
 			launchSpark(pos, vel, color1, color2, randomAngle);
 		}
-		Pools.free(angle);
-		Pools.free(vel);
+		PoolsManager.free(angle);
+		PoolsManager.free(vel);
 
 		if (start == null && end == null) {
-			Pools.free(color1);
-			Pools.free(color2);
+			PoolsManager.free(color1);
+			PoolsManager.free(color2);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		spark.setScaleX(.5f, 0.001f);
 		spark.setLifeTime(MathUtils.random(3000, 5000));
 		spark.setScaleInterpolation(Interpolation.fade);
-		
+
 		add(spark);
 	}
 
@@ -140,40 +140,44 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		spark.getPos().set(pos);
 		spark.setupColor(start, end);
 		spark.getVel().set(vel);
-		spark.setScaleInterpolation(Interpolation.sineOut);
-		spark.setScaleX(.01f, 1);
-		spark.setScaleY(.01f, 1);
-		spark.setLifeTime(3000);
+		spark.setScaleInterpolation(Interpolation.linear);
+		spark.setScaleX(.01f, 2);
+		spark.setScaleY(.01f, 2);
+		spark.setLifeTime(3000 + MathUtils.random(2000));
 		add(spark);
 	}
 
-	public synchronized void update(final ClientEngine engine, final float dt) {
-		process(new SingleProcessor<Particle>() {
-			@Override
-			public void process(Particle entity) {
-				entity.update(dt);
-				Rectangle region = engine.getRegion();
-				Vector2 pos = entity.getPos();
-				float rad = entity.getRadius();
-				float inset = rad + 2;
-				if (pos.x - rad < region.x) {
-					entity.setPos(region.x + inset, pos.y);
-					entity.getVel().x *= -1;
+	SingleProcessor<Particle> updateProcessor = null;
+	public synchronized void update(){
+		if(updateProcessor == null){
+			updateProcessor = new SingleProcessor<Particle>() {
+				@Override
+				public void process(Particle entity) {
+					entity.update(engine.getLastDeltaTime());
+					Rectangle region = engine.getRegion();
+					Vector2 pos = entity.getPos();
+					float rad = entity.getRadius();
+					float inset = rad + 2;
+					if (pos.x - rad < region.x) {
+						entity.setPos(region.x + inset, pos.y);
+						entity.getVel().x *= -1;
+					}
+					if (pos.x + rad > region.x + region.width) {
+						entity.setPos(region.x + region.width - inset, pos.y);
+						entity.getVel().x *= -1;
+					}
+					if (pos.y - rad < region.y) {
+						entity.setPos(pos.x, region.y + inset);
+						entity.getVel().y *= -1;
+					}
+					if (pos.y + rad > region.y + region.height) {
+						entity.setPos(pos.x, region.y + region.height - inset);
+						entity.getVel().y *= -1;
+					}
 				}
-				if (pos.x + rad > region.x + region.width) {
-					entity.setPos(region.x + region.width - inset, pos.y);
-					entity.getVel().x *= -1;
-				}
-				if (pos.y - rad < region.y) {
-					entity.setPos(pos.x, region.y + inset);
-					entity.getVel().y *= -1;
-				}
-				if (pos.y + rad > region.y + region.height) {
-					entity.setPos(pos.x, region.y + region.height - inset);
-					entity.getVel().y *= -1;
-				}
-			}
-		});
+			};
+		}
+		process(updateProcessor);
 		clearDead();
 		partition.rebuild(this);
 	}
@@ -220,7 +224,7 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		this.maxParticles = maxParticles;
 	}
 
-	public void getEntities(Rectangle viewport, Set<Particle> renderEntities) {
+	public void getEntities(Rectangle viewport, ArrayList<Particle> renderEntities) {
 		partition.getEntities(viewport, renderEntities);
 	}
 

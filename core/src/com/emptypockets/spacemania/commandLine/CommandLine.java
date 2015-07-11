@@ -1,10 +1,10 @@
 package com.emptypockets.spacemania.commandLine;
 
-import com.emptypockets.spacemania.console.Console;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
+
+import com.emptypockets.spacemania.console.Console;
 
 public class CommandLine {
     int commandHistoryCount = 10;

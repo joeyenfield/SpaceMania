@@ -2,8 +2,6 @@ package com.emptypockets.spacemania.network.engine.particles;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.Constants;
@@ -35,7 +33,9 @@ public class Particle implements Poolable, PartitionEntity {
 	float damping = 0.8f;
 
 	ParticleType type;
-
+	int partitionTag = 0;
+	
+	
 	public Particle() {
 		pos = new Vector2();
 		vel = new Vector2();
@@ -157,6 +157,14 @@ public class Particle implements Poolable, PartitionEntity {
 
 	public void setScaleInterpolation(Interpolation scaleInterpolation) {
 		this.scaleInterpolation = scaleInterpolation;
+	}
+
+	public int getPartitionTag() {
+		return partitionTag;
+	}
+
+	public void setPartitionTag(int partitionTag) {
+		this.partitionTag = partitionTag;
 	}
 
 }

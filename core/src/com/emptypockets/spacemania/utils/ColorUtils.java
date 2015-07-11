@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.utils;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
 
 public class ColorUtils {
 

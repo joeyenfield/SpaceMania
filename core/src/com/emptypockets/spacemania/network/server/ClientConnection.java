@@ -21,9 +21,9 @@ public class ClientConnection extends Connection {
         incommingPayloads = new ArrayList<ServerPayload>();
     }
 
-    public void send(ClientPayload payload){
+    public void send(ClientPayload payload, ComsType type){
         try {
-            if(payload.getComsType() == ComsType.TCP) {
+            if(type == ComsType.TCP) {
                 sendTCP(payload);
             }else{
                 sendUDP(payload);

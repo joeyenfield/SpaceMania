@@ -23,6 +23,8 @@ public class Engine implements Disposable {
 	long lastUpdate;
 	ArrayList<EngineRegionListener> regionListeners;
 
+	float lastDeltaTime = 0;
+	
 	public Engine() {
 		entities = new EntityManager();
 		regionListeners = new ArrayList<EngineRegionListener>();
@@ -64,9 +66,9 @@ public class Engine implements Disposable {
 	public long getTime() {
 		return System.currentTimeMillis() - startTime;
 	}
-	
-	public float getTimeInSec(){
-		return getTime()/1000f;
+
+	public float getTimeInSec() {
+		return getTime() / 1000f;
 	}
 
 	public long getEngineLastUpdateTime() {
@@ -81,61 +83,69 @@ public class Engine implements Disposable {
 		updateEntities(entities, deltaTime);
 	}
 
-	public void updateEntities(EntityManager manager, final float deltaTime) {
-		manager.process(new SingleProcessor<Entity>() {
-			@Override
-			public void process(Entity entity) {
-				entity.update(deltaTime);
-				Vector2 pos = entity.getPos();
-				float rad = entity.getRadius();
-				float inset = rad + 2;
+	SingleProcessor<Entity> updateEntitiesProcessor = null;
 
-				boolean hitWall = false;
-				if (pos.x - rad < region.x) {
-					entity.setPos(region.x + inset, pos.y);
-					if (entity.isBounceOffWall()) {
-						entity.getVel().x *= -1;
-					} else {
-						entity.getVel().x = 0;
-					}
-					hitWall = true;
-				}
-				if (pos.x + rad > region.x + region.width) {
-					entity.setPos(region.x + region.width - inset, pos.y);
-					if (entity.isBounceOffWall()) {
-						entity.getVel().x *= -1;
-					} else {
-						entity.getVel().x = 0;
-					}
-					hitWall = true;
-				}
-				if (pos.y - rad < region.y) {
-					entity.setPos(pos.x, region.y + inset);
-					if (entity.isBounceOffWall()) {
-						entity.getVel().y *= -1;
-					} else {
-						entity.getVel().y = 0;
-					}
-					hitWall = true;
-				}
-				if (pos.y + rad > region.y + region.height) {
-					entity.setPos(pos.x, region.y + region.height - inset);
-					if (entity.isBounceOffWall()) {
-						entity.getVel().y *= -1;
-					} else {
-						entity.getVel().y = 0;
-					}
-					hitWall = true;
-				}
+	public float getLastDeltaTime(){
+		return lastDeltaTime;
+	}
+	public void updateEntities(EntityManager manager,  float deltaTime) {
+		if (updateEntitiesProcessor == null) {
+			updateEntitiesProcessor = new SingleProcessor<Entity>() {
+				@Override
+				public void process(Entity entity) {
+					entity.update(getLastDeltaTime());
+					Vector2 pos = entity.getPos();
+					float rad = entity.getRadius();
+					float inset = rad + 2;
 
-				if (hitWall && entity.getType() == EntityType.Bullet) {
-					entity.setAlive(false);
-					entity.setExplodes(true);
-				}
-			}
-		});
+					boolean hitWall = false;
+					if (pos.x - rad < region.x) {
+						entity.setPos(region.x + inset, pos.y);
+						if (entity.isBounceOffWall()) {
+							entity.getVel().x *= -1;
+						} else {
+							entity.getVel().x = 0;
+						}
+						hitWall = true;
+					}
+					if (pos.x + rad > region.x + region.width) {
+						entity.setPos(region.x + region.width - inset, pos.y);
+						if (entity.isBounceOffWall()) {
+							entity.getVel().x *= -1;
+						} else {
+							entity.getVel().x = 0;
+						}
+						hitWall = true;
+					}
+					if (pos.y - rad < region.y) {
+						entity.setPos(pos.x, region.y + inset);
+						if (entity.isBounceOffWall()) {
+							entity.getVel().y *= -1;
+						} else {
+							entity.getVel().y = 0;
+						}
+						hitWall = true;
+					}
+					if (pos.y + rad > region.y + region.height) {
+						entity.setPos(pos.x, region.y + region.height - inset);
+						if (entity.isBounceOffWall()) {
+							entity.getVel().y *= -1;
+						} else {
+							entity.getVel().y = 0;
+						}
+						hitWall = true;
+					}
 
-		entitySpatialPartition.rebuild(getEntityManager());
+					if (hitWall && entity.getType() == EntityType.Bullet) {
+						entity.setAlive(false);
+						entity.setExplodes(true);
+					}
+				}
+			};
+		}
+		manager.process(updateEntitiesProcessor);
+
+		entitySpatialPartition.rebuild(getEntityManager().getProcessor());
 	}
 
 	public void update() {
@@ -143,7 +153,7 @@ public class Engine implements Disposable {
 		long delta = time - lastUpdate;
 		lastUpdate = time;
 		float deltaTime = delta / 1000f;
-
+		lastDeltaTime = deltaTime;
 		updateEntities(deltaTime);
 
 	}
@@ -169,10 +179,10 @@ public class Engine implements Disposable {
 			return;
 		}
 		DataLogger.log(prefix + "-time", getTime());
-		if(this instanceof ClientEngine){
-			DataLogger.log(prefix + "-lastServerTime", ((ClientEngine)this).getLastServerUpdateTime());
+		if (this instanceof ClientEngine) {
+			DataLogger.log(prefix + "-lastServerTime", ((ClientEngine) this).getLastServerUpdateTime());
 		}
-		Iterator<Entity> iter = getEntityManager().getIterator();
+		Iterator<Entity> iter = getEntityManager().getProcessor().getIterator();
 		while (iter.hasNext()) {
 			Entity ent = iter.next();
 			if (ent instanceof PlayerEntity) {

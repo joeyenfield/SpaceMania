@@ -1,8 +1,7 @@
 package com.emptypockets.spacemania.network.engine.partitioning.cell;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -24,6 +23,9 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 	float startY = 0;
 
 	Cell<ENT>[][] data;
+	int lastTag = 0;
+
+	ArrayList<ENT> tempEntities = new ArrayList<ENT>();
 
 	public CellSpacePartition() {
 		create(0, 0);
@@ -54,36 +56,41 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 		}
 	}
 
+	SingleProcessor<ENT> rebuildProcessor = null;
+
 	public synchronized void rebuild(ObjectProcessor<ENT> entityManger) {
 		for (int x = 0; x < numX; x++) {
 			for (int y = 0; y < numY; y++) {
 				data[x][y].clear();
 			}
 		}
-		entityManger.process(new SingleProcessor<ENT>() {
-			@Override
-			public void process(ENT entity) {
-				Vector2 pos = entity.getPos();
+		if (rebuildProcessor == null) {
+			rebuildProcessor = new SingleProcessor<ENT>() {
+				@Override
+				public void process(ENT entity) {
+					Vector2 pos = entity.getPos();
+					entity.setPartitionTag(0);
+					// Top Left
+					int cellMinX = getCellX(pos.x - entity.getRadius());
+					int cellMinY = getCellY(pos.y - entity.getRadius());
 
-				// Top Left
-				int cellMinX = getCellX(pos.x - entity.getRadius());
-				int cellMinY = getCellY(pos.y - entity.getRadius());
+					// Bottom Right
+					int cellMaxX = getCellX(pos.x + entity.getRadius());
+					int cellMaxY = getCellY(pos.y + entity.getRadius());
 
-				// Bottom Right
-				int cellMaxX = getCellX(pos.x + entity.getRadius());
-				int cellMaxY = getCellY(pos.y + entity.getRadius());
-
-				for (int cellX = cellMinX; cellX <= cellMaxX; cellX++) {
-					for (int cellY = cellMinY; cellY <= cellMaxY; cellY++) {
-						Cell cell = data[cellX][cellY];
-						if (IntersectorUtils.intersects(cell.getBounds(), entity.getPos(), entity.getRadius())) {
-							data[cellX][cellY].addEntity(entity);
+					for (int cellX = cellMinX; cellX <= cellMaxX; cellX++) {
+						for (int cellY = cellMinY; cellY <= cellMaxY; cellY++) {
+							Cell cell = data[cellX][cellY];
+							if (IntersectorUtils.intersects(cell.getBounds(), entity.getPos(), entity.getRadius())) {
+								data[cellX][cellY].addEntity(entity);
+							}
 						}
 					}
-				}
 
-			}
-		});
+				}
+			};
+		}
+		entityManger.process(rebuildProcessor);
 
 	}
 
@@ -99,7 +106,7 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 		return data;
 	}
 
-	public void filter(Set<ENT> result, Class<?> type) {
+	public void filter(ArrayList<ENT> result, Class<?> type) {
 		Iterator<ENT> entIterator = result.iterator();
 		while (entIterator.hasNext()) {
 			ENT ent = entIterator.next();
@@ -109,40 +116,39 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 		}
 	}
 
-	public void filter(Set<ENT> result, EntityType type) {
+	public void filter(ArrayList<ENT> result, EntityType type) {
 		Iterator<ENT> entIterator = result.iterator();
 		while (entIterator.hasNext()) {
-			Entity ent = (Entity)entIterator.next();
+			Entity ent = (Entity) entIterator.next();
 			if (!(type == ent.getType())) {
 				entIterator.remove();
 			}
 		}
 	}
 
-	public synchronized void getNearbyEntities(Entity entity, float distance, Set<ENT> result) {
+	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<ENT> result) {
 		searchNearbyEntities(entity.getPos(), entity.getRadius() + distance, result);
 	}
 
-	public synchronized void getNearbyEntities(Entity entity, float distance, Set<ENT> result, Class filterClass) {
+	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<ENT> result, Class filterClass) {
 		searchNearbyEntities(entity.getPos(), (entity.getRadius() + distance), result, filterClass);
 	}
 
-	public synchronized void getNearbyEntities(Entity entity, float distance, Set<ENT> result, EntityType type) {
+	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<ENT> result, EntityType type) {
 		searchNearbyEntities(entity.getPos(), entity.getRadius() + distance, result, type);
 	}
 
-	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<ENT> result, Class filterClass) {
+	public synchronized void searchNearbyEntities(Vector2 pos, float dist, ArrayList<ENT> result, Class filterClass) {
 		searchNearbyEntities(pos, dist, result);
 		filter(result, filterClass);
 	}
 
-	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<ENT> result, EntityType type) {
+	public synchronized void searchNearbyEntities(Vector2 pos, float dist, ArrayList<ENT> result, EntityType type) {
 		searchNearbyEntities(pos, dist, result);
 		filter(result, type);
 	}
 
-	public synchronized void searchNearbyEntities(Vector2 pos, float dist, Set<ENT> result) {
-
+	public synchronized void searchNearbyEntities(Vector2 pos, float dist, ArrayList<ENT> result) {
 		// Top Left
 		int cellMinX = getCellX(pos.x - dist);
 		int cellMinY = getCellY(pos.y - dist);
@@ -151,20 +157,33 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 		int cellMaxX = getCellX(pos.x + dist);
 		int cellMaxY = getCellY(pos.y + dist);
 
+		float dist2 = 0;
+		Cell cell;
+		ENT ent;
+		boolean addAll;
+		lastTag++;
+		int arrayLength = 0;
+
 		for (int cellX = cellMinX; cellX <= cellMaxX; cellX++) {
 			for (int cellY = cellMinY; cellY <= cellMaxY; cellY++) {
-				Cell cell = data[cellX][cellY];
+				cell = data[cellX][cellY];
 				if (cell.hasEntities()) {
-					if (cell.containedInCircle(pos, dist)) {
-						result.addAll(cell.getEntities());
-					} else {
-						for (Object entObj : cell.getEntities()) {
-							ENT ent = (ENT)entObj;
-							float dist2 = (dist + ent.getRadius());
-							dist2 = dist2 * dist2;
-							if (ent.getPos().dst2(pos) < dist2) {
-								result.add(ent);
+					addAll = cell.containedInCircle(pos, dist);
+					ArrayList data = cell.getEntities();
+					arrayLength = data.size();
+
+					ENTITY_LOOP: for (int i = 0; i < arrayLength; i++) {
+						ent = (ENT) data.get(i);
+						if (ent.getPartitionTag() != lastTag) {
+							if (!addAll) {
+								dist2 = (dist + ent.getRadius());
+								dist2 = dist2 * dist2;
+								if (ent.getPos().dst2(pos) > dist2) {
+									continue ENTITY_LOOP;
+								}
 							}
+							ent.setPartitionTag(lastTag);
+							result.add(ent);
 						}
 					}
 				}
@@ -172,7 +191,7 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 		}
 	}
 
-	public synchronized void getEntities(Rectangle viewport, Set<ENT> result) {
+	public synchronized void getEntities(Rectangle viewport, ArrayList<ENT> result) {
 		// Top Left
 		int cellMinX = getCellX(viewport.x);
 		int cellMinY = getCellY(viewport.y);
@@ -181,16 +200,44 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 		int cellMaxX = getCellX(viewport.x + viewport.width);
 		int cellMaxY = getCellY(viewport.y + viewport.height);
 
+		Cell cell;
+		ENT ent;
+		boolean addAll;
+		lastTag++;
+		int arrayLength = 0;
 		for (int cellX = cellMinX; cellX <= cellMaxX; cellX++) {
 			for (int cellY = cellMinY; cellY <= cellMaxY; cellY++) {
-				Cell cell = data[cellX][cellY];
+				cell = data[cellX][cellY];
 				if (cell.hasEntities()) {
-					if (viewport.contains(viewport)) {
-						result.addAll(cell.getEntities());
-					} else {
-						for (Object entObj : cell.getEntities()) {
-							ENT ent = (ENT)entObj;
-							if (IntersectorUtils.intersects(viewport, ent.getPos(), ent.getRadius())) {
+
+					// addAll = cell.containedInCircle(pos, dist);
+					// ENTITY_LOOP: for (Object entObj : cell.getEntities()) {
+					// ent = (ENT) entObj;
+					// if (ent.getPartitionTag() != lastTag) {
+					// if (!addAll) {
+					// dist2 = (dist + ent.getRadius());
+					// dist2 = dist2 * dist2;
+					// if (ent.getPos().dst2(pos) > dist2) {
+					// continue ENTITY_LOOP;
+					// }
+					// }
+					// ent.setPartitionTag(lastTag);
+					// result.add(ent);
+					// }
+					// }
+					//
+
+					addAll = (viewport.contains(viewport));
+					ArrayList data = cell.getEntities();
+					arrayLength = data.size();
+					ENTITY_LOOP: for (int i = 0; i < arrayLength; i++) {
+						ent = (ENT) data.get(i);
+						if (ent.getPartitionTag() != lastTag) {
+							if (!addAll) {
+								if (!IntersectorUtils.intersects(viewport, ent.getPos(), ent.getRadius())) {
+									continue ENTITY_LOOP;
+								}
+								ent.setPartitionTag(lastTag);
 								result.add(ent);
 							}
 						}
@@ -204,10 +251,11 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 		Entity result = null;
 		float minDist2 = 0;
 
-		Set<ENT> entities = new HashSet<ENT>();
-		searchNearbyEntities(entity.getPos(), maxDistance, entities);
-		for (ENT entObj : entities) {
-			Entity ent = (Entity)entObj;
+		searchNearbyEntities(entity.getPos(), maxDistance, tempEntities);
+
+		int length = tempEntities.size();
+		for (int i = 0; i < length; i++) {
+			Entity ent = (Entity) tempEntities.get(i);
 			if (ent.getType() == type) {
 				// Check within Distance
 				// Check within FOV
@@ -225,6 +273,7 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 				}
 			}
 		}
+		tempEntities.clear();
 		return result;
 	}
 

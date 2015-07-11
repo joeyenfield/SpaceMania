@@ -12,6 +12,10 @@ public abstract class ObjectProcessor<ENT> {
 
     protected abstract Iterator<ENT> getIterator();
 
+    /**
+     * Overidded in array processor
+     * @param processor
+     */
     public synchronized void process(SingleProcessor<ENT> processor) {
         Iterator<ENT> iterator = getIterator();
         while (iterator.hasNext()) {

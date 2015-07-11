@@ -2,9 +2,7 @@ package com.emptypockets.spacemania.network.engine.ai.manager;
 
 import com.emptypockets.spacemania.network.engine.ai.steering.Flee;
 import com.emptypockets.spacemania.network.engine.ai.steering.Follow;
-import com.emptypockets.spacemania.network.engine.ai.steering.ProximityTargetSteering.ProximityType;
 import com.emptypockets.spacemania.network.engine.ai.steering.Steering;
-import com.emptypockets.spacemania.network.engine.ai.steering.Wander;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;

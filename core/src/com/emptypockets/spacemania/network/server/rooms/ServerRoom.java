@@ -1,13 +1,11 @@
 package com.emptypockets.spacemania.network.server.rooms;
 
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
 import com.emptypockets.spacemania.holders.CleanerProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.payloads.rooms.ClientRoomMessagesPayload;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
-import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.EngineState;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
@@ -22,6 +20,7 @@ import com.emptypockets.spacemania.network.server.rooms.messages.ServerRoomMessa
 import com.emptypockets.spacemania.network.server.rooms.messages.ServerRoomPlayerJoinMessage;
 import com.emptypockets.spacemania.network.server.rooms.messages.ServerRoomPlayerLeaveMessage;
 import com.emptypockets.spacemania.network.transport.ComsType;
+import com.emptypockets.spacemania.utils.PoolsManager;
 
 /**
  * Created by jenfield on 14/05/2015.
@@ -129,21 +128,20 @@ public class ServerRoom implements Disposable {
 		lastBroadcastTime = System.currentTimeMillis();
 		// If no messages dont broadcast
 		if (messageManager.getSize() > 0) {
-			final ClientRoomMessagesPayload roomMessagePayloads = Pools.obtain(ClientRoomMessagesPayload.class);
-			roomMessagePayloads.setComsType(ComsType.TCP);
+			final ClientRoomMessagesPayload roomMessagePayloads = PoolsManager.obtain(ClientRoomMessagesPayload.class);
 			roomMessagePayloads.setRoomId(getId());
 			messageManager.process(new CleanerProcessor<ServerRoomMessage>() {
 				@Override
 				public boolean shouldRemove(ServerRoomMessage entity) {
 					roomMessagePayloads.addMessage(entity.createClientMessage());
-					Pools.free(entity);
+					PoolsManager.free(entity);
 					return true;
 				}
 			});
 			getPlayerManager().process(new SingleProcessor<ServerPlayer>() {
 				@Override
 				public void process(ServerPlayer entity) {
-					entity.send(roomMessagePayloads);
+					entity.send(roomMessagePayloads, ComsType.TCP);
 				}
 			});
 		}
@@ -184,7 +182,7 @@ public class ServerRoom implements Disposable {
 		player.setEntityId(entity.getState().getId());
 
 		// Send message that player has joined
-		ServerRoomPlayerJoinMessage message = Pools.obtain(ServerRoomPlayerJoinMessage.class);
+		ServerRoomPlayerJoinMessage message = PoolsManager.obtain(ServerRoomPlayerJoinMessage.class);
 		message.setServerPlayer(player);
 		messageManager.add(message);
 		sendMessage(String.format("%s has joined the room", player.getUsername()));
@@ -196,7 +194,7 @@ public class ServerRoom implements Disposable {
 	public void leaveRoom(ServerPlayer player) {
 		playerManager.removePlayer(player);
 
-		ServerRoomPlayerLeaveMessage message = Pools.obtain(ServerRoomPlayerLeaveMessage.class);
+		ServerRoomPlayerLeaveMessage message = PoolsManager.obtain(ServerRoomPlayerLeaveMessage.class);
 		message.setServerPlayer(player);
 		messageManager.add(message);
 
@@ -212,7 +210,7 @@ public class ServerRoom implements Disposable {
 	}
 
 	public void sendMessage(String messageContent, String username) {
-		ServerRoomChatMessage message = Pools.obtain(ServerRoomChatMessage.class);
+		ServerRoomChatMessage message = PoolsManager.obtain(ServerRoomChatMessage.class);
 		message.setTimestamp(System.currentTimeMillis());
 		message.setMessage(messageContent);
 		message.setUsername(username);

@@ -9,6 +9,7 @@ import com.emptypockets.spacemania.network.client.commands.authentication.Client
 import com.emptypockets.spacemania.network.client.commands.authentication.ClientLogoutCommand;
 import com.emptypockets.spacemania.network.client.commands.connection.ClientConnectCommand;
 import com.emptypockets.spacemania.network.client.commands.connection.ClientDisconnectCommand;
+import com.emptypockets.spacemania.network.client.commands.connection.ClientIpCommand;
 import com.emptypockets.spacemania.network.client.commands.connection.ClientPingCommand;
 import com.emptypockets.spacemania.network.client.commands.connection.ClientSearchCommand;
 import com.emptypockets.spacemania.network.client.commands.rooms.ClientChatCommand;
@@ -41,6 +42,7 @@ public class CommandService {
     }
 
     public static void registerClientCommands(ClientManager client) {
+    	client.getCommand().registerCommand(new ClientIpCommand(client));
     	client.getCommand().registerCommand(new ClientStartCommand(client));
         client.getCommand().registerCommand(new ClientJoinRoomCommand(client));
 

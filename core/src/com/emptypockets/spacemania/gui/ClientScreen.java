@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -56,12 +55,12 @@ public class ClientScreen extends StageScreen {
 
 	public ClientScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
-		setDrawEvents(true);
+		setDrawEvents(false);
 		clientInputProducer = new OnScreenInput();
 		client = new ClientManager(clientInputProducer);
 		setClearColor(Color.BLACK);
 
-		getClient().getCommand().pushHistory("connect 192.168.43.137;login user" + MathUtils.random(100) + ";lobby;set grid 1;set gridsize 2 2;set gridrender 0;set roomsize 4000;set particles 1000");
+		getClient().getCommand().pushHistory("connect 192.168.1.9;login user" + MathUtils.random(100) + ";lobby");
 		// getClient().getCommand().pushHistory("connect 192.168.43.100; login user"
 		// + MathUtils.random(100) + ";lobby;");
 		// getClient().getCommand().pushHistory("connect 192.168.1.8;login user"

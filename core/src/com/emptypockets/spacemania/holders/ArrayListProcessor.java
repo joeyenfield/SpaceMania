@@ -28,7 +28,15 @@ public class ArrayListProcessor<ENT> extends ObjectProcessor<ENT> {
         holder.clear();
     }
     @Override
-    protected Iterator<ENT> getIterator() {
+	public Iterator<ENT> getIterator() {
         return holder.iterator();
+    }
+    
+    @Override
+    public synchronized void process(SingleProcessor<ENT> processor) {
+    	int size = holder.size();
+    	for(int i = 0; i < size; i++){
+    		processor.process(holder.get(i));
+    	}
     }
 }

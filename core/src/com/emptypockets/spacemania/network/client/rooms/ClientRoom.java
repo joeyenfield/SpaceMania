@@ -5,15 +5,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomMessage;
-import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
+import com.emptypockets.spacemania.utils.PoolsManager;
 
 /**
  * Created by jenfield on 14/05/2015.
@@ -47,7 +46,7 @@ public class ClientRoom implements Disposable{
         room.getPlayerManager().process(new SingleProcessor<ServerPlayer>() {
             @Override
             public void process(ServerPlayer entity) {
-                ClientPlayer player = Pools.obtain(ClientPlayer.class);
+                ClientPlayer player = PoolsManager.obtain(ClientPlayer.class);
                 player.read(entity);
                 players.add(player);
             }

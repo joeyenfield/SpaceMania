@@ -13,6 +13,7 @@ import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.ClientConnection;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
+import com.emptypockets.spacemania.network.transport.ComsType;
 import com.emptypockets.spacemania.plotter.DataLogger;
 
 /**
@@ -116,8 +117,8 @@ public class ServerPlayer implements Disposable {
 		clientConnection.processIncommingPayloads();
 	}
 
-	public void send(ClientPayload payload) {
-		clientConnection.send(payload);
+	public void send(ClientPayload payload, ComsType type) {
+		clientConnection.send(payload, type);
 	}
 
 	public void updateClientPlayer() {

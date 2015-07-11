@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.gui.renderer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
@@ -19,7 +18,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
 import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
@@ -28,7 +26,6 @@ import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.entities.collect.ScoreEntity;
 import com.emptypockets.spacemania.network.engine.grid.GridSystem;
 import com.emptypockets.spacemania.network.engine.particles.Particle;
-import com.emptypockets.spacemania.network.engine.particles.ParticleSystem;
 import com.emptypockets.spacemania.network.engine.partitioning.cell.Cell;
 import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePartition;
 
@@ -36,6 +33,9 @@ import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePar
  * Created by jenfield on 10/05/2015.
  */
 public class EngineRender {
+	ArrayList<Entity> renderEntities = new ArrayList<Entity>();
+	ArrayList<Particle> particles = new ArrayList<Particle>();
+
 	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRender;
 
@@ -137,11 +137,13 @@ public class EngineRender {
 		shapeRender.end();
 	}
 
-	public void renderEntity(OrthographicCamera camera, Set<Entity> entities, SpriteBatch batch) {
+	public void renderEntity(OrthographicCamera camera, ArrayList<Entity> entities, SpriteBatch batch) {
 		// Render Players
 		batch.begin();
 		batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-		for (Entity entity : entities) {
+		int size = entities.size();
+		for (int i = 0; i < size; i++) {
+			Entity entity = entities.get(i);
 			if (entity.isAlive()) {
 				transform.idt();
 				transform.translate(entity.getPos());
@@ -229,14 +231,15 @@ public class EngineRender {
 		/**
 		 * Render Particles
 		 */
-		Set<Particle> particles = new HashSet<Particle>();
+
+		particles.clear();
 		engine.getParticleSystem().getEntities(viewport, particles);
 		renderParticles(particles, spriteBatch);
 
 		/**
 		 * Render Entities
 		 */
-		Set<Entity> renderEntities = new HashSet<Entity>();
+		renderEntities.clear();
 		engine.getEntitySpatialPartition().getEntities(viewport, renderEntities);
 		// renderEntityDebug(camera, renderEntities);
 		renderEntity(camera, renderEntities, spriteBatch);
@@ -253,9 +256,11 @@ public class EngineRender {
 
 	}
 
-	public void renderParticles(Set<Particle> particles, final SpriteBatch batch) {
+	public void renderParticles(ArrayList<Particle> particles, final SpriteBatch batch) {
 		batch.begin();
-		for (Particle entity : particles) {
+		int size = particles.size();
+		for (int i = 0; i < size; i++) {
+			Particle entity = particles.get(i);
 			if (!entity.isDead()) {
 
 				AtlasRegion region = sparkRegion;

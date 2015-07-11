@@ -6,8 +6,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.network.engine.partitioning.cell.PartitionEntity;
-import com.emptypockets.spacemania.network.engine.sync.StateSyncUtils;
-import com.emptypockets.spacemania.plotter.DataLogger;
 
 public abstract class Entity implements Poolable,PartitionEntity{
 	EntityState state;
@@ -36,13 +34,16 @@ public abstract class Entity implements Poolable,PartitionEntity{
 	protected long lifeTime = 0;
 
 	Vector2 lastServerOffset = new Vector2();
-
+	
+	int partitionTag = 0;
+	
 	public Entity(EntityType type) {
 		this.type = type;
 		state = new EntityState();
 		color = Color.GREEN.cpy();
 	}
 
+	
 	public void setLifeTime(long time) {
 		this.lifeTime = time;
 	}
@@ -253,6 +254,16 @@ public abstract class Entity implements Poolable,PartitionEntity{
 
 	public Vector2 getLastServerOffset() {
 		return lastServerOffset;
+	}
+
+
+	public int getPartitionTag() {
+		return partitionTag;
+	}
+
+
+	public void setPartitionTag(int partitionTag) {
+		this.partitionTag = partitionTag;
 	}
 
 }

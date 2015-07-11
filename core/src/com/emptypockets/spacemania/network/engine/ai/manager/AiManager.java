@@ -5,7 +5,6 @@ import java.util.HashMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.EntityManagerInterface;
-import com.emptypockets.spacemania.network.engine.ai.steering.Follow;
 import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;

@@ -32,7 +32,7 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	protected EventRecorder eventLogger;
 	SpriteBatch eventBatch;
 	InputMultiplexer parentInputMultiplexer;
-	boolean drawEvents = true;
+	boolean drawEvents = false;
 
 	public GameScreen(MainGame game, InputMultiplexer inputProcessor) {
 		this.mainGame = game;

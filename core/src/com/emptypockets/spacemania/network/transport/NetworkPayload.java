@@ -7,15 +7,15 @@ import com.badlogic.gdx.utils.Pool;
  */
 public abstract class NetworkPayload implements Pool.Poolable {
 
-    ComsType comsType = ComsType.TCP;
-
-    public ComsType getComsType() {
-        return comsType;
-    }
-
-    public void setComsType(ComsType comsType) {
-        this.comsType = comsType;
-    }
+//    ComsType comsType = ComsType.TCP;
+//
+//    public ComsType getComsType() {
+//        return comsType;
+//    }
+//
+//    public void setComsType(ComsType comsType) {
+//        this.comsType = comsType;
+//    }
 
     @Override
     public void reset() {

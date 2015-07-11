@@ -2,7 +2,6 @@ package com.emptypockets.spacemania.commandLine.commands;
 
 import com.emptypockets.spacemania.commandLine.Command;
 import com.emptypockets.spacemania.commandLine.CommandLine;
-import com.emptypockets.spacemania.console.Console;
 
 public class CommandLineHelpCommand extends CommandLineCommand {
 

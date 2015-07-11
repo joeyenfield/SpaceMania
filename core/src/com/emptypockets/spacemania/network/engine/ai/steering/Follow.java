@@ -3,7 +3,6 @@ package com.emptypockets.spacemania.network.engine.ai.steering;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
-import com.emptypockets.spacemania.network.engine.entities.EntityType;
 
 public class Follow extends ProximityTargetSteering {
 

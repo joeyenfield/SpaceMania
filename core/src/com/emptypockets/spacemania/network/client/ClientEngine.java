@@ -25,14 +25,16 @@ public class ClientEngine extends Engine {
 
 	long lastServerUpdateTime = 0;
 
+	ArrayList<PlayerEntity> players = new ArrayList<PlayerEntity>();
+
 	public ClientEngine() {
 		super();
-		particleSystem = new ParticleSystem();
+		particleSystem = new ParticleSystem(this);
 		particleSystem.setMaxParticles(maxParticles);
-		
+
 		gridManager = new GridSystem();
 		gridManager.setup(gridSizeX, gridSizeY, getRegion());
-		
+
 		getEntityManager().register(particleSystem);
 		addRegionListener(gridManager);
 		addRegionListener(particleSystem.getPartition());
@@ -55,29 +57,37 @@ public class ClientEngine extends Engine {
 		super.updateEntities(deltaTime);
 
 		// Get Players and draw pixels
-		ArrayList<PlayerEntity> players = getEntityManager().filterEntities(PlayerEntity.class);
+		players.clear();
+		getEntityManager().filterEntities(PlayerEntity.class, players);
 
-		for (PlayerEntity player : players) {
-			particleSystem.drawPlayerTrail(this, player);
+		int count = players.size();
+		for (int i = 0; i < count; i++) {
+			particleSystem.drawPlayerTrail(this, players.get(i));
 		}
 
-		particleSystem.update(this, deltaTime);
+		particleSystem.update();
 
 		updateGrid(deltaTime);
 	}
+
+	SingleProcessor<Entity> updateGridProcessor = null;
 
 	public void updateGrid(float deltaTime) {
 		if (!dynamicGrid) {
 			return;
 		}
-		getEntityManager().process(new SingleProcessor<Entity>() {
 
-			@Override
-			public void process(Entity entity) {
-				if (entity instanceof BulletEntity)
-					gridManager.applyExplosion(entity.getPos(), explosiveForce, 30);
-			}
-		});
+		if (updateGridProcessor == null) {
+			updateGridProcessor = new SingleProcessor<Entity>() {
+
+				@Override
+				public void process(Entity entity) {
+					if (entity instanceof BulletEntity)
+						gridManager.applyExplosion(entity.getPos(), explosiveForce, 30);
+				}
+			};
+		}
+		getEntityManager().process(updateGridProcessor);
 		gridManager.solve();
 		gridManager.update();
 	}

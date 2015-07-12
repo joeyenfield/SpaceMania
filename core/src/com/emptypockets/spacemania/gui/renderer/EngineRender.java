@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.gui.renderer;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -18,6 +17,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
 import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
@@ -54,8 +54,6 @@ public class EngineRender {
 	Affine2 transform = new Affine2();
 
 	BitmapFont font;
-
-	boolean debugEnabled = true;
 
 	GridTextureRenderer gridTextureRender;
 	GridPathRenderer gridPathRender;
@@ -120,7 +118,7 @@ public class EngineRender {
 
 	}
 
-	public void renderEntityDebug(OrthographicCamera camera, Set<Entity> entities) {
+	public void renderEntityDebug(OrthographicCamera camera, ArrayList<Entity> entities) {
 		if (entities.size() == 0) {
 			return;
 		}
@@ -204,18 +202,21 @@ public class EngineRender {
 		/**
 		 * Render Background
 		 */
-		backgroundRender.render(camera, engine);
-
+		if (Constants.RENDER_TEXTURE) {
+			backgroundRender.render(camera, engine);
+		}
 		/**
 		 * Render Grid
 		 */
-		// renderSpatialPartionDebug(camera, engine.getEntitySpatialPartition());
-		if (engine.getGridData().getRenderType() == GridSystem.RENDER_PATH) {
+		if (Constants.RENDER_DEBUG) {
+			renderSpatialPartionDebug(camera, engine.getEntitySpatialPartition());
+		}
+		if (Constants.RENDER_TEXTURE && engine.getGridData().getRenderType() == GridSystem.RENDER_PATH) {
 			engine.getGridData().addListener(gridPathRender);
 			engine.getGridData().removeListener(gridTextureRender);
 			gridPathRender.updateBounds();
 			gridPathRender.render(engine.getGridData(), viewport, shapeRender);
-		} else if (engine.getGridData().getRenderType() == GridSystem.RENDER_TEXTURE) {
+		} else if (Constants.RENDER_TEXTURE && engine.getGridData().getRenderType() == GridSystem.RENDER_TEXTURE) {
 			engine.getGridData().addListener(gridTextureRender);
 			engine.getGridData().removeListener(gridPathRender);
 			// Render Grid
@@ -232,18 +233,23 @@ public class EngineRender {
 		 * Render Particles
 		 */
 
-		particles.clear();
-		engine.getParticleSystem().getEntities(viewport, particles);
-		renderParticles(particles, spriteBatch);
-
+		if (Constants.RENDER_TEXTURE) {
+			particles.clear();
+			engine.getParticleSystem().getEntities(viewport, particles);
+			renderParticles(particles, spriteBatch);
+		}
 		/**
 		 * Render Entities
 		 */
 		renderEntities.clear();
 		engine.getEntitySpatialPartition().getEntities(viewport, renderEntities);
-		// renderEntityDebug(camera, renderEntities);
-		renderEntity(camera, renderEntities, spriteBatch);
 
+		if (Constants.RENDER_TEXTURE) {
+			renderEntity(camera, renderEntities, spriteBatch);
+		}
+		if (Constants.RENDER_DEBUG) {
+			renderEntityDebug(camera, renderEntities);
+		}
 		// renderEntities.clear();
 		// if (ServerManager.manager != null) {
 		// ServerManager manager = ServerManager.manager;

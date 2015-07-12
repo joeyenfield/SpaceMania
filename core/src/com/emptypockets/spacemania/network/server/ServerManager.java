@@ -203,52 +203,57 @@ public class ServerManager implements Disposable, Runnable {
 		long processingTime = 0;
 
 		while (alive) {
-			DataLogger.log("server-update", 1);
-			startTime = System.currentTimeMillis();
-			// Update All Pings
-			long delta = System.currentTimeMillis() - lastPingUpdate;
-			if (delta > pingUpdateTime) {
-				lastPingUpdate = System.currentTimeMillis();
-				updatePings();
-			}
-			// Read All Data
-			connectionManager.processIncommingPackets();
-
-			// Update Rooms and client information
-			roomManager.process(new SingleProcessor<ServerRoom>() {
-				@Override
-				public void process(ServerRoom entity) {
-					entity.update();
-					if (entity.shouldBroadcast()) {
-						entity.broadcast();
-					}
-				}
-			});
-
-			// Update Server Player Client Information
-			playerManager.process(new SingleProcessor<ServerPlayer>() {
-				@Override
-				public void process(ServerPlayer entity) {
-					entity.updateClientPlayer();
-				}
-			});
-
-			// Update All Player States
-			delta = System.currentTimeMillis() - lastplayerStateUpdate;
-			if (delta > playerStateUpdateTime) {
-				lastplayerStateUpdate = System.currentTimeMillis();
-				updatePlayerStates();
-			}
-
-			processingTime = System.currentTimeMillis() - startTime;
 			try {
-				if (processingTime < desiredUpdatePeroid) {
-					Thread.sleep(desiredUpdatePeroid - processingTime);
-				} else {
-					console.println("Server Running Behind : Update[" + processingTime + "] - Update Time [" + desiredUpdatePeroid + "]" + getLobbyRoom().getEngine().getEntityManager().getSize());
+				DataLogger.log("server-update", 1);
+				startTime = System.currentTimeMillis();
+				// Update All Pings
+				long delta = System.currentTimeMillis() - lastPingUpdate;
+				if (delta > pingUpdateTime) {
+					lastPingUpdate = System.currentTimeMillis();
+					updatePings();
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				// Read All Data
+				connectionManager.processIncommingPackets();
+
+				// Update Rooms and client information
+				roomManager.process(new SingleProcessor<ServerRoom>() {
+					@Override
+					public void process(ServerRoom entity) {
+						entity.update();
+						if (entity.shouldBroadcast()) {
+							entity.broadcast();
+						}
+					}
+				});
+
+				// Update Server Player Client Information
+				playerManager.process(new SingleProcessor<ServerPlayer>() {
+					@Override
+					public void process(ServerPlayer entity) {
+						entity.updateClientPlayer();
+					}
+				});
+
+				// Update All Player States
+				delta = System.currentTimeMillis() - lastplayerStateUpdate;
+				if (delta > playerStateUpdateTime) {
+					lastplayerStateUpdate = System.currentTimeMillis();
+					updatePlayerStates();
+				}
+
+				processingTime = System.currentTimeMillis() - startTime;
+				try {
+					if (processingTime < desiredUpdatePeroid) {
+						Thread.sleep(desiredUpdatePeroid - processingTime);
+					} else {
+						console.println("Server Running Behind : Update[" + processingTime + "] - Update Time [" + desiredUpdatePeroid + "]" + getLobbyRoom().getEngine().getEntityManager().getSize());
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} catch (Throwable t) {
+				getConsole().print("Error");
+				getConsole().error(t);
 			}
 		}
 

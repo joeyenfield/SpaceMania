@@ -3,6 +3,7 @@ package com.emptypockets.spacemania.network.server;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.network.NetworkProperties;
 import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
 import com.emptypockets.spacemania.network.transport.NetworkProtocall;
@@ -35,7 +36,7 @@ public class ServerConnectionManager extends Listener {
     }
 
     public void setupServer() {
-        server = new Server(2*1024*1024,2*1024*1024) {
+        server = new Server(Constants.BUFFER_WRITE_SERVER, Constants.BUFFER_OBJECT_SERVER) {
             @Override
             protected Connection newConnection() {
                 return createConnection();

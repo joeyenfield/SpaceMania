@@ -17,4 +17,11 @@ public class Constants {
 
 	public static final int ENTITY_SPAWN_FOLLOW_COUNT = 10;
 	public static final int ENTITY_SPAWN_RANDOM_COUNT = 10;
+	
+	public static final int BUFFER_OBJECT_SERVER = 5*1024*1024;
+	public static final int BUFFER_WRITE_SERVER = 5*1024*1024;
+	
+
+	public static final int BUFFER_OBJECT_CLIENT = 5*1024*1024;
+	public static final int BUFFER_WRITE_CLIENT = 5*1024*1024;
 }

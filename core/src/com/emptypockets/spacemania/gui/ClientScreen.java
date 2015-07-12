@@ -60,7 +60,7 @@ public class ClientScreen extends StageScreen {
 		client = new ClientManager(clientInputProducer);
 		setClearColor(Color.BLACK);
 
-		getClient().getCommand().pushHistory("connect 192.168.1.9;login user" + MathUtils.random(100) + ";lobby");
+		getClient().getCommand().pushHistory("connect emptypocketgames.noip.me;login user" + MathUtils.random(100) + ";lobby");
 		// getClient().getCommand().pushHistory("connect 192.168.43.100; login user"
 		// + MathUtils.random(100) + ";lobby;");
 		// getClient().getCommand().pushHistory("connect 192.168.1.8;login user"

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.utils.Disposable;
+import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.network.client.exceptions.ClientNotConnectedException;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.server.payloads.ServerPayload;
@@ -53,7 +54,7 @@ public class ClientConnectionManager extends Listener implements Disposable {
 	private void setupClientConnection() {
 		synchronized (clientConnectionLock) {
 			disconnect();
-			connection = new Client(1 * 1024 * 1024, 1 * 1024 * 1024);
+			connection = new Client(Constants.BUFFER_WRITE_CLIENT, Constants.BUFFER_OBJECT_CLIENT);
 			connection.start();
 			connection.addListener(this);
 			NetworkProtocall.register(connection.getKryo());

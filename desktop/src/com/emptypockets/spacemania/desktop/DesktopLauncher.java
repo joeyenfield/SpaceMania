@@ -115,11 +115,13 @@ public class DesktopLauncher {
 			// client.processCommand("host rooms");
 			// game.screen.getClient().getCommand().processCommand("start; set roomsize 4000;set grid 1; set gridrender 1; set gridsize 2 2");
 
-			while (true) {
+			try {
 				Scanner in = new Scanner(System.in);
 				while (true) {
 					game.screen.getClient().getCommand().processCommand(in.nextLine());
 				}
+			} catch (Exception e) {
+
 			}
 		} catch (Throwable t) {
 			JTextArea textArea = new JTextArea();

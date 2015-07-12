@@ -69,7 +69,11 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	@Override
 	public final void render(float delta) {
 		eventLogger.begin("LOGIC");
-		updateLogic(delta);
+		try {
+			updateLogic(delta);
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
 		eventLogger.end("LOGIC");
 
 		eventLogger.begin("RENDER");

@@ -16,6 +16,7 @@ public class ClientSetCommand extends ClientCommand {
 		commands.registerCommand(new ClientSetGridCommand(client));
 		commands.registerCommand(new ClientSetParticlesCommand(client));
 		commands.registerCommand(new ClientSetRoomSizeCommand(client));
+		commands.registerCommand(new ClientSetRenderCommand(client));
 	}
 
 	@Override

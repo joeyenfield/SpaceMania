@@ -234,6 +234,13 @@ public abstract class Entity implements Poolable,PartitionEntity{
 	public long getAge() {
 		return System.currentTimeMillis() - creationTime;
 	}
+	
+	public float getLifeProgress(){
+		if(lifeTime == 0){
+			return 1;
+		}
+		return getAge()/(float)lifeTime;
+	}
 
 	public float getLastMovementDist() {
 		return lastMovementDist;

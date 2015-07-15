@@ -25,7 +25,7 @@ public class ServerEngine extends Engine {
 	long lastEnemy = 0;
 
 	ArrayList<BulletEntity> bullets = new ArrayList<BulletEntity>();
-	ArrayList<Entity> entities = new ArrayList<Entity>();
+	ArrayList<Entity> tempEntitiesHolder = new ArrayList<Entity>();
 	
 	public ServerEngine(PlayerManager playerManager) {
 		super();
@@ -40,9 +40,9 @@ public class ServerEngine extends Engine {
 
 		// Kill Enemys
 		for (BulletEntity bullet : bullets) {
-			entities.clear();
-			getEntitySpatialPartition().getNearbyEntities(bullet, bullet.getLastMovementDist() * 2, entities, EnemyEntity.class);
-			ENEMY_LOOP: for (Entity ent : entities) {
+			tempEntitiesHolder.clear();
+			getEntitySpatialPartition().getNearbyEntities(bullet, bullet.getLastMovementDist() * 2, tempEntitiesHolder, EnemyEntity.class);
+			ENEMY_LOOP: for (Entity ent : tempEntitiesHolder) {
 				EnemyEntity enemy = (EnemyEntity) ent;
 				if (bullet.contact(enemy)) {
 					bullet.setAlive(false);
@@ -62,7 +62,7 @@ public class ServerEngine extends Engine {
 			}
 		}
 		bullets.clear();
-		entities.clear();
+		tempEntitiesHolder.clear();
 
 		// Get Collectable
 		final Vector2 force = new Vector2();
@@ -72,10 +72,10 @@ public class ServerEngine extends Engine {
 				int id = player.getEntityId();
 				Entity ent = getEntityManager().getEntityById(id);
 				if (ent != null) {
-					entities.clear();
+					tempEntitiesHolder.clear();
 					PlayerEntity playerEntity = (PlayerEntity) ent;
-					getEntitySpatialPartition().getNearbyEntities(ent, playerEntity.getMagnetDistance(), entities, CollectableEntity.class);
-					for (Entity col : entities) {
+					getEntitySpatialPartition().getNearbyEntities(ent, playerEntity.getMagnetDistance(), tempEntitiesHolder, CollectableEntity.class);
+					for (Entity col : tempEntitiesHolder) {
 						CollectableEntity collect = (CollectableEntity) col;
 						if (collect.contact(playerEntity)) {
 							collect.collect(player);
@@ -88,7 +88,7 @@ public class ServerEngine extends Engine {
 				}
 			}
 		});
-		entities.clear();
+		tempEntitiesHolder.clear();
 	}
 
 	public void updateAi() {

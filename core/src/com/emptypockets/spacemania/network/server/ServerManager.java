@@ -271,7 +271,7 @@ public class ServerManager implements Disposable, Runnable {
 				player.setEntityId(entity.getEntityId());
 
 				payload.setMyPlayer(player);
-				entity.send(payload, ComsType.UDP);
+				entity.send(payload, ComsType.TCP);
 				PoolsManager.free(payload);
 			}
 		});

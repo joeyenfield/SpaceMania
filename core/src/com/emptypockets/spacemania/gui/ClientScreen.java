@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLinePanel;
 import com.emptypockets.spacemania.gui.renderer.EngineRender;
@@ -34,6 +35,7 @@ public class ClientScreen extends StageScreen {
 	int minTouchSize = 60;
 	int insetSize = 50;
 	int touchPadSize = 200;
+	long lastInputSentToServer = 0;
 
 	CommandLinePanel commandLinePanel;
 	Touchpad movePad;
@@ -204,10 +206,10 @@ public class ClientScreen extends StageScreen {
 					playerPositionFixTemp.x = (ent.getPos().x);
 					playerPositionFixTemp.y = (ent.getPos().y);
 
-					//Map Player into screen
+					// Map Player into screen
 					screenCamera.project(playerPositionFixTemp);
-					
-					//Normalise
+
+					// Normalise
 					playerPositionFixTemp.x /= Gdx.graphics.getWidth();
 					playerPositionFixTemp.y /= Gdx.graphics.getHeight();
 
@@ -230,13 +232,13 @@ public class ClientScreen extends StageScreen {
 					} else {
 						playerOffsetFixTemp.y = 0;
 					}
-					
-					//Denormalise
+
+					// Denormalise
 					playerOffsetFixTemp.x *= Gdx.graphics.getWidth();
 					playerOffsetFixTemp.y *= Gdx.graphics.getHeight();
 					screenCamera.unproject(playerOffsetFixTemp);
 
-					//Get Distance
+					// Get Distance
 					playerPositionFixTemp.x = 0;
 					playerPositionFixTemp.y = 0;
 					screenCamera.unproject(playerPositionFixTemp);
@@ -267,7 +269,10 @@ public class ClientScreen extends StageScreen {
 		super.updateLogic(delta);
 
 		if (client.isLoggedIn()) {
-			client.sendInput();
+			if (System.currentTimeMillis() - lastInputSentToServer > Constants.CLIENT_INPUT_TO_SERVER_PEROID) {
+				lastInputSentToServer = System.currentTimeMillis();
+				client.sendInput();
+			}
 		}
 		client.update();
 	}

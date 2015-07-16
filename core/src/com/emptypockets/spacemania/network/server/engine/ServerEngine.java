@@ -2,6 +2,8 @@ package com.emptypockets.spacemania.network.server.engine;
 
 import java.util.ArrayList;
 
+import javax.management.RuntimeErrorException;
+
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.Constants;
@@ -15,31 +17,34 @@ import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.entities.collect.CollectableEntity;
 import com.emptypockets.spacemania.network.engine.entities.collect.ScoreEntity;
-import com.emptypockets.spacemania.network.server.player.PlayerManager;
+import com.emptypockets.spacemania.network.server.player.ServerPlayerManager;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 
 public class ServerEngine extends Engine {
 	AiManager aiManager;
-	PlayerManager playerManager;
+	ServerPlayerManager playerManager;
 
 	long lastEnemy = 0;
-
-	ArrayList<BulletEntity> bullets = new ArrayList<BulletEntity>();
+	
+	ArrayList<BulletEntity> tempBulletsHolder = new ArrayList<BulletEntity>();
 	ArrayList<Entity> tempEntitiesHolder = new ArrayList<Entity>();
 	
-	public ServerEngine(PlayerManager playerManager) {
+	public ServerEngine(ServerPlayerManager playerManager) {
 		super();
 		aiManager = new AiManager(this);
 		aiManager.setEnabled(true);
 		this.playerManager = playerManager;
+		if(this.playerManager == null){
+			throw new RuntimeException("Should not be null");
+		}
 		getEntityManager().register(aiManager);
 	}
 
 	public void processCollissions() {
-		 getEntityManager().filterEntities(BulletEntity.class,bullets);
+		 getEntityManager().filterEntities(BulletEntity.class,tempBulletsHolder);
 
 		// Kill Enemys
-		for (BulletEntity bullet : bullets) {
+		for (BulletEntity bullet : tempBulletsHolder) {
 			tempEntitiesHolder.clear();
 			getEntitySpatialPartition().getNearbyEntities(bullet, bullet.getLastMovementDist() * 2, tempEntitiesHolder, EnemyEntity.class);
 			ENEMY_LOOP: for (Entity ent : tempEntitiesHolder) {
@@ -61,7 +66,7 @@ public class ServerEngine extends Engine {
 				}
 			}
 		}
-		bullets.clear();
+		tempBulletsHolder.clear();
 		tempEntitiesHolder.clear();
 
 		// Get Collectable
@@ -125,5 +130,9 @@ public class ServerEngine extends Engine {
 		updateAi();
 		super.update();
 		logEntity("server");
+	}
+
+	public ServerPlayerManager getPlayerManager() {
+		return playerManager;
 	}
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -16,9 +17,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.emptypockets.spacemania.Constants;
+import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.ClientEngine;
+import com.emptypockets.spacemania.network.client.player.ClientPlayer;
+import com.emptypockets.spacemania.network.client.player.ClientPlayerManager;
+import com.emptypockets.spacemania.network.engine.EntityManager;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
 import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
@@ -33,8 +39,8 @@ import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePar
  * Created by jenfield on 10/05/2015.
  */
 public class EngineRender {
-	ArrayList<Entity> renderEntities = new ArrayList<Entity>();
-	ArrayList<Particle> particles = new ArrayList<Particle>();
+	ArrayList<Entity> tempRenderEntitiesHolder = new ArrayList<Entity>();
+	ArrayList<Particle> tempRenderParticlesHolder = new ArrayList<Particle>();
 
 	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRender;
@@ -53,6 +59,7 @@ public class EngineRender {
 
 	Affine2 transform = new Affine2();
 
+	GlyphLayout fontLayout = new GlyphLayout();
 	BitmapFont font;
 
 	GridTextureRenderer gridTextureRender;
@@ -62,8 +69,6 @@ public class EngineRender {
 	Vector3 screenStart = new Vector3();
 	Vector3 screenEnd = new Vector3();
 	Rectangle viewport = new Rectangle();
-
-	boolean lastGridTextureRender = false;
 
 	public EngineRender() {
 		textureAtlas = new TextureAtlas("game/game.atlas");
@@ -176,8 +181,6 @@ public class EngineRender {
 
 	}
 
-	boolean firstPathRender = true;
-
 	public void render(OrthographicCamera camera, ClientEngine engine) {
 		shapeRender.setProjectionMatrix(camera.combined);
 
@@ -221,7 +224,6 @@ public class EngineRender {
 			engine.getGridData().removeListener(gridPathRender);
 			// Render Grid
 			gridTextureRender.render(camera, engine);
-			lastGridTextureRender = true;
 		} else {
 			shapeRender.begin(ShapeType.Line);
 			shapeRender.setColor(Color.WHITE);
@@ -234,32 +236,48 @@ public class EngineRender {
 		 */
 
 		if (Constants.RENDER_TEXTURE) {
-			particles.clear();
-			engine.getParticleSystem().getEntities(viewport, particles);
-			renderParticles(particles, spriteBatch);
+			tempRenderParticlesHolder.clear();
+			engine.getParticleSystem().getEntities(viewport, tempRenderParticlesHolder);
+			renderParticles(tempRenderParticlesHolder, spriteBatch);
 		}
 		/**
 		 * Render Entities
 		 */
-		renderEntities.clear();
-		engine.getEntitySpatialPartition().getEntities(viewport, renderEntities);
+		tempRenderEntitiesHolder.clear();
+		engine.getEntitySpatialPartition().getEntities(viewport, tempRenderEntitiesHolder);
 
 		if (Constants.RENDER_TEXTURE) {
-			renderEntity(camera, renderEntities, spriteBatch);
+			renderEntity(camera, tempRenderEntitiesHolder, spriteBatch);
 		}
-		if (Constants.RENDER_DEBUG) {
-			renderEntityDebug(camera, renderEntities);
-		}
-		// renderEntities.clear();
-		// if (ServerManager.manager != null) {
-		// ServerManager manager = ServerManager.manager;
-		// manager.getLobbyRoom().getEngine().getEntitySpatialPartition().getEntities(viewport,
-		// renderEntities);
-		// engine.getEntitySpatialPartition().getEntities(viewport,
-		// renderEntities);
-		// renderEntity(camera, renderEntities, batch);
-		// }
 
+		if (Constants.RENDER_DEBUG) {
+			renderEntityDebug(camera, tempRenderEntitiesHolder);
+		}
+		
+		renderPlayerNames(engine.getPlayerData(), engine.getEntityManager());
+	}
+
+	public void renderPlayerNames(ClientPlayerManager players, final EntityManager entities) {
+
+		spriteBatch.begin();
+		players.process(new SingleProcessor<ClientPlayer>() {
+			@Override
+			public void process(ClientPlayer entity) {
+				Entity ent = entities.getEntityById(entity.getEntityId());
+				if (ent != null) {
+					Vector2 pos = ent.getPos();
+					
+					//Draw Username
+					fontLayout.setText(font, entity.getUsername());
+					font.draw(spriteBatch, fontLayout, pos.x-fontLayout.width/2, pos.y-(ent.getRadius()+fontLayout.height));
+					
+					fontLayout.setText(font, String.valueOf(entity.getPing()));
+					font.draw(spriteBatch, fontLayout, pos.x-fontLayout.width/2, pos.y-(ent.getRadius()+2.5f*fontLayout.height));
+
+				}
+			}
+		});
+		spriteBatch.end();
 	}
 
 	public void renderParticles(ArrayList<Particle> particles, final SpriteBatch batch) {

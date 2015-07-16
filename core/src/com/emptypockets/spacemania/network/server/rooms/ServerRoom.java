@@ -1,25 +1,25 @@
 package com.emptypockets.spacemania.network.server.rooms;
 
 import com.badlogic.gdx.utils.Disposable;
+import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
-import com.emptypockets.spacemania.holders.CleanerProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
+import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineRegionStatePayload;
+import com.emptypockets.spacemania.network.client.payloads.engine.ServerRoomDataSendProcessor;
 import com.emptypockets.spacemania.network.client.payloads.rooms.ClientRoomMessagesPayload;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
-import com.emptypockets.spacemania.network.engine.EngineState;
+import com.emptypockets.spacemania.network.engine.EngineRegionSync;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
-import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.server.ServerManager;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;
-import com.emptypockets.spacemania.network.server.player.PlayerManager;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
+import com.emptypockets.spacemania.network.server.player.ServerPlayerManager;
 import com.emptypockets.spacemania.network.server.rooms.messages.ServerRoomChatMessage;
 import com.emptypockets.spacemania.network.server.rooms.messages.ServerRoomMessage;
 import com.emptypockets.spacemania.network.server.rooms.messages.ServerRoomPlayerJoinMessage;
 import com.emptypockets.spacemania.network.server.rooms.messages.ServerRoomPlayerLeaveMessage;
-import com.emptypockets.spacemania.network.transport.ComsType;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 /**
@@ -28,25 +28,30 @@ import com.emptypockets.spacemania.utils.PoolsManager;
 public class ServerRoom implements Disposable {
 	int id;
 	String name;
+	
 	ServerManager manager;
 	ServerPlayer host;
+	
 	ArrayListProcessor<ServerRoomMessage> messageManager;
-	PlayerManager playerManager;
 	ClientRoom clientRoom;
 	ServerEngine engine;
-	EngineState engineState;
-	boolean sendEngineState = false;
+	ServerPlayerManager serverRoomPlayers;
+
+	boolean hasEngineRegionStateChanged = false;
+	EngineRegionSync engineRegionState;
+	ServerRoomDataSendProcessor dataSendProcessor;
 	long lastBroadcastTime = 0;
-	long broadcastPeroid = 100;
 
 	public ServerRoom(ServerManager manager) {
 		super();
 		this.manager = manager;
 		messageManager = new ArrayListProcessor<ServerRoomMessage>();
-		playerManager = new PlayerManager();
 		clientRoom = new ClientRoom();
-		engine = new ServerEngine(playerManager);
-		engineState = new EngineState();
+		serverRoomPlayers = new ServerPlayerManager();
+		engine = new ServerEngine(serverRoomPlayers);
+
+		engineRegionState = new EngineRegionSync();
+		dataSendProcessor = new ServerRoomDataSendProcessor();
 	}
 
 	@Override
@@ -65,11 +70,11 @@ public class ServerRoom implements Disposable {
 	}
 
 	public int getMaxPlayers() {
-		return playerManager.getMaxPlayers();
+		return serverRoomPlayers.getMaxPlayers();
 	}
 
 	public void setMaxPlayers(int maxPlayers) {
-		playerManager.setMaxPlayers(maxPlayers);
+		serverRoomPlayers.setMaxPlayers(maxPlayers);
 	}
 
 	public String getName() {
@@ -89,98 +94,79 @@ public class ServerRoom implements Disposable {
 	}
 
 	public boolean isEmpty() {
-		return playerManager.isEmpty();
+		return serverRoomPlayers.isEmpty();
 	}
 
 	@Override
 	public void dispose() {
-		playerManager.clear();
+		serverRoomPlayers.clear();
 	}
 
-	public PlayerManager getPlayerManager() {
-		return playerManager;
+	public ServerPlayerManager getPlayerManager() {
+		return serverRoomPlayers;
 	}
 
 	public int getPlayerCount() {
-		return playerManager.getSize();
+		return serverRoomPlayers.getSize();
 	}
 
 	public ClientRoom getClientRoom() {
 		return clientRoom;
 	}
 
-	public void processPlayerInput() {
-		playerManager.process(new SingleProcessor<ServerPlayer>() {
+	private void updatePlayers() {
+		serverRoomPlayers.process(new SingleProcessor<ServerPlayer>() {
 			@Override
 			public void process(ServerPlayer player) {
-				player.processInput(engine);
+				player.update(engine);
 			}
 		});
 	}
 
-	public void update() {
-		processPlayerInput();
+	public synchronized void update() {
+		updatePlayers();
 		engine.update();
-		clientRoom.read(this);
 	}
 
 	public synchronized void broadcast() {
+		clientRoom.read(this);
 		lastBroadcastTime = System.currentTimeMillis();
 		// If no messages dont broadcast
 		if (messageManager.getSize() > 0) {
-			final ClientRoomMessagesPayload roomMessagePayloads = PoolsManager.obtain(ClientRoomMessagesPayload.class);
+			ClientRoomMessagesPayload roomMessagePayloads = PoolsManager.obtain(ClientRoomMessagesPayload.class);
 			roomMessagePayloads.setRoomId(getId());
-			messageManager.process(new CleanerProcessor<ServerRoomMessage>() {
-				@Override
-				public boolean shouldRemove(ServerRoomMessage entity) {
-					roomMessagePayloads.addMessage(entity.createClientMessage());
-					PoolsManager.free(entity);
-					return true;
-				}
-			});
-			getPlayerManager().process(new SingleProcessor<ServerPlayer>() {
-				@Override
-				public void process(ServerPlayer entity) {
-					entity.send(roomMessagePayloads, ComsType.TCP);
-				}
-			});
+			messageManager.process(roomMessagePayloads);
+			messageManager.freeToPool();
+			dataSendProcessor.setRoomMessages(roomMessagePayloads);
 		}
 
-		if (sendEngineState) {
-			engineState.readFrom(engine);
-			// Broadcast Player Entity Managers
-			playerManager.process(new SingleProcessor<ServerPlayer>() {
-				@Override
-				public void process(ServerPlayer player) {
-					engineState.broadcast(player);
-				}
-			});
-
-			sendEngineState = false;
+		// Engine Room Size State Broadcast
+		if (hasEngineRegionStateChanged) {
+			hasEngineRegionStateChanged = false;
+			engineRegionState.readFrom(engine);
+			ClientEngineRegionStatePayload engineRegionPayload = PoolsManager.obtain(ClientEngineRegionStatePayload.class);
+			engineRegionPayload.setState(engineRegionState);
+			dataSendProcessor.setRegionState(engineRegionPayload);
 		}
 
-		// Broadcast Player Entity Managers
-		playerManager.process(new SingleProcessor<ServerPlayer>() {
-			@Override
-			public void process(ServerPlayer player) {
-				EntityManagerSync sync = player.getEntityManagerSync();
-				sync.setTime(engine.getEngineLastUpdateTime());
-				sync.setSyncTime(false);
-				sync.broadcast(player);
-			}
-		});
+		serverRoomPlayers.process(dataSendProcessor);
+
+		// Clear and release entities that aren't needed anymore
+		dataSendProcessor.clearAfterSend();
 	}
-
-	public synchronized void joinRoom(ServerPlayer player) throws TooManyPlayersException {
-		playerManager.addPlayer(player);
-
+	
+	public synchronized void spawnPlayer(ServerPlayer player){
 		// Add entity for player
 		Entity entity = engine.getEntityManager().createEntity(EntityType.Player);
 		entity.getState().getPos().x = 5;
 		entity.getState().getPos().y = 5;
 		engine.getEntityManager().addEntity(entity);
 		player.setEntityId(entity.getState().getId());
+	}
 
+	public synchronized void joinRoom(ServerPlayer player) throws TooManyPlayersException {
+		serverRoomPlayers.addPlayer(player);
+		player.setEntityId(-1);
 		// Send message that player has joined
 		ServerRoomPlayerJoinMessage message = PoolsManager.obtain(ServerRoomPlayerJoinMessage.class);
 		message.setServerPlayer(player);
@@ -192,7 +178,7 @@ public class ServerRoom implements Disposable {
 	}
 
 	public void leaveRoom(ServerPlayer player) {
-		playerManager.removePlayer(player);
+		serverRoomPlayers.removePlayer(player);
 
 		ServerRoomPlayerLeaveMessage message = PoolsManager.obtain(ServerRoomPlayerLeaveMessage.class);
 		message.setServerPlayer(player);
@@ -219,7 +205,7 @@ public class ServerRoom implements Disposable {
 
 	public void resizeRoom(float size) {
 		engine.setRegion(size);
-		sendEngineState = true;
+		hasEngineRegionStateChanged = true;
 	}
 
 	public ServerPlayer getHost() {
@@ -238,16 +224,8 @@ public class ServerRoom implements Disposable {
 		return lastBroadcastTime;
 	}
 
-	public long getBroadcastPeroid() {
-		return broadcastPeroid;
-	}
-
-	public void setBroadcastPeroid(long broadcastPeroid) {
-		this.broadcastPeroid = broadcastPeroid;
-	}
-
 	public boolean shouldBroadcast() {
-		return System.currentTimeMillis() - lastBroadcastTime > broadcastPeroid;
+		return System.currentTimeMillis() - lastBroadcastTime > Constants.SERVER_TIME_ROOM_BROADCAST_PEROID;
 	}
 
 }

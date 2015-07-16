@@ -36,7 +36,7 @@ public class ServerConnectionManager extends Listener {
     }
 
     public void setupServer() {
-        server = new Server(Constants.BUFFER_WRITE_SERVER, Constants.BUFFER_OBJECT_SERVER) {
+        server = new Server(Constants.SERVER_BUFFER_WRITE, Constants.SERVER_BUFFER_OBJECT) {
             @Override
             protected Connection newConnection() {
                 return createConnection();

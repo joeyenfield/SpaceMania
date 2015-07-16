@@ -3,6 +3,8 @@ package com.emptypockets.spacemania.holders;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.emptypockets.spacemania.utils.PoolsManager;
+
 /**
  * Created by jenfield on 15/05/2015.
  */
@@ -39,4 +41,12 @@ public class ArrayListProcessor<ENT> extends ObjectProcessor<ENT> {
     		processor.process(holder.get(i));
     	}
     }
+    
+    public synchronized void freeToPool(){
+    	int size = holder.size();
+    	for(int i = 0; i < size; i++){
+    	    PoolsManager.free(holder.get(i));
+    	}
+    	clear();
+   }
 }

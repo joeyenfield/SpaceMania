@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.network.engine.sync;
+package com.emptypockets.spacemania.network.engine.sync.events;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.network.engine.entities.EntityState;

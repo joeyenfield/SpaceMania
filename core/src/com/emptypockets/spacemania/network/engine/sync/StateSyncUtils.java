@@ -20,19 +20,13 @@ public class StateSyncUtils {
 	 * @param clientState
 	 */
 	public static void updateState(long serverTime, EntityState serverState, long clientTime, Entity entity, boolean force) {
-		long delta = (clientTime - serverTime);
-		float timeDelta = -(delta) / 1000f;
-
-//		serverState.delta(timeDelta);
-		// Set Velocity and Acl
 		entity.getState().getVel().set(serverState.getVel());
 		entity.getState().setAngVel(serverState.getAngVel());
 
-		if (entity.getLastServerOffset().len2() > MAX_POS_DELTA_2) {
+		if (entity.getLastServerOffset().len2() > MAX_POS_DELTA_2 || force) {
 			entity.getState().getPos().set(serverState.getPos());
 		} else {
 			entity.getLastServerOffset().set(serverState.getPos()).sub(entity.getPos());
-			DataLogger.log("ent-offset-server-x", entity.getLastServerOffset().x);
 		}
 		entity.getState().setAng(serverState.getAng());
 	}

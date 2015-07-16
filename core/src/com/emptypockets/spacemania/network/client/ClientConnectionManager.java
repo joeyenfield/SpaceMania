@@ -54,7 +54,7 @@ public class ClientConnectionManager extends Listener implements Disposable {
 	private void setupClientConnection() {
 		synchronized (clientConnectionLock) {
 			disconnect();
-			connection = new Client(Constants.BUFFER_WRITE_CLIENT, Constants.BUFFER_OBJECT_CLIENT);
+			connection = new Client(Constants.CLIENT_BUFFER_WRITE, Constants.CLIENT_BUFFER_OBJECT);
 			connection.start();
 			connection.addListener(this);
 			NetworkProtocall.register(connection.getKryo());

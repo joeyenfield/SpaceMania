@@ -10,6 +10,7 @@ import com.emptypockets.spacemania.network.engine.entities.wepon.BasicWeapon;
 import com.emptypockets.spacemania.network.engine.entities.wepon.SpreadWeapon;
 import com.emptypockets.spacemania.network.engine.entities.wepon.Weapon;
 import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
+import com.emptypockets.spacemania.network.engine.sync.PlayerManagerSync;
 import com.emptypockets.spacemania.network.server.ClientConnection;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
@@ -33,12 +34,19 @@ public class ServerPlayer implements Disposable {
 	ClientPlayer clientPlayer;
 	ClientInput clientInput;
 	int entityId;
+	
+	PlayerManagerSync playerManagerSync;
+	private long lastPlayersBroadcast = 0;
+
 
 	public ServerPlayer(ClientConnection clientConnection) {
 		this.clientConnection = clientConnection;
 		clientPlayer = new ClientPlayer();
 		clientInput = new ClientInput();
+
 		entityManagerSync = new EntityManagerSync();
+		playerManagerSync = new PlayerManagerSync();
+		
 		weapon = new SpreadWeapon();
 		weapon = new BasicWeapon();
 		score = 0;
@@ -121,7 +129,7 @@ public class ServerPlayer implements Disposable {
 		clientConnection.send(payload, type);
 	}
 
-	public void updateClientPlayer() {
+	private void updateClientPlayer() {
 		clientPlayer.read(this);
 	}
 
@@ -158,18 +166,33 @@ public class ServerPlayer implements Disposable {
 		return clientInput;
 	}
 
-	public void processInput(ServerEngine engine) {
+	public void update(ServerEngine engine) {
 		PlayerEntity entity = (PlayerEntity) engine.getEntityManager().getEntityById(entityId);
 		if (entity != null) {
 			// Process Movement
 			entity.applyClientInput(clientInput);
-			DataLogger.log("server-input-x",clientInput.getMove().x);
 			// Processing Shooting
 			weapon.shoot(this, entity, engine);
+		}else{
+			
 		}
+		updateClientPlayer();
 	}
 
 	public void addScore(ScoreEntity scoreEntity) {
 		score++;
 	}
+
+	public long getLastPlayersBroadcast() {
+		return lastPlayersBroadcast;
+	}
+
+	public void setLastPlayersBroadcast(long lastPlayersBroadcast) {
+		this.lastPlayersBroadcast = lastPlayersBroadcast;
+	}
+
+	public PlayerManagerSync getPlayerManagerSync() {
+		return playerManagerSync;
+	}
+
 }

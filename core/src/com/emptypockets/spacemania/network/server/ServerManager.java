@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Disposable;
+import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.holders.SingleProcessor;
@@ -14,10 +15,10 @@ import com.emptypockets.spacemania.network.client.payloads.authentication.LoginF
 import com.emptypockets.spacemania.network.client.payloads.authentication.LoginSuccessResponsePayload;
 import com.emptypockets.spacemania.network.client.payloads.authentication.LogoutSuccessPayload;
 import com.emptypockets.spacemania.network.client.payloads.rooms.JoinRoomSuccessPayload;
-import com.emptypockets.spacemania.network.client.player.MyPlayer;
+import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;
-import com.emptypockets.spacemania.network.server.player.PlayerManager;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
+import com.emptypockets.spacemania.network.server.player.ServerPlayerManager;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoomManager;
 import com.emptypockets.spacemania.network.transport.ComsType;
@@ -35,31 +36,23 @@ public class ServerManager implements Disposable, Runnable {
 	ServerRoom lobbyRoom;
 	ServerConnectionManager connectionManager;
 
-	PlayerManager playerManager;
+	ServerPlayerManager playerManager;
 	ServerRoomManager roomManager;
 
-	public static ServerManager manager;
 	Thread thread;
 
-	long pingUpdateTime = 5000;
 	long lastPingUpdate = 0;
 
-	long playerStateUpdateTime = 1000;
 	long lastplayerStateUpdate = 0;
 
-	long roomDefaultBroadcastTime = 100;
-	long desiredUpdatePeroid = 50;
-
 	public ServerManager(Console console) {
-		manager = this;
 		this.console = console;
 		command = new CommandLine(console);
-		CommandService.registerServerCommands(this);
-
-		playerManager = new PlayerManager();
+		playerManager = new ServerPlayerManager();
 		connectionManager = new ServerConnectionManager(this);
 		roomManager = new ServerRoomManager(this);
 		lobbyRoom = roomManager.createNewRoom(null, "Lobby");
+		CommandService.registerServerCommands(this);
 	}
 
 	public ServerManager() {
@@ -208,7 +201,7 @@ public class ServerManager implements Disposable, Runnable {
 				startTime = System.currentTimeMillis();
 				// Update All Pings
 				long delta = System.currentTimeMillis() - lastPingUpdate;
-				if (delta > pingUpdateTime) {
+				if (delta > Constants.SERVER_TIME_PING_UPDATE_PEROID) {
 					lastPingUpdate = System.currentTimeMillis();
 					updatePings();
 				}
@@ -226,27 +219,19 @@ public class ServerManager implements Disposable, Runnable {
 					}
 				});
 
-				// Update Server Player Client Information
-				playerManager.process(new SingleProcessor<ServerPlayer>() {
-					@Override
-					public void process(ServerPlayer entity) {
-						entity.updateClientPlayer();
-					}
-				});
-
-				// Update All Player States
+				// Send all Player state
 				delta = System.currentTimeMillis() - lastplayerStateUpdate;
-				if (delta > playerStateUpdateTime) {
+				if (delta > Constants.SERVER_TIME_PLAYER_STATE_UPDATE_PEROID) {
 					lastplayerStateUpdate = System.currentTimeMillis();
-					updatePlayerStates();
+					broadcastPlayerStates();
 				}
 
 				processingTime = System.currentTimeMillis() - startTime;
 				try {
-					if (processingTime < desiredUpdatePeroid) {
-						Thread.sleep(desiredUpdatePeroid - processingTime);
+					if (processingTime < Constants.SERVER_TIME_UPDATE_PEROID) {
+						Thread.sleep(Constants.SERVER_TIME_UPDATE_PEROID - processingTime);
 					} else {
-						console.println("Server Running Behind : Update[" + processingTime + "] - Update Time [" + desiredUpdatePeroid + "]" + getLobbyRoom().getEngine().getEntityManager().getSize());
+						console.println("Server Running Behind : Update[" + processingTime + "] - Update Time [" + Constants.SERVER_TIME_UPDATE_PEROID + "]" + getLobbyRoom().getEngine().getEntityManager().getSize());
 					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -259,18 +244,13 @@ public class ServerManager implements Disposable, Runnable {
 
 	}
 
-	private void updatePlayerStates() {
+	private void broadcastPlayerStates() {
 		// Update Server Player Client Information
 		playerManager.process(new SingleProcessor<ServerPlayer>() {
 			@Override
 			public void process(ServerPlayer entity) {
 				ClientMyPlayerStateUpdatePayload payload = PoolsManager.obtain(ClientMyPlayerStateUpdatePayload.class);
-
-				MyPlayer player = new MyPlayer();
-				player.read(entity);
-				player.setEntityId(entity.getEntityId());
-
-				payload.setMyPlayer(player);
+				payload.setMyPlayer(entity.getClientPlayer());
 				entity.send(payload, ComsType.TCP);
 				PoolsManager.free(payload);
 			}
@@ -334,11 +314,9 @@ public class ServerManager implements Disposable, Runnable {
 
 						JoinRoomSuccessPayload payload = PoolsManager.obtain(JoinRoomSuccessPayload.class);
 						payload.setRoom(newRoom.getClientRoom());
-						synchronized (player.getEntityManagerSync()) {
-							payload.setInitialSync(player.getEntityManagerSync());
-							clientConnection.send(payload, ComsType.TCP);
-							player.getEntityManagerSync().cleanAfterSends();
-						}
+						payload.setInitialSync(player.getEntityManagerSync());
+						clientConnection.send(payload, ComsType.TCP);
+						player.getEntityManagerSync().clearAfterDataSend();
 
 						PoolsManager.free(payload);
 
@@ -522,8 +500,11 @@ public class ServerManager implements Disposable, Runnable {
 		}
 	}
 
-	public long getRoomDefaultBroadcastTime() {
-		return roomDefaultBroadcastTime;
+	public void spawnPlayer(ClientConnection clientConnection) {
+		if(ensureInRoom(clientConnection)){
+			ServerRoom room = clientConnection.getPlayer().getCurrentRoom();
+			room.spawnPlayer(clientConnection.getPlayer());
+		}
 	}
 
 }

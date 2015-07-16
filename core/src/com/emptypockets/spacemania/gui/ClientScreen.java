@@ -269,7 +269,7 @@ public class ClientScreen extends StageScreen {
 		super.updateLogic(delta);
 
 		if (client.isLoggedIn()) {
-			if (System.currentTimeMillis() - lastInputSentToServer > Constants.CLIENT_INPUT_TO_SERVER_PEROID) {
+			if (System.currentTimeMillis() - lastInputSentToServer > Constants.CLIENT_TIME_INPUT_TO_SERVER_PEROID) {
 				lastInputSentToServer = System.currentTimeMillis();
 				client.sendInput();
 			}

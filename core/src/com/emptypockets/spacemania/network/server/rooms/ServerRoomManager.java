@@ -28,7 +28,6 @@ public class ServerRoomManager extends ObjectProcessor<ServerRoom> {
         ServerRoom room = new ServerRoom(manager);
         room.setId(createdRoomCount);
         room.setName(roomName);
-        room.setBroadcastPeroid(manager.getRoomDefaultBroadcastTime());
 
         roomData.put(room.getId(), room);
 

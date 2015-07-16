@@ -7,25 +7,21 @@ import com.emptypockets.spacemania.network.engine.sync.PlayerManagerSync;
 import com.emptypockets.spacemania.plotter.DataLogger;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
-public class ClientEngineEntityManagerSyncPayload extends ClientPayload {
-	EntityManagerSync entitySyncData;
-
-	public EntityManagerSync getSyncData() {
-		return entitySyncData;
-	}
-
-	public void setEntitySyncData(EntityManagerSync syncData) {
-		this.entitySyncData = syncData;
-	}
+public class ClientEnginePlayerManagerSyncPayload extends ClientPayload {
+	PlayerManagerSync playerSyncData;
 
 	@Override
 	public void executePayload(ClientManager clientManager) {
-		entitySyncData.writeToEngine(clientManager.getEngine(), false);
-		PoolsManager.free(entitySyncData);
-		entitySyncData = null;
+		playerSyncData.write(clientManager.getEngine().getPlayerData());
+		PoolsManager.free(playerSyncData);
+		playerSyncData = null;
 	}
 
+	public void setPlayerSyncData(PlayerManagerSync playerSyncData) {
+		this.playerSyncData = playerSyncData;
+	};
+
 	public void reset() {
-		entitySyncData = null;
+		playerSyncData = null;
 	}
 }

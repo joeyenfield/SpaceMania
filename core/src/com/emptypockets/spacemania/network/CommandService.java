@@ -18,6 +18,7 @@ import com.emptypockets.spacemania.network.client.commands.rooms.ClientJoinRoomC
 import com.emptypockets.spacemania.network.client.commands.rooms.ClientListRoomsCommand;
 import com.emptypockets.spacemania.network.client.commands.rooms.ClientLobbyCommand;
 import com.emptypockets.spacemania.network.client.commands.rooms.ClientRoomCommand;
+import com.emptypockets.spacemania.network.client.commands.rooms.ClientSpawnCommand;
 import com.emptypockets.spacemania.network.client.commands.settings.ClientSetCommand;
 import com.emptypockets.spacemania.network.client.commands.settings.ClientSetGridRenderCommand;
 import com.emptypockets.spacemania.network.server.ServerManager;
@@ -61,6 +62,7 @@ public class CommandService {
         client.getCommand().registerCommand(new ClientListRoomsCommand(client));
         client.getCommand().registerCommand(new ClientSetCommand(client));
         client.getCommand().registerCommand(new ClientSetGridRenderCommand(client));
+        client.getCommand().registerCommand(new ClientSpawnCommand(client));
 
     }
 }

@@ -1,13 +1,13 @@
-package com.emptypockets.spacemania.network.engine.sync;
+package com.emptypockets.spacemania.network.engine.sync.events;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
 public class EntityRemoval implements Poolable {
 	int id;
-	Vector2 pos = new Vector2();
-	boolean killed;
-	boolean explodes;
+	public Vector2 pos = new Vector2();
+	public boolean killed;
+	public boolean explodes;
 	
 	public int getId() {
 		return id;

@@ -3,7 +3,10 @@ package com.emptypockets.spacemania.network.client;
 import java.util.ArrayList;
 
 import com.emptypockets.spacemania.Constants;
+import com.emptypockets.spacemania.holders.ArrayListProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
+import com.emptypockets.spacemania.network.client.player.ClientPlayer;
+import com.emptypockets.spacemania.network.client.player.ClientPlayerManager;
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
@@ -25,10 +28,16 @@ public class ClientEngine extends Engine {
 
 	long lastServerUpdateTime = 0;
 
-	ArrayList<PlayerEntity> players = new ArrayList<PlayerEntity>();
+	ArrayList<PlayerEntity> tempPlayerEntityHolder;
+
+	SingleProcessor<Entity> updateGridProcessor = null;
+
+	ClientPlayerManager playerData;
 
 	public ClientEngine() {
 		super();
+		playerData = new ClientPlayerManager();
+		tempPlayerEntityHolder = new ArrayList<PlayerEntity>();
 		particleSystem = new ParticleSystem(this);
 		particleSystem.setMaxParticles(maxParticles);
 
@@ -38,6 +47,7 @@ public class ClientEngine extends Engine {
 		getEntityManager().register(particleSystem);
 		addRegionListener(gridManager);
 		addRegionListener(particleSystem.getPartition());
+
 	}
 
 	@Override
@@ -57,20 +67,19 @@ public class ClientEngine extends Engine {
 		super.updateEntities(deltaTime);
 
 		// Get Players and draw pixels
-		players.clear();
-		getEntityManager().filterEntities(PlayerEntity.class, players);
+		tempPlayerEntityHolder.clear();
+		getEntityManager().filterEntities(PlayerEntity.class, tempPlayerEntityHolder);
 
-		int count = players.size();
+		int count = tempPlayerEntityHolder.size();
 		for (int i = 0; i < count; i++) {
-			particleSystem.drawPlayerTrail(this, players.get(i));
+			particleSystem.drawPlayerTrail(this, tempPlayerEntityHolder.get(i));
 		}
+		tempPlayerEntityHolder.clear();
 
 		particleSystem.update();
 
 		updateGrid(deltaTime);
 	}
-
-	SingleProcessor<Entity> updateGridProcessor = null;
 
 	public void updateGrid(float deltaTime) {
 		if (!dynamicGrid) {
@@ -120,6 +129,10 @@ public class ClientEngine extends Engine {
 
 	public void setLastServerUpdateTime(long lastServerUpdateTime) {
 		this.lastServerUpdateTime = lastServerUpdateTime;
+	}
+
+	public ClientPlayerManager getPlayerData() {
+		return playerData;
 	}
 
 }

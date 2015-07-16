@@ -29,7 +29,7 @@ public class Engine implements Disposable {
 		entities = new EntityManager();
 		regionListeners = new ArrayList<EngineRegionListener>();
 		entitySpatialPartition = new CellSpacePartition<Entity>();
-		entitySpatialPartition.create(Constants.ENTITY_SYTEM_PARTITION_X, Constants.ENTITY_SYTEM_PARTITION_Y);
+		entitySpatialPartition.create(Constants.ENTITY_SYSTEM_PARTITION_X, Constants.ENTITY_SYSTEM_PARTITION_Y);
 		addRegionListener(entitySpatialPartition);
 		setRegion(Constants.DEFAULT_ROOM_SIZE);
 		start();

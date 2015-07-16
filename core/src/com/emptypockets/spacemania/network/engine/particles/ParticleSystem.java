@@ -22,13 +22,13 @@ import com.emptypockets.spacemania.utils.ColorUtils;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class ParticleSystem extends ArrayListProcessor<Particle> implements EntityManagerInterface {
-	int particleCountSphere = Constants.DEFAULT_PARTICLES_SPHERE;
+	int particleCountSphere = Constants.DEFAULT_PARTICLES_CREATED_IN_SPHERE;
 	int maxParticles = Constants.DEFAULT_PARTICLES;
 	CellSpacePartition<Particle> partition;
 	ClientEngine engine;
 	public ParticleSystem(ClientEngine engine) {
 		partition = new CellSpacePartition<Particle>();
-		partition.create(Constants.PARTICLE_SYTEM_PARTITION_X, Constants.PARTICLE_SYTEM_PARTITION_Y);
+		partition.create(Constants.PARTICLE_SYSTEM_PARTITION_X, Constants.PARTICLE_SYSTEM_PARTITION_Y);
 		this.engine=engine;
 	}
 
@@ -184,7 +184,6 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 
 	public void drawPlayerTrail(ClientEngine engine, PlayerEntity player) {
 		player.createExhaust(engine, this);
-
 	}
 
 	@Override

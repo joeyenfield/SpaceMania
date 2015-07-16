@@ -57,8 +57,8 @@ public class DesktopLauncher {
 
 			Log.ERROR();
 			LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-			config.width = 400;
-			config.height = 400;
+			config.width = 10;
+			config.height = 10;
 			config.x = 0;
 			config.y = 100;
 
@@ -106,7 +106,7 @@ public class DesktopLauncher {
 			//
 			// client.processCommand("start;set gridsize 128 128; set roomsize 2000;set gridrender 1;set particles 10000;");
 			// client.processCommand("connect emptypocketgames.noip.me");
-			// client.processCommand("login awsoem");
+//			 client.processCommand("start");
 			// client.processCommand("lobby");
 			//
 			// client.processCommand("host start; connect;login server; lobby");

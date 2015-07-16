@@ -5,6 +5,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.emptypockets.spacemania.utils.PoolsManager;
+
 /**
  * Created by jenfield on 14/05/2015.
  */
@@ -51,6 +53,14 @@ public abstract class ObjectProcessor<ENT> {
                 iterator.remove();
             }
         }
+    }
+    
+    public synchronized void freeToPool(){
+    	 Iterator<ENT> iterator = getIterator();
+         while (iterator.hasNext()) {
+             ENT entity = iterator.next();
+             PoolsManager.free(entity);
+         }
     }
 
 }

@@ -42,6 +42,7 @@ public class ClientPlayer{
     	id = player.getId();
         username = player.getUsername();
         ping = player.getPing();
+        entityId = player.getEntityId();
     }
 
     public void dispose() {
@@ -76,4 +77,7 @@ public class ClientPlayer{
         result.append("]");
         return result.toString();
     }
+	public int getEntityId() {
+		return entityId;
+	}
 }

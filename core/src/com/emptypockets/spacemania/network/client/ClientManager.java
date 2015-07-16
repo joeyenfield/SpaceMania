@@ -7,8 +7,9 @@ import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.network.CommandService;
+import com.emptypockets.spacemania.network.client.commands.rooms.ClientSpawnCommand;
 import com.emptypockets.spacemania.network.client.exceptions.ClientNotConnectedException;
-import com.emptypockets.spacemania.network.client.player.MyPlayer;
+import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
@@ -21,6 +22,7 @@ import com.emptypockets.spacemania.network.server.payloads.rooms.JoinLobyRequest
 import com.emptypockets.spacemania.network.server.payloads.rooms.JoinRoomRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.RequestRoomListPayload;
 import com.emptypockets.spacemania.network.server.payloads.rooms.ResizeRoomPayload;
+import com.emptypockets.spacemania.network.server.payloads.rooms.SpawnPlayerRequestPayload;
 import com.emptypockets.spacemania.network.transport.ComsType;
 import com.emptypockets.spacemania.plotter.DataLogger;
 import com.emptypockets.spacemania.utils.PoolsManager;
@@ -30,7 +32,7 @@ public class ClientManager implements Disposable {
 	ClientConnectionManager connection;
 
 	boolean loggedIn = false;
-	MyPlayer player;
+	ClientPlayer player;
 	ClientInputProducer inputProducer;
 	ClientRoom currentRoom;
 	ClientEngine engine;
@@ -144,11 +146,11 @@ public class ClientManager implements Disposable {
 		return command;
 	}
 
-	public MyPlayer getPlayer() {
+	public ClientPlayer getPlayer() {
 		return player;
 	}
 
-	public void setPlayer(MyPlayer player) {
+	public void setPlayer(ClientPlayer player) {
 		this.player = player;
 		if (player == null) {
 			console.setConsoleKey("CLIENT[] : ");
@@ -227,15 +229,19 @@ public class ClientManager implements Disposable {
 	}
 
 	public void sendInput() {
-		DataLogger.log("client-input-x", inputProducer.getInput().getMove().x);
 		ServerClientInputUpdatePayload payload = PoolsManager.obtain(ServerClientInputUpdatePayload.class);
 		payload.setInput(inputProducer.getInput());
-		connection.send(payload, ComsType.UDP);
+		connection.send(payload, ComsType.TCP);
 	}
 
 	public void resizeRoom(int size) {
 		ResizeRoomPayload payload = PoolsManager.obtain(ResizeRoomPayload.class);
 		payload.setRoomSize(size);
+		connection.send(payload, ComsType.TCP);
+	}
+
+	public void spawn() {
+		SpawnPlayerRequestPayload payload = PoolsManager.obtain(SpawnPlayerRequestPayload.class);
 		connection.send(payload, ComsType.TCP);
 	}
 }

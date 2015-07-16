@@ -1,15 +1,15 @@
 package com.emptypockets.spacemania.network.engine.sync;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineEntityManagerSyncPayload;
 import com.emptypockets.spacemania.network.engine.EntityManagerInterface;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityState;
+import com.emptypockets.spacemania.network.engine.sync.events.EntityAdd;
+import com.emptypockets.spacemania.network.engine.sync.events.EntityRemoval;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 import com.emptypockets.spacemania.network.transport.ComsType;
 import com.emptypockets.spacemania.plotter.DataLogger;
@@ -18,32 +18,22 @@ import com.emptypockets.spacemania.utils.PoolsManager;
 public class EntityManagerSync implements EntityManagerInterface, Poolable {
 	long time;
 	int roomId;
-	private HashMap<Integer, EntityState> entityStates;
+	ArrayList<EntityState> entityStates;
 	ArrayList<EntityAdd> newEntities;
 	ArrayList<EntityRemoval> removedEntities;
-	boolean syncTime = false;
 
 	public EntityManagerSync() {
-		entityStates = new HashMap<Integer, EntityState>();
+		entityStates = new ArrayList<EntityState>();
 		newEntities = new ArrayList<EntityAdd>();
 		removedEntities = new ArrayList<EntityRemoval>();
 	}
 
-	public void setSyncTime(boolean syncTime) {
-		this.syncTime = syncTime;
-	}
-
-	public void writeToEngine(final ClientEngine engine) {
+	public void writeToEngine(final ClientEngine engine, boolean syncTime) {
 		if (syncTime) {
-
 			engine.setTime(time);
-			engine.setLastServerUpdateTime(time);
 		}
-		// // Drop Old Packets
-		// if (engine.getLastServerUpdateTime() > time) {
-		// return;
-		// }
 		engine.setLastServerUpdateTime(time);
+
 		for (EntityAdd creation : newEntities) {
 			Entity entity = engine.getEntityManager().createEntity(creation.getType(), creation.getId());
 			creation.getEntityState().writeOnto(entity.getState());
@@ -52,22 +42,15 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 
 		for (EntityRemoval removal : removedEntities) {
 			Entity entity = engine.getEntityManager().getEntityById(removal.getId());
-
 			entity.getPos().set(removal.pos);
 			entity.setExplodes(removal.isExplodes());
-
 			engine.getEntityManager().removeEntityById(removal.getId(), removal.killed);
 		}
 
-		engine.getEntityManager().process(new SingleProcessor<Entity>() {
-
-			@Override
-			public void process(Entity entity) {
-				EntityState serverState = entityStates.get(entity.getState().getId());
-				StateSyncUtils.updateState(time, serverState, engine.getEngineLastUpdateTime(), entity, false);
-			}
-		});
-
+		for (EntityState state : entityStates) {
+			Entity entity = engine.getEntityManager().getEntityById(state.getId());
+			StateSyncUtils.updateState(time, state, engine.getEngineLastUpdateTime(), entity, false);
+		}
 		releaseAddList();
 		releaseRemovedList();
 		releaseStateList();
@@ -81,7 +64,7 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 		created.setType(entity.getType());
 		created.setEntityState(entity.getState());
 		newEntities.add(created);
-		entityStates.put(entity.getState().getId(), entity.getState());
+		entityStates.add(entity.getState());
 	}
 
 	@Override
@@ -92,7 +75,12 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 		removed.setKilled(killed);
 		removed.setExplodes(entity.isExplodes());
 		removedEntities.add(removed);
-		entityStates.remove(entity.getState().getId());
+		entityStates.remove(entity.getState());
+	}
+	
+	public void clearAfterDataSend(){
+		releaseAddList();
+		releaseRemovedList();
 	}
 
 	private void releaseAddList() {
@@ -112,7 +100,7 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 	}
 
 	private void releaseStateList() {
-		for (EntityState state : entityStates.values()) {
+		for (EntityState state : entityStates) {
 			PoolsManager.free(state);
 		}
 		entityStates.clear();
@@ -123,7 +111,6 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 		releaseAddList();
 		releaseStateList();
 		releaseRemovedList();
-		syncTime = false;
 	}
 
 	public void setTime(long time) {
@@ -136,21 +123,5 @@ public class EntityManagerSync implements EntityManagerInterface, Poolable {
 
 	public void setRoomId(int roomId) {
 		this.roomId = roomId;
-	}
-
-	public synchronized void broadcast(ServerPlayer player) {
-		DataLogger.log("server-sync", 2);
-		ClientEngineEntityManagerSyncPayload payload = PoolsManager.obtain(ClientEngineEntityManagerSyncPayload.class);
-		payload.setSyncData(this);
-		player.send(payload, ComsType.TCP);
-		// Cant release this
-		payload.setSyncData(null);
-		PoolsManager.free(payload);
-		cleanAfterSends();
-	}
-
-	public synchronized void cleanAfterSends() {
-		releaseAddList();
-		releaseRemovedList();
 	}
 }

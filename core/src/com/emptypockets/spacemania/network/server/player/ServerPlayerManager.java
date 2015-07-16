@@ -6,19 +6,18 @@ import java.util.Iterator;
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.holders.ObjectProcessor;
 import com.emptypockets.spacemania.network.client.player.ClientPlayer;
+import com.emptypockets.spacemania.network.engine.sync.PlayerManagerSync;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 
 /**
  * Created by jenfield on 12/05/2015.
  */
-public class PlayerManager extends ObjectProcessor<ServerPlayer> implements Disposable {
-    //Force Kryonet to serialize players as client players
-    @CollectionSerializer.BindCollection(elementClass = ClientPlayer.class, elementsCanBeNull = true)
+public class ServerPlayerManager extends ObjectProcessor<ServerPlayer> implements Disposable {
     ArrayList<ServerPlayer> players;
     int maxPlayers = 0;
 
-    public PlayerManager() {
+    public ServerPlayerManager() {
         players = new ArrayList<ServerPlayer>();
     }
 
@@ -28,7 +27,7 @@ public class PlayerManager extends ObjectProcessor<ServerPlayer> implements Disp
         }
         players.add(player);
     }
-
+    
     public synchronized ServerPlayer getPlayerByUsername(String name) {
         for (ServerPlayer p : players) {
 

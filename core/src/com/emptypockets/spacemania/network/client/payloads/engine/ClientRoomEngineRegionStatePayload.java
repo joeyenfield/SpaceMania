@@ -5,11 +5,11 @@ import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.engine.EngineRegionSync;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
-public class ClientEngineRegionStatePayload extends ClientPayload {
+public class ClientRoomEngineRegionStatePayload extends ClientPayload {
 
 	EngineRegionSync state;
 
-	public ClientEngineRegionStatePayload() {
+	public ClientRoomEngineRegionStatePayload() {
 	}
 
 	@Override

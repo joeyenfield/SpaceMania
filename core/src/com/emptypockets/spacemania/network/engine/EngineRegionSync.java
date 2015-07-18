@@ -2,7 +2,7 @@ package com.emptypockets.spacemania.network.engine;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.emptypockets.spacemania.network.client.ClientEngine;
-import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineRegionStatePayload;
+import com.emptypockets.spacemania.network.client.payloads.engine.ClientRoomEngineRegionStatePayload;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 import com.emptypockets.spacemania.network.transport.ComsType;

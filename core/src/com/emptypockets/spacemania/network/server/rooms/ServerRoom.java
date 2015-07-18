@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
-import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineRegionStatePayload;
+import com.emptypockets.spacemania.network.client.payloads.engine.ClientRoomEngineRegionStatePayload;
 import com.emptypockets.spacemania.network.client.payloads.engine.ServerRoomDataSendProcessor;
 import com.emptypockets.spacemania.network.client.payloads.rooms.ClientRoomMessagesPayload;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
@@ -28,10 +28,10 @@ import com.emptypockets.spacemania.utils.PoolsManager;
 public class ServerRoom implements Disposable {
 	int id;
 	String name;
-	
+
 	ServerManager manager;
 	ServerPlayer host;
-	
+
 	ArrayListProcessor<ServerRoomMessage> messageManager;
 	ClientRoom clientRoom;
 	ServerEngine engine;
@@ -126,6 +126,11 @@ public class ServerRoom implements Disposable {
 	public synchronized void update() {
 		updatePlayers();
 		engine.update();
+
+		if (shouldBroadcast()) {
+			broadcast();
+		}
+
 	}
 
 	public synchronized void broadcast() {
@@ -144,7 +149,7 @@ public class ServerRoom implements Disposable {
 		if (hasEngineRegionStateChanged) {
 			hasEngineRegionStateChanged = false;
 			engineRegionState.readFrom(engine);
-			ClientEngineRegionStatePayload engineRegionPayload = PoolsManager.obtain(ClientEngineRegionStatePayload.class);
+			ClientRoomEngineRegionStatePayload engineRegionPayload = PoolsManager.obtain(ClientRoomEngineRegionStatePayload.class);
 			engineRegionPayload.setState(engineRegionState);
 			dataSendProcessor.setRegionState(engineRegionPayload);
 		}
@@ -154,19 +159,14 @@ public class ServerRoom implements Disposable {
 		// Clear and release entities that aren't needed anymore
 		dataSendProcessor.clearAfterSend();
 	}
-	
-	public synchronized void spawnPlayer(ServerPlayer player){
-		// Add entity for player
-		Entity entity = engine.getEntityManager().createEntity(EntityType.Player);
-		entity.getState().getPos().x = 5;
-		entity.getState().getPos().y = 5;
-		engine.getEntityManager().addEntity(entity);
-		player.setEntityId(entity.getState().getId());
+
+	public synchronized void spawnPlayer(ServerPlayer player) {
+		player.respawn(engine);
 	}
 
 	public synchronized void joinRoom(ServerPlayer player) throws TooManyPlayersException {
 		serverRoomPlayers.addPlayer(player);
-		player.setEntityId(-1);
+		
 		// Send message that player has joined
 		ServerRoomPlayerJoinMessage message = PoolsManager.obtain(ServerRoomPlayerJoinMessage.class);
 		message.setServerPlayer(player);

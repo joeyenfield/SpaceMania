@@ -197,35 +197,36 @@ public class ServerManager implements Disposable, Runnable {
 
 		while (alive) {
 			try {
+				long delta = 0;
 				DataLogger.log("server-update", 1);
 				startTime = System.currentTimeMillis();
-				// Update All Pings
-				long delta = System.currentTimeMillis() - lastPingUpdate;
-				if (delta > Constants.SERVER_TIME_PING_UPDATE_PEROID) {
-					lastPingUpdate = System.currentTimeMillis();
-					updatePings();
-				}
-				// Read All Data
+				
+				// Read All Incomming Data
 				connectionManager.processIncommingPackets();
 
-				// Update Rooms and client information
+				// Update Rooms and broadcast if necessary
 				roomManager.process(new SingleProcessor<ServerRoom>() {
 					@Override
 					public void process(ServerRoom entity) {
 						entity.update();
-						if (entity.shouldBroadcast()) {
-							entity.broadcast();
-						}
 					}
 				});
 
-				// Send all Player state
+				// Update All Pings
+				delta = System.currentTimeMillis() - lastPingUpdate;
+				if (delta > Constants.SERVER_TIME_PING_UPDATE_PEROID) {
+					lastPingUpdate = System.currentTimeMillis();
+					updatePings();
+				}
+				
+				// Send all MyPlayer States out to players
 				delta = System.currentTimeMillis() - lastplayerStateUpdate;
 				if (delta > Constants.SERVER_TIME_PLAYER_STATE_UPDATE_PEROID) {
 					lastplayerStateUpdate = System.currentTimeMillis();
 					broadcastPlayerStates();
 				}
-
+				
+				//Sleep what ever time is left this tick
 				processingTime = System.currentTimeMillis() - startTime;
 				try {
 					if (processingTime < Constants.SERVER_TIME_UPDATE_PEROID) {
@@ -250,7 +251,8 @@ public class ServerManager implements Disposable, Runnable {
 			@Override
 			public void process(ServerPlayer entity) {
 				ClientMyPlayerStateUpdatePayload payload = PoolsManager.obtain(ClientMyPlayerStateUpdatePayload.class);
-				payload.setMyPlayer(entity.getClientPlayer());
+				entity.updateMyPlayerData();
+				payload.setMyPlayer(entity.getMyPlayer());
 				entity.send(payload, ComsType.TCP);
 				PoolsManager.free(payload);
 			}

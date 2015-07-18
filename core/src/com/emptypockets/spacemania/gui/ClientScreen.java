@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
@@ -24,11 +23,14 @@ import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLinePanel;
 import com.emptypockets.spacemania.gui.renderer.EngineRender;
+import com.emptypockets.spacemania.gui.renderer.OverlayRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.input.OnScreenInput;
 import com.emptypockets.spacemania.network.client.ClientManager;
+import com.emptypockets.spacemania.network.client.commands.rooms.ClientSpawnCommand;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 import com.emptypockets.spacemania.plotter.DataLogger;
 
 public class ClientScreen extends StageScreen {
@@ -43,9 +45,13 @@ public class ClientScreen extends StageScreen {
 	ClientManager client;
 
 	TextButton showConsole;
+
+	TextButton respawnButton;
+
 	boolean alive;
 
 	EngineRender render;
+	OverlayRender overlay;
 
 	ClientInputProducer clientInputProducer;
 
@@ -88,6 +94,7 @@ public class ClientScreen extends StageScreen {
 	public void show() {
 		super.show();
 		render = new EngineRender();
+		overlay = new OverlayRender();
 	}
 
 	@Override
@@ -106,6 +113,8 @@ public class ClientScreen extends StageScreen {
 
 	@Override
 	public void createStage(Stage stage) {
+		respawnButton = new TextButton("Respawn", getSkin());
+
 		showConsole = new TextButton("C", getSkin());
 		movePad = new Touchpad(0, getSkin());
 		shootPad = new Touchpad(0, getSkin());
@@ -146,7 +155,7 @@ public class ClientScreen extends StageScreen {
 		Table inset = new Table();
 		inset.row();
 		inset.add();
-		inset.add().height(insetSize).expandX().fillX();
+		inset.add(respawnButton).height(insetSize).expandX().fillX();
 		inset.add(showConsole).size(minTouchSize, minTouchSize);
 
 		inset.row();
@@ -174,6 +183,13 @@ public class ClientScreen extends StageScreen {
 				updateCommandScreenSize();
 			}
 		});
+
+		respawnButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				getClient().getCommand().processCommand(ClientSpawnCommand.COMMAND_TEXT);
+			}
+		});
 	}
 
 	public ClientManager getClient() {
@@ -198,8 +214,8 @@ public class ClientScreen extends StageScreen {
 			int myEntityId = client.getPlayer().getEntityId();
 			if (client.getEngine() != null) {
 				Entity ent = client.getEngine().getEntityManager().getEntityById(myEntityId);
-				if (ent != null) {
-
+				if (ent == null) {
+				} else {
 					/*
 					 * Fix player into bounds
 					 */
@@ -252,15 +268,13 @@ public class ClientScreen extends StageScreen {
 	public void drawScreen(float delta) {
 		if (client.getEngine() != null)
 			synchronized (client.getEngine()) {
-				Gdx.gl.glEnable(GL20.GL_BLEND);
-				Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 				render.render(getScreenCamera(), client.getEngine());
-				Gdx.gl.glDisable(GL20.GL_BLEND);
 			}
 	}
 
 	@Override
 	public void drawOverlay(float delta) {
+		overlay.render(getOverlayCamera(), client);
 	}
 
 	@Override
@@ -268,6 +282,12 @@ public class ClientScreen extends StageScreen {
 		DataLogger.log("client-logic", 1);
 		super.updateLogic(delta);
 
+		boolean playerAlive = true;
+		if (getClient() != null && getClient().getPlayer() != null) {
+			playerAlive = getClient().getPlayer().getEntityId() != ServerPlayer.NO_ENTITY;
+		}
+		respawnButton.setDisabled(playerAlive);
+		respawnButton.setVisible(!playerAlive);
 		if (client.isLoggedIn()) {
 			if (System.currentTimeMillis() - lastInputSentToServer > Constants.CLIENT_TIME_INPUT_TO_SERVER_PEROID) {
 				lastInputSentToServer = System.currentTimeMillis();

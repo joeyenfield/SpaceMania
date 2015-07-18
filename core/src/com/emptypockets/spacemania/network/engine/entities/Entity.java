@@ -195,7 +195,10 @@ public abstract class Entity implements Poolable,PartitionEntity{
 
 	@Override
 	public void reset() {
-		alive = true;
+		/*
+		 * Alive is set false here otherwise when the entity release its set to alive again
+		 */
+		alive = false;
 		explodes = false;
 	}
 

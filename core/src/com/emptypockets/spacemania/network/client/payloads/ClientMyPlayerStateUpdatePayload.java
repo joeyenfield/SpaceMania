@@ -1,22 +1,22 @@
 package com.emptypockets.spacemania.network.client.payloads;
 
 import com.emptypockets.spacemania.network.client.ClientManager;
-import com.emptypockets.spacemania.network.client.player.ClientPlayer;
+import com.emptypockets.spacemania.network.client.player.MyPlayer;
 
 public class ClientMyPlayerStateUpdatePayload extends ClientPayload {
-	ClientPlayer myPlayer;
+	MyPlayer myPlayer;
 
-	public ClientPlayer getMyPlayer() {
+	public MyPlayer getMyPlayer() {
 		return myPlayer;
 	}
 
-	public void setMyPlayer(ClientPlayer myPlayer) {
+	public void setMyPlayer(MyPlayer myPlayer) {
 		this.myPlayer = myPlayer;
 	}
 
 	@Override
 	public void executePayload(ClientManager clientManager) {
-		ClientPlayer player = clientManager.getPlayer();
+		MyPlayer player = clientManager.getPlayer();
 		if(player != null){
 			player.read(myPlayer);
 		}

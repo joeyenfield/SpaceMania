@@ -9,63 +9,65 @@ import com.emptypockets.spacemania.network.transport.ComsType;
 import com.esotericsoftware.kryonet.Connection;
 
 public class ClientConnection extends Connection {
-    ServerManager serverManager;
-    ServerPlayer player;
-    private boolean loggedIn;
+	ServerManager serverManager;
+	ServerPlayer player;
+	private boolean loggedIn;
 
-    ArrayList<ServerPayload> incommingPayloads;
+	ArrayList<ServerPayload> incommingPayloads;
 
-    public ClientConnection(ServerManager serverManager){
-    	super();
-        this.serverManager = serverManager;
-        incommingPayloads = new ArrayList<ServerPayload>();
-    }
+	public ClientConnection(ServerManager serverManager) {
+		super();
+		this.serverManager = serverManager;
+		incommingPayloads = new ArrayList<ServerPayload>();
+	}
 
-    public void send(ClientPayload payload, ComsType type){
-        try {
-            if(type == ComsType.TCP) {
-                sendTCP(payload);
-            }else{
-                sendUDP(payload);
-            }
-        }catch(Throwable t){
-            serverManager.console.println("Error sending payload");
-            serverManager.console.error(t);
-        }
-    }
+	public void send(ClientPayload payload, ComsType type) {
+		try {
+			if (type == ComsType.TCP) {
+				sendTCP(payload);
+			} else {
+				sendUDP(payload);
+			}
+		} catch (Throwable t) {
+			serverManager.console.println("Error sending payload");
+			serverManager.console.error(t);
+		}
+	}
 
-    public void recieve(ServerPayload payload){
-        synchronized (incommingPayloads){
-            incommingPayloads.add(payload);
-        }
-    }
+	public void recieve(ServerPayload payload) {
+		synchronized (incommingPayloads) {
+			incommingPayloads.add(payload);
+		}
+	}
 
-    public void processIncommingPayloads(){
-        synchronized (incommingPayloads){
-            for(ServerPayload payload : incommingPayloads){
-                payload.executePayload(this, serverManager);
-            }
-            incommingPayloads.clear();
-        }
-    }
+	public void processIncommingPayloads() {
+		synchronized (incommingPayloads) {
+			int size = incommingPayloads.size();
+			for (int i = 0; i < size; i++) {
+				ServerPayload payload = incommingPayloads.get(i);
+				payload.executePayload(this, serverManager);
+			}
+			incommingPayloads.clear();
+		}
+	}
 
-    public boolean getLoggedIn() {
-        return loggedIn;
-    }
+	public boolean getLoggedIn() {
+		return loggedIn;
+	}
 
-    public ServerPlayer getPlayer() {
-        return player;
-    }
+	public ServerPlayer getPlayer() {
+		return player;
+	}
 
-    public void setPlayer(ServerPlayer player) {
-        this.player = player;
-    }
+	public void setPlayer(ServerPlayer player) {
+		this.player = player;
+	}
 
-    public boolean isLoggedIn() {
-        return loggedIn;
-    }
+	public boolean isLoggedIn() {
+		return loggedIn;
+	}
 
-    public void setLoggedIn(boolean loggedIn) {
-        this.loggedIn = loggedIn;
-    }
+	public void setLoggedIn(boolean loggedIn) {
+		this.loggedIn = loggedIn;
+	}
 }

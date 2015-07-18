@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.gui.renderer;
+package com.emptypockets.spacemania.gui.renderer.engine;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.gui.renderer.path.Path;
 import com.emptypockets.spacemania.network.engine.grid.GridNode;
 import com.emptypockets.spacemania.network.engine.grid.GridSystem;
 import com.emptypockets.spacemania.network.engine.grid.GridSystemListener;

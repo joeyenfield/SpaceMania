@@ -9,9 +9,9 @@ import com.emptypockets.spacemania.network.engine.particles.ParticleSystem;
 public class PlayerEntity extends Entity {
 	long lastExhaust = 0;
 	long exhaustTime = 25;
-	float magnetDistance = 100;
-	Color smokeStart = new Color(1,1,1, 0.3f); // deep
-	Color smokeEnd = new Color(.1f,.1f,.1f, 0.01f); // orange-yellow
+
+	Color smokeStart = new Color(1, 1, 1, 0.3f); // deep
+	Color smokeEnd = new Color(.1f, .1f, .1f, 0.01f); // orange-yellow
 
 	public PlayerEntity() {
 		super(EntityType.Player);
@@ -47,18 +47,4 @@ public class PlayerEntity extends Entity {
 			state.ang = state.vel.angle();
 		}
 	}
-
-	public void addScore() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public float getMagnetDistance() {
-		return magnetDistance;
-	}
-
-	public void setMagnetDistance(float magnetDistance) {
-		this.magnetDistance = magnetDistance;
-	}
-
 }

@@ -106,7 +106,7 @@ public class DesktopLauncher {
 			//
 			// client.processCommand("start;set gridsize 128 128; set roomsize 2000;set gridrender 1;set particles 10000;");
 			// client.processCommand("connect emptypocketgames.noip.me");
-//			 client.processCommand("start");
+			 client.processCommand("start");
 			// client.processCommand("lobby");
 			//
 			// client.processCommand("host start; connect;login server; lobby");

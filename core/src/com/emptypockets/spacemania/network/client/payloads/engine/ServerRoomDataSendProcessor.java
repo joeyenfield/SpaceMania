@@ -13,7 +13,7 @@ public class ServerRoomDataSendProcessor implements SingleProcessor<ServerPlayer
 	long serverTime;
 
 	ClientRoomMessagesPayload roomMessagePayloads;
-	ClientEngineRegionStatePayload engineRegionPayload;
+	ClientRoomEngineRegionStatePayload engineRegionPayload;
 
 	@Override
 	public void process(ServerPlayer player) {
@@ -68,7 +68,7 @@ public class ServerRoomDataSendProcessor implements SingleProcessor<ServerPlayer
 		this.serverTime = serverTime;
 	}
 
-	public void setRegionState(ClientEngineRegionStatePayload engineRegionPayload) {
+	public void setRegionState(ClientRoomEngineRegionStatePayload engineRegionPayload) {
 		this.engineRegionPayload = engineRegionPayload;
 	}
 

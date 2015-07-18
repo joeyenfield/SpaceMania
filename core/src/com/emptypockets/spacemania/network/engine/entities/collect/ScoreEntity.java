@@ -18,7 +18,7 @@ public class ScoreEntity extends CollectableEntity {
 	@Override
 	public void collect(ServerPlayer player) {
 		if (isAlive()) {
-			player.addScore(this);
+			player.addScrapCount(this);
 		}
 		setAlive(false);
 	}

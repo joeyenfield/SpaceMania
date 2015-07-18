@@ -204,7 +204,7 @@ public class ParticleSystem extends ArrayListProcessor<Particle> implements Enti
 		boolean randomAngle = true;
 
 		if (entity instanceof PlayerEntity) {
-			multiplier = 100;
+			multiplier = 3;
 		} else if (entity instanceof BulletEntity) {
 			multiplier = 0.2f;
 			randomAngle = false;

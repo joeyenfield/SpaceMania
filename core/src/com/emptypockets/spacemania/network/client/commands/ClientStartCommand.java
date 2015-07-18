@@ -10,7 +10,7 @@ public class ClientStartCommand extends ClientCommand {
 
 	@Override
 	public void exec(String args) {
-		client.getCommand().processCommand("host start;connect;login local;lobby;spawn");
+		client.getCommand().processCommand("host start;connect;login local;lobby;");
 	}
 
 }

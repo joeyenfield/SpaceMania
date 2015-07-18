@@ -20,7 +20,7 @@ public class EntityManager {
 	HashMap<Integer, Entity> entities;
 	ArrayListProcessor<Entity> processor;
 	ArrayList<EntityManagerInterface> entityMangerInterface;
-	final ArrayList<Entity> toRemove = new ArrayList<Entity>();
+	final ArrayList<Entity> tempToRemove = new ArrayList<Entity>();
 
 	public EntityManager() {
 		entities = new HashMap<Integer, Entity>();
@@ -58,7 +58,7 @@ public class EntityManager {
 		default:
 			throw new RuntimeException("Unknown Entity Type");
 		}
-
+		entity.setAlive(true);
 		entity.getState().setId(id);
 		entity.tagCreationTime();
 		return entity;
@@ -141,14 +141,14 @@ public class EntityManager {
 	public synchronized void removeDead() {
 		for (Entity ent : entities.values()) {
 			if (!ent.isAlive()) {
-				toRemove.add(ent);
+				tempToRemove.add(ent);
 			}
 		}
 
-		for (Entity ent : toRemove) {
+		for (Entity ent : tempToRemove) {
 			removeEntity(ent, true);
 		}
-		toRemove.clear();
+		tempToRemove.clear();
 	}
 
 	public synchronized int countType(EntityType entType) {

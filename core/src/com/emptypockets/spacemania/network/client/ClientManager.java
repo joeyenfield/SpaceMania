@@ -7,9 +7,9 @@ import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.network.CommandService;
-import com.emptypockets.spacemania.network.client.commands.rooms.ClientSpawnCommand;
 import com.emptypockets.spacemania.network.client.exceptions.ClientNotConnectedException;
 import com.emptypockets.spacemania.network.client.player.ClientPlayer;
+import com.emptypockets.spacemania.network.client.player.MyPlayer;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
@@ -32,7 +32,7 @@ public class ClientManager implements Disposable {
 	ClientConnectionManager connection;
 
 	boolean loggedIn = false;
-	ClientPlayer player;
+	MyPlayer player;
 	ClientInputProducer inputProducer;
 	ClientRoom currentRoom;
 	ClientEngine engine;
@@ -67,9 +67,6 @@ public class ClientManager implements Disposable {
 			}
 		}
 		
-		if (currentRoom != null) {
-			currentRoom.update();
-		}
 		if (engine != null) {
 			engine.update();
 		}
@@ -146,11 +143,11 @@ public class ClientManager implements Disposable {
 		return command;
 	}
 
-	public ClientPlayer getPlayer() {
+	public MyPlayer getPlayer() {
 		return player;
 	}
 
-	public void setPlayer(ClientPlayer player) {
+	public void setPlayer(MyPlayer player) {
 		this.player = player;
 		if (player == null) {
 			console.setConsoleKey("CLIENT[] : ");

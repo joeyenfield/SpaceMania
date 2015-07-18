@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.gui.renderer;
+package com.emptypockets.spacemania.gui.renderer.engine;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;

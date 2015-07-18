@@ -20,11 +20,11 @@ public class ClientEngine extends Engine {
 	GridSystem gridManager;
 
 	float explosiveForce = 5f;
-	int gridSizeX = 30;
-	int gridSizeY = 30;
+	int gridSizeX = Constants.GRID_SIZE_X;
+	int gridSizeY = Constants.GRID_SIZE_Y;
 
 	int maxParticles = Constants.DEFAULT_PARTICLES;
-	boolean dynamicGrid = true;
+	boolean dynamicGrid = Constants.GRID_DYNAMIC;
 
 	long lastServerUpdateTime = 0;
 
@@ -47,6 +47,8 @@ public class ClientEngine extends Engine {
 		getEntityManager().register(particleSystem);
 		addRegionListener(gridManager);
 		addRegionListener(particleSystem.getPartition());
+		
+		setDynamicGrid(Constants.GRID_DYNAMIC);
 
 	}
 

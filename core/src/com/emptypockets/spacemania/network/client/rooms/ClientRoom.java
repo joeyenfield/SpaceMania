@@ -43,22 +43,15 @@ public class ClientRoom implements Disposable, SingleProcessor<ServerPlayer> {
 		if (room.getHost() != null) {
 			setHost(room.getHost().getClientPlayer());
 		}
-		clearPlayers();
+		//Re-add allplayers
+		players.clear();
 		room.getPlayerManager().process(this);
 	}
 
-	public void clearPlayers(){
-		int size = players.size(); 
-		for(int i = 0; i < players.size(); i++){
-			PoolsManager.free(players.get(i));
-		}
-		players.clear();
-	}
 	@Override
 	public void process(ServerPlayer entity) {
-		ClientPlayer player = PoolsManager.obtain(ClientPlayer.class);
-		player.read(entity);
-		players.add(player);
+		entity.updateClientPlayerData();
+		players.add(entity.getClientPlayer());
 	}
 
 	public ClientPlayer getHost() {
@@ -75,9 +68,6 @@ public class ClientRoom implements Disposable, SingleProcessor<ServerPlayer> {
 
 	public void setMaxPlayers(int maxPlayers) {
 		this.maxPlayers = maxPlayers;
-	}
-
-	public void update() {
 	}
 
 	public void dispose() {

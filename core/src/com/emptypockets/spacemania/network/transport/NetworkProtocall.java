@@ -16,10 +16,11 @@ import com.emptypockets.spacemania.network.client.payloads.authentication.LoginS
 import com.emptypockets.spacemania.network.client.payloads.authentication.LogoutSuccessPayload;
 import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineEntityManagerSyncPayload;
 import com.emptypockets.spacemania.network.client.payloads.engine.ClientEnginePlayerManagerSyncPayload;
-import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineRegionStatePayload;
+import com.emptypockets.spacemania.network.client.payloads.engine.ClientRoomEngineRegionStatePayload;
 import com.emptypockets.spacemania.network.client.payloads.rooms.ClientRoomMessagesPayload;
 import com.emptypockets.spacemania.network.client.payloads.rooms.JoinRoomSuccessPayload;
 import com.emptypockets.spacemania.network.client.player.ClientPlayer;
+import com.emptypockets.spacemania.network.client.player.MyPlayer;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomChatMessage;
 import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomPlayerJoinMessage;
@@ -74,7 +75,7 @@ public class NetworkProtocall {
 		register(kryo, LogoutRequestPayload.class);
 		register(kryo, ClientEngineEntityManagerSyncPayload.class);
 		register(kryo, ClientMyPlayerStateUpdatePayload.class);
-		register(kryo, ClientEngineRegionStatePayload.class);
+		register(kryo, ClientRoomEngineRegionStatePayload.class);
 		register(kryo, EngineRegionSync.class);
 		register(kryo, EntityManagerSync.class);
 		register(kryo, EntityState.class);
@@ -88,6 +89,7 @@ public class NetworkProtocall {
 		register(kryo, PlayerManagerSync.class);
 		register(kryo, ClientEnginePlayerManagerSyncPayload.class);
 		register(kryo, SpawnPlayerRequestPayload.class);
+		register(kryo, MyPlayer.class);
 	}
 
 	public static <T> void register(Kryo kryo, final Class<T> classType) {

@@ -2,8 +2,6 @@ package com.emptypockets.spacemania.network.server.engine;
 
 import java.util.ArrayList;
 
-import javax.management.RuntimeErrorException;
-
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.Constants;
@@ -17,33 +15,33 @@ import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.entities.collect.CollectableEntity;
 import com.emptypockets.spacemania.network.engine.entities.collect.ScoreEntity;
-import com.emptypockets.spacemania.network.server.player.ServerPlayerManager;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
+import com.emptypockets.spacemania.network.server.player.ServerPlayerManager;
 
 public class ServerEngine extends Engine {
 	AiManager aiManager;
 	ServerPlayerManager playerManager;
 
 	long lastEnemy = 0;
-	
+
 	ArrayList<BulletEntity> tempBulletsHolder = new ArrayList<BulletEntity>();
 	ArrayList<Entity> tempEntitiesHolder = new ArrayList<Entity>();
-	
+
 	public ServerEngine(ServerPlayerManager playerManager) {
 		super();
 		aiManager = new AiManager(this);
 		aiManager.setEnabled(true);
 		this.playerManager = playerManager;
-		if(this.playerManager == null){
+		if (this.playerManager == null) {
 			throw new RuntimeException("Should not be null");
 		}
 		getEntityManager().register(aiManager);
 	}
 
 	public void processCollissions() {
-		 getEntityManager().filterEntities(BulletEntity.class,tempBulletsHolder);
 
-		// Kill Enemys
+		// Process Bullets Hitting Enemys
+		getEntityManager().filterEntities(BulletEntity.class, tempBulletsHolder);
 		for (BulletEntity bullet : tempBulletsHolder) {
 			tempEntitiesHolder.clear();
 			getEntitySpatialPartition().getNearbyEntities(bullet, bullet.getLastMovementDist() * 2, tempEntitiesHolder, EnemyEntity.class);
@@ -69,23 +67,34 @@ public class ServerEngine extends Engine {
 		tempBulletsHolder.clear();
 		tempEntitiesHolder.clear();
 
-		// Get Collectable
+		// Process Players
 		final Vector2 force = new Vector2();
 		playerManager.process(new SingleProcessor<ServerPlayer>() {
 			@Override
-			public void process(ServerPlayer player) {
-				int id = player.getEntityId();
-				Entity ent = getEntityManager().getEntityById(id);
-				if (ent != null) {
+			public void process(ServerPlayer serverPlayer) {
+				int id = serverPlayer.getEntityId();
+				PlayerEntity playerEnt = (PlayerEntity) getEntityManager().getEntityById(id);
+				if (playerEnt != null) {
+
+					// Check Enemy Collissions
 					tempEntitiesHolder.clear();
-					PlayerEntity playerEntity = (PlayerEntity) ent;
-					getEntitySpatialPartition().getNearbyEntities(ent, playerEntity.getMagnetDistance(), tempEntitiesHolder, CollectableEntity.class);
+					getEntitySpatialPartition().getNearbyEntities(playerEnt, playerEnt.getRadius(), tempEntitiesHolder, EnemyEntity.class);
+					for (Entity enemyEntity : tempEntitiesHolder) {
+						EnemyEntity enemy = (EnemyEntity) enemyEntity;
+						if (enemy.contact(playerEnt)) {
+							serverPlayer.attacked(enemy, playerEnt);
+						}
+					}
+
+					// Check Collectables
+					tempEntitiesHolder.clear();
+					getEntitySpatialPartition().getNearbyEntities(playerEnt, serverPlayer.getMagnetDistance(), tempEntitiesHolder, CollectableEntity.class);
 					for (Entity col : tempEntitiesHolder) {
 						CollectableEntity collect = (CollectableEntity) col;
-						if (collect.contact(playerEntity)) {
-							collect.collect(player);
+						if (collect.contact(playerEnt)) {
+							serverPlayer.collect(collect, playerEnt);
 						} else {
-							force.set(playerEntity.getPos()).sub(col.getPos()).nor().setLength(col.getMaxForce());
+							force.set(playerEnt.getPos()).sub(col.getPos()).nor().setLength(col.getMaxForce());
 							collect.applyForce(force);
 						}
 					}
@@ -109,15 +118,30 @@ public class ServerEngine extends Engine {
 			return;
 		if (System.currentTimeMillis() - lastEnemy > Constants.ENTITY_SPAWN_TIME) {
 			lastEnemy = System.currentTimeMillis();
-			if (getEntityManager().countType(EntityType.Enemy_FOLLOW) <  Constants.ENTITY_SPAWN_FOLLOW_COUNT) {
+			if (getEntityManager().countType(EntityType.Enemy_FOLLOW) < Constants.ENTITY_SPAWN_FOLLOW_COUNT) {
 				EnemyEntity entity = (EnemyEntity) getEntityManager().createEntity(EntityType.Enemy_FOLLOW);
 				entity.setPos(getRegion().x + getRegion().width * MathUtils.random(), getRegion().y + getRegion().height * MathUtils.random());
+				moveToDistantRegionWithoutEntities(Constants.ENTITY_SPAWN_PLAYER_DISTANCE, entity, PlayerEntity.class);
 				getEntityManager().addEntity(entity);
 			}
-			if (getEntityManager().countType(EntityType.Enemy_RANDOM) <  Constants.ENTITY_SPAWN_RANDOM_COUNT) {
+			if (getEntityManager().countType(EntityType.Enemy_RANDOM) < Constants.ENTITY_SPAWN_RANDOM_COUNT) {
 				EnemyEntity entity = (EnemyEntity) getEntityManager().createEntity(EntityType.Enemy_RANDOM);
 				entity.setPos(getRegion().x + getRegion().width * MathUtils.random(), getRegion().y + getRegion().height * MathUtils.random());
+				moveToDistantRegionWithoutEntities(Constants.ENTITY_SPAWN_PLAYER_DISTANCE, entity,PlayerEntity.class);
 				getEntityManager().addEntity(entity);
+			}
+		}
+	}
+
+	public void moveToDistantRegionWithoutEntities(float dist, Entity entity, Class<?> entityTypes) {
+		// times = 10;
+		if (!getEntitySpatialPartition().hasNearbyEntities(entity, dist,entityTypes)) {
+			return;
+		}
+		for (int i = 0; i < 10; i++) {
+			entity.setPos(getRegion().x + getRegion().width * MathUtils.random(), getRegion().y + getRegion().height * MathUtils.random());
+			if (!getEntitySpatialPartition().hasNearbyEntities(entity, dist, entityTypes)) {
+				return;
 			}
 		}
 	}

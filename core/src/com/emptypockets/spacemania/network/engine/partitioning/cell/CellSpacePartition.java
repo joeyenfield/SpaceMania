@@ -282,4 +282,13 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 		updateCellPositions(region);
 	}
 
+	public synchronized boolean hasNearbyEntities(Entity entity, float dist, Class<?> classTypes) {
+		tempEntities.clear();
+		searchNearbyEntities(entity.getPos(), dist, tempEntities);
+		filter(tempEntities, classTypes);
+		int count = tempEntities.size();
+		tempEntities.clear();
+		return count == 0;
+	}
+
 }

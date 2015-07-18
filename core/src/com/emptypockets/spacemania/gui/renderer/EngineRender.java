@@ -20,6 +20,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.emptypockets.spacemania.Constants;
+import com.emptypockets.spacemania.gui.renderer.engine.BackgroundRenderer;
+import com.emptypockets.spacemania.gui.renderer.engine.GridPathRenderer;
+import com.emptypockets.spacemania.gui.renderer.engine.GridTextureRenderer;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.client.player.ClientPlayer;
@@ -133,9 +136,6 @@ public class EngineRender {
 			c.set(entity.getColor());
 			shapeRender.setColor(c);
 			shapeRender.circle(entity.getState().getPos().x, entity.getState().getPos().y, entity.getRadius());
-			if (entity instanceof PlayerEntity) {
-				shapeRender.circle(entity.getState().getPos().x, entity.getState().getPos().y, entity.getRadius() + ((PlayerEntity) entity).getMagnetDistance());
-			}
 		}
 		shapeRender.end();
 	}

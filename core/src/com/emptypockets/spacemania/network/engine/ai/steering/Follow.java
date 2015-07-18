@@ -10,7 +10,11 @@ public class Follow extends ProximityTargetSteering {
 
 	@Override
 	public void updateSteeringForce(Engine engine, Entity entity, Vector2 force) {
-		desiredVelocity.set(target.getPos()).sub(entity.getPos()).nor().scl(entity.getMaxVelocity());
-		force.set(desiredVelocity).sub(entity.getVel()).setLength(getMaxForce());
+		if (target != null) {
+			desiredVelocity.set(target.getPos()).sub(entity.getPos()).nor().scl(entity.getMaxVelocity());
+			force.set(desiredVelocity).sub(entity.getVel()).setLength(getMaxForce());
+		}else{
+			force.setZero();
+		}
 	}
 }

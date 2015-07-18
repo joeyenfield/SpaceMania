@@ -11,6 +11,7 @@ public class ClientPlayer{
     int ping;
     String username;
     int entityId;
+    int deaths;
     
     public int getId() {
         return id;
@@ -79,5 +80,11 @@ public class ClientPlayer{
     }
 	public int getEntityId() {
 		return entityId;
+	}
+	public int getDeaths() {
+		return deaths;
+	}
+	public void setDeaths(int deaths) {
+		this.deaths = deaths;
 	}
 }

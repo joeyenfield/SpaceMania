@@ -30,6 +30,7 @@ public class FollowerEntityAi extends EntityAi {
 
 	@Override
 	public void update() {
+		//Check for any nearby bullets
 		Entity entity = engine.getEntitySpatialPartition().searchNearestEntityWhereEntityInThereFOV(getEntity(), EntityType.Bullet, 200, 100);
 		if (entity != null) {
 			flee.setTarget(entity);
@@ -37,8 +38,8 @@ public class FollowerEntityAi extends EntityAi {
 			getEntity().setMaxVelocity(400);
 			getEntity().setMaxForce(flee.getMaxForce());
 		} else {
-			
 			if (target == null || !target.isAlive()) {
+				follow.setTarget(null);
 				target = engine.getEntityManager().pickRandom(EntityType.Player);
 				follow.setTarget(target);
 			}

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.emptypockets.spacemania.RootTest;
+import com.emptypockets.spacemania.network.engine.entities.bullets.BulletEntity;
 
 
 public class EntityTest extends RootTest{

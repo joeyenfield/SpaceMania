@@ -8,13 +8,13 @@ import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.ai.manager.AiManager;
-import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
-import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
-import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
-import com.emptypockets.spacemania.network.engine.entities.collect.CollectableEntity;
-import com.emptypockets.spacemania.network.engine.entities.collect.ScoreEntity;
+import com.emptypockets.spacemania.network.engine.entities.bullets.BulletEntity;
+import com.emptypockets.spacemania.network.engine.entities.collectable.CollectableEntity;
+import com.emptypockets.spacemania.network.engine.entities.collectable.ScoreEntity;
+import com.emptypockets.spacemania.network.engine.entities.enemy.EnemyEntity;
+import com.emptypockets.spacemania.network.engine.entities.players.PlayerEntity;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 import com.emptypockets.spacemania.network.server.player.ServerPlayerManager;
 
@@ -94,7 +94,7 @@ public class ServerEngine extends Engine {
 						if (collect.contact(playerEnt)) {
 							serverPlayer.collect(collect, playerEnt);
 						} else {
-							force.set(playerEnt.getPos()).sub(col.getPos()).nor().setLength(col.getMaxForce());
+							force.set(playerEnt.getPos()).sub(collect.getPos()).nor().setLength(collect.getMaxForce());
 							collect.applyForce(force);
 						}
 					}
@@ -138,7 +138,7 @@ public class ServerEngine extends Engine {
 		if (!getEntitySpatialPartition().hasNearbyEntities(entity, dist,entityTypes)) {
 			return;
 		}
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 20; i++) {
 			entity.setPos(getRegion().x + getRegion().width * MathUtils.random(), getRegion().y + getRegion().height * MathUtils.random());
 			if (!getEntitySpatialPartition().hasNearbyEntities(entity, dist, entityTypes)) {
 				return;

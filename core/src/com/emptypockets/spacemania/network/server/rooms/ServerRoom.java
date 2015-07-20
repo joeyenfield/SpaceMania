@@ -11,6 +11,8 @@ import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 import com.emptypockets.spacemania.network.engine.EngineRegionSync;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.building.BuildingEntity;
+import com.emptypockets.spacemania.network.engine.entities.players.PlayerEntity;
 import com.emptypockets.spacemania.network.server.ServerManager;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.server.exceptions.TooManyPlayersException;
@@ -160,13 +162,22 @@ public class ServerRoom implements Disposable {
 		dataSendProcessor.clearAfterSend();
 	}
 
-	public synchronized void spawnPlayer(ServerPlayer player) {
-		player.respawn(engine);
+	public synchronized void spawnPlayer(ServerPlayer serverPlayer) {
+
+		PlayerEntity player = serverPlayer.respawn(engine);
+
+		// build(serverPlayer, player, EntityType.Base);
+	}
+
+	public void build(ServerPlayer serverPlayer, PlayerEntity player, EntityType type) {
+		BuildingEntity building = (BuildingEntity) engine.getEntityManager().createEntity(type);
+		building.setPos(player.getPos().x, player.getPos().y + 100);
+		engine.getEntityManager().addEntity(building);
 	}
 
 	public synchronized void joinRoom(ServerPlayer player) throws TooManyPlayersException {
 		serverRoomPlayers.addPlayer(player);
-		
+
 		// Send message that player has joined
 		ServerRoomPlayerJoinMessage message = PoolsManager.obtain(ServerRoomPlayerJoinMessage.class);
 		message.setServerPlayer(player);

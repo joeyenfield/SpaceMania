@@ -57,10 +57,10 @@ public class DesktopLauncher {
 
 			Log.ERROR();
 			LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-			config.width = 10;
-			config.height = 10;
+			config.width = 800;
+			config.height = 600;
 			config.x = 0;
-			config.y = 100;
+			config.y = 0;
 
 			MainGame game = null;
 			ApplicationListener test;

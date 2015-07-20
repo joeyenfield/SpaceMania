@@ -2,6 +2,7 @@ package com.emptypockets.spacemania.network.engine.ai.steering;
 
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
 
 public abstract class ProximityTargetSteering extends Steering {
 
@@ -38,7 +39,7 @@ public abstract class ProximityTargetSteering extends Steering {
 		this.distance = distance;
 	}
 
-	public void update(Engine engine, Entity entity) {
+	public void update(Engine engine, MovingEntity entity) {
 		if (target != null && target.isAlive()) {
 			super.update(engine, entity);
 

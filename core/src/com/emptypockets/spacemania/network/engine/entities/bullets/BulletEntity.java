@@ -1,8 +1,11 @@
-package com.emptypockets.spacemania.network.engine.entities;
+package com.emptypockets.spacemania.network.engine.entities.bullets;
 
 import com.badlogic.gdx.graphics.Color;
+import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
+import com.emptypockets.spacemania.network.engine.entities.players.PlayerEntity;
 
-public class BulletEntity extends Entity {
+public class BulletEntity extends MovingEntity {
 	PlayerEntity owner;
 
 	public BulletEntity() {

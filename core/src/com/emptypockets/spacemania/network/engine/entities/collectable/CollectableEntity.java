@@ -1,11 +1,11 @@
-package com.emptypockets.spacemania.network.engine.entities.collect;
+package com.emptypockets.spacemania.network.engine.entities.collectable;
 
 import com.badlogic.gdx.graphics.Color;
-import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 
-public abstract class CollectableEntity extends Entity {
+public abstract class CollectableEntity extends MovingEntity {
 
 	public CollectableEntity(EntityType type) {
 		super(type);

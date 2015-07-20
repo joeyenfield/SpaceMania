@@ -5,41 +5,33 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.emptypockets.spacemania.network.engine.entities.states.EntityState;
 import com.emptypockets.spacemania.network.engine.partitioning.cell.PartitionEntity;
 
-public abstract class Entity implements Poolable,PartitionEntity{
-	EntityState state;
-	EntityType type;
+public abstract class Entity<STATE extends EntityState> implements Poolable,PartitionEntity{
+	protected STATE state;
+	protected EntityType type;
 
-	boolean alive = true;
-	boolean explodes = false;
+	protected boolean alive = true;
+	protected boolean explodes = false;
 
 	protected Color color;
 	float inverseMass = 1;
 	float radius = 15;
-	float maxVelocity = 400;
-	float maxForce = 400;
 
-	Vector2 lastPosition = new Vector2();
-	float lastMovementDist = 0;
-	Vector2 fovTemp1 = new Vector2();
-	Vector2 fovTemp2 = new Vector2();
-
-	float damping = 0;
-
-	Vector2 forceAculumator = new Vector2();
-	boolean bounceOffWalls = true; // Indicate if an enttity should stop dead or
-									// bounce off walls
 	protected long creationTime;
 	protected long lifeTime = 0;
+	
+	float lastMovementDist = 0;
+	Vector2 lastPosition = new Vector2();
 
 	Vector2 lastServerOffset = new Vector2();
 	
 	int partitionTag = 0;
 	
-	public Entity(EntityType type) {
+	public Entity(EntityType type, STATE state) {
 		this.type = type;
-		state = new EntityState();
+		this.state = state;
 		color = Color.GREEN.cpy();
 	}
 
@@ -48,14 +40,7 @@ public abstract class Entity implements Poolable,PartitionEntity{
 		this.lifeTime = time;
 	}
 
-	public boolean isInsideFOV(Entity ent, float fovInDeg) {
-
-		fovTemp1.set(getVel()).nor();
-		fovTemp2.set(ent.getPos()).sub(getPos()).nor();
-		float angle = Math.abs(fovTemp1.angle(fovTemp2.nor()));
-		return angle < fovInDeg / 2;
-	}
-
+	
 	public void setType(EntityType type) {
 		this.type = type;
 	}
@@ -85,7 +70,6 @@ public abstract class Entity implements Poolable,PartitionEntity{
 	}
 
 	public void setPos(float x, float y) {
-		lastPosition.set(getPos());
 		state.getPos().x = x;
 		state.getPos().y = y;
 	}
@@ -102,15 +86,11 @@ public abstract class Entity implements Poolable,PartitionEntity{
 		return state.getPos();
 	}
 
-	public Vector2 getVel() {
-		return state.getVel();
-	}
-
 	public EntityType getType() {
 		return type;
 	}
 
-	public EntityState getState() {
+	public STATE getState() {
 		return state;
 	}
 
@@ -119,19 +99,7 @@ public abstract class Entity implements Poolable,PartitionEntity{
 	}
 
 	public void update(float deltaTime) {
-		lastPosition.set(getPos());
-		// Convert the Force to Velocity
-		forceAculumator.limit(maxForce);
-		forceAculumator.scl(inverseMass * deltaTime);
-
-		// Update the velocity
-		getVel().add(forceAculumator);
-		if (damping > 0) {
-			getVel().scl((float) Math.pow(damping, deltaTime));
-		}
-		getVel().limit(maxVelocity);
-		forceAculumator.x = 0;
-		forceAculumator.y = 0;
+		
 		// Update the state
 		state.delta(deltaTime);
 
@@ -144,7 +112,6 @@ public abstract class Entity implements Poolable,PartitionEntity{
 			lastServerOffset.y -= dY;
 			getPos().add(dX, dY);
 		}
-		lastMovementDist = lastPosition.dst(getPos());
 
 		if (lifeTime != 0) {
 			if (getAge() > lifeTime) {
@@ -153,16 +120,8 @@ public abstract class Entity implements Poolable,PartitionEntity{
 		}
 	}
 
-	public float getMaxVelocity() {
-		return maxVelocity;
-	}
-
 	public float getInverseMass() {
 		return inverseMass;
-	}
-
-	public float getMaxForce() {
-		return maxForce;
 	}
 
 	public void setRadius(float radius) {
@@ -181,18 +140,7 @@ public abstract class Entity implements Poolable,PartitionEntity{
 		this.inverseMass = inverseMass;
 	}
 
-	public void setMaxVelocity(float maxVelocity) {
-		this.maxVelocity = maxVelocity;
-	}
-
-	public void setMaxForce(float maxForce) {
-		this.maxForce = maxForce;
-	}
-
-	public void setDamping(float damping) {
-		this.damping = damping;
-	}
-
+	
 	@Override
 	public void reset() {
 		/*
@@ -202,34 +150,11 @@ public abstract class Entity implements Poolable,PartitionEntity{
 		explodes = false;
 	}
 
-	public void resetForce() {
-		forceAculumator.set(0, 0);
-	}
-
-	public void applyForce(Vector2 force) {
-		this.forceAculumator.add(force);
-	}
-
-	public boolean isBounceOffWall() {
-		return bounceOffWalls;
-	}
-
-	public void setBounceOffWalls(boolean boundeWalls) {
-		this.bounceOffWalls = boundeWalls;
-	}
-
 	public float dst2(Entity entity) {
 		return getPos().dst2(entity.getPos());
 	}
-
-	public void setVel(float x, float y) {
-		getVel().set(x, y);
-	}
-
-	public void setVel(Vector2 vel) {
-		getVel().set(vel);
-	}
-
+	
+	
 	public void tagCreationTime() {
 		creationTime = System.currentTimeMillis();
 	}
@@ -245,9 +170,6 @@ public abstract class Entity implements Poolable,PartitionEntity{
 		return getAge()/(float)lifeTime;
 	}
 
-	public float getLastMovementDist() {
-		return lastMovementDist;
-	}
 
 	public boolean intersects(Rectangle viewport) {
 		// TODO Auto-generated method stub
@@ -274,6 +196,11 @@ public abstract class Entity implements Poolable,PartitionEntity{
 
 	public void setPartitionTag(int partitionTag) {
 		this.partitionTag = partitionTag;
+	}
+
+
+	public boolean isInsideFOV(Entity entity, float fov) {
+		return false;
 	}
 
 }

@@ -2,8 +2,8 @@ package com.emptypockets.spacemania.network.engine.ai.fms.follower.states;
 
 import com.emptypockets.spacemania.network.engine.ai.fms.EntityStateMachine;
 import com.emptypockets.spacemania.network.engine.ai.steering.Flee;
-import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.bullets.BulletEntity;
 import com.emptypockets.spacemania.network.engine.fsm.State;
 
 public class FleeBulletState<EMS extends EntityStateMachine> extends State<EMS>{

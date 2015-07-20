@@ -1,13 +1,14 @@
 package com.emptypockets.spacemania.network.engine.ai.manager;
 
 import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 
 public abstract class EntityAi {
-	Entity entity;
+	MovingEntity entity;
 	ServerEngine engine;
 
-	public EntityAi(ServerEngine engine, Entity entity) {
+	public EntityAi(ServerEngine engine, MovingEntity entity) {
 		super();
 		this.engine = engine;
 		this.entity = entity;
@@ -20,7 +21,7 @@ public abstract class EntityAi {
 
 	public abstract void apply();
 
-	public Entity getEntity() {
+	public MovingEntity getEntity() {
 		return entity;
 	}
 

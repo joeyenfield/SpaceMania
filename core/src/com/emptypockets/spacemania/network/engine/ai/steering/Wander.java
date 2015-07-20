@@ -2,7 +2,7 @@ package com.emptypockets.spacemania.network.engine.ai.steering;
 
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.engine.Engine;
-import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
 
 public class Wander extends Steering {
 
@@ -14,7 +14,7 @@ public class Wander extends Steering {
 	Vector2 temp = new Vector2();
 
 	@Override
-	public void updateSteeringForce(Engine engine, Entity entity, Vector2 force) {
+	public void updateSteeringForce(Engine engine, MovingEntity entity, Vector2 force) {
 
 		// this behavior is dependent on the update rate, so this line must
 		// be included when using time independent framerate.

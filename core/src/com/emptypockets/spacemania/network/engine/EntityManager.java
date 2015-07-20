@@ -7,12 +7,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
-import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
-import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
-import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
-import com.emptypockets.spacemania.network.engine.entities.collect.ScoreEntity;
+import com.emptypockets.spacemania.network.engine.entities.building.BuildingEntity;
+import com.emptypockets.spacemania.network.engine.entities.bullets.BulletEntity;
+import com.emptypockets.spacemania.network.engine.entities.collectable.ScoreEntity;
+import com.emptypockets.spacemania.network.engine.entities.enemy.EnemyEntity;
+import com.emptypockets.spacemania.network.engine.entities.players.PlayerEntity;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class EntityManager {
@@ -54,6 +55,11 @@ public class EntityManager {
 			entity = PoolsManager.obtain(EnemyEntity.class);
 			entity.setType(EntityType.Enemy_RANDOM);
 			entity.setColor(Color.MAGENTA);
+			break;
+		case Base:
+			entity = PoolsManager.obtain(BuildingEntity.class);
+			entity.setType(EntityType.Base);
+			entity.setColor(Color.RED);
 			break;
 		default:
 			throw new RuntimeException("Unknown Entity Type");

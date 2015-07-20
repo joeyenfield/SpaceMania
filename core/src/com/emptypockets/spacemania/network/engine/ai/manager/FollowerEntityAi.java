@@ -2,20 +2,23 @@ package com.emptypockets.spacemania.network.engine.ai.manager;
 
 import com.emptypockets.spacemania.network.engine.ai.steering.Flee;
 import com.emptypockets.spacemania.network.engine.ai.steering.Follow;
+import com.emptypockets.spacemania.network.engine.ai.steering.Separation;
 import com.emptypockets.spacemania.network.engine.ai.steering.Steering;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 
 public class FollowerEntityAi extends EntityAi {
 
 	Follow follow;
 	Flee flee;
+	Separation seperation;
 	Steering currentSteering;
 
-	Entity target;
+	MovingEntity target;
 
-	public FollowerEntityAi(ServerEngine engine, Entity entity) {
+	public FollowerEntityAi(ServerEngine engine, MovingEntity entity) {
 		super(engine, entity);
 	}
 
@@ -25,6 +28,8 @@ public class FollowerEntityAi extends EntityAi {
 		follow.setMaxForce(400);
 		flee = new Flee();
 		flee.setMaxForce(4000);
+		seperation = new Separation();
+		
 
 	}
 
@@ -40,7 +45,7 @@ public class FollowerEntityAi extends EntityAi {
 		} else {
 			if (target == null || !target.isAlive()) {
 				follow.setTarget(null);
-				target = engine.getEntityManager().pickRandom(EntityType.Player);
+				target = (MovingEntity) engine.getEntityManager().pickRandom(EntityType.Player);
 				follow.setTarget(target);
 			}
 			currentSteering = follow;

@@ -4,8 +4,8 @@ import com.emptypockets.spacemania.network.engine.ai.fms.EntityStateMachine;
 import com.emptypockets.spacemania.network.engine.ai.fms.follower.states.FleeBulletState;
 import com.emptypockets.spacemania.network.engine.ai.fms.follower.states.FollowPlayerState;
 import com.emptypockets.spacemania.network.engine.ai.fms.follower.states.WanderState;
-import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.enemy.EnemyEntity;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 
 public class FollowerStateMachine extends EntityStateMachine<EnemyEntity> {

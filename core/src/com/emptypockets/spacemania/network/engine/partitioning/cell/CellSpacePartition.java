@@ -106,7 +106,7 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 		return data;
 	}
 
-	public void filter(ArrayList<ENT> result, Class<?> type) {
+	public void filterToType(ArrayList<ENT> result, Class<?> type) {
 		Iterator<ENT> entIterator = result.iterator();
 		while (entIterator.hasNext()) {
 			ENT ent = entIterator.next();
@@ -116,11 +116,31 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 		}
 	}
 
-	public void filter(ArrayList<ENT> result, EntityType type) {
+	public void filterToType(ArrayList<ENT> result, EntityType type) {
 		Iterator<ENT> entIterator = result.iterator();
 		while (entIterator.hasNext()) {
 			Entity ent = (Entity) entIterator.next();
 			if (!(type == ent.getType())) {
+				entIterator.remove();
+			}
+		}
+	}
+	
+	public void filterRemove(ArrayList<ENT> result, Class<?> type) {
+		Iterator<ENT> entIterator = result.iterator();
+		while (entIterator.hasNext()) {
+			ENT ent = entIterator.next();
+			if (type.isAssignableFrom(ent.getClass())) {
+				entIterator.remove();
+			}
+		}
+	}
+
+	public void filterRemove(ArrayList<ENT> result, EntityType type) {
+		Iterator<ENT> entIterator = result.iterator();
+		while (entIterator.hasNext()) {
+			Entity ent = (Entity) entIterator.next();
+			if ((type == ent.getType())) {
 				entIterator.remove();
 			}
 		}
@@ -140,12 +160,12 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 
 	public synchronized void searchNearbyEntities(Vector2 pos, float dist, ArrayList<ENT> result, Class filterClass) {
 		searchNearbyEntities(pos, dist, result);
-		filter(result, filterClass);
+		filterToType(result, filterClass);
 	}
 
 	public synchronized void searchNearbyEntities(Vector2 pos, float dist, ArrayList<ENT> result, EntityType type) {
 		searchNearbyEntities(pos, dist, result);
-		filter(result, type);
+		filterToType(result, type);
 	}
 
 	public synchronized void searchNearbyEntities(Vector2 pos, float dist, ArrayList<ENT> result) {
@@ -285,10 +305,10 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 	public synchronized boolean hasNearbyEntities(Entity entity, float dist, Class<?> classTypes) {
 		tempEntities.clear();
 		searchNearbyEntities(entity.getPos(), dist, tempEntities);
-		filter(tempEntities, classTypes);
+		filterToType(tempEntities, classTypes);
 		int count = tempEntities.size();
 		tempEntities.clear();
-		return count == 0;
+		return count > 0;
 	}
 
 }

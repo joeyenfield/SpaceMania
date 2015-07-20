@@ -5,12 +5,11 @@ import com.emptypockets.spacemania.network.client.input.ClientInput;
 import com.emptypockets.spacemania.network.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.client.player.MyPlayer;
-import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
-import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
-import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
-import com.emptypockets.spacemania.network.engine.entities.collect.CollectableEntity;
-import com.emptypockets.spacemania.network.engine.entities.collect.ScoreEntity;
+import com.emptypockets.spacemania.network.engine.entities.collectable.CollectableEntity;
+import com.emptypockets.spacemania.network.engine.entities.collectable.ScoreEntity;
+import com.emptypockets.spacemania.network.engine.entities.enemy.EnemyEntity;
+import com.emptypockets.spacemania.network.engine.entities.players.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.entities.wepon.BasicWeapon;
 import com.emptypockets.spacemania.network.engine.entities.wepon.SpreadWeapon;
 import com.emptypockets.spacemania.network.engine.entities.wepon.Weapon;
@@ -79,7 +78,7 @@ public class ServerPlayer implements Disposable {
 	public void attacked(EnemyEntity enemy, PlayerEntity playerEnt) {
 		playerEnt.setAlive(false);
 		playerEnt.setExplodes(true);
-		
+
 		entityId = NO_ENTITY;
 		deathsCount++;
 	}
@@ -88,14 +87,15 @@ public class ServerPlayer implements Disposable {
 		collect.collect(this);
 	}
 
-	public void respawn(ServerEngine engine) {
+	public PlayerEntity respawn(ServerEngine engine) {
 		// Add entity for player
-		Entity entity = engine.getEntityManager().createEntity(EntityType.Player);
+		PlayerEntity entity = (PlayerEntity) engine.getEntityManager().createEntity(EntityType.Player);
 		entity.getState().getPos().x = 0;
 		entity.getState().getPos().y = 0;
-		engine.moveToDistantRegionWithoutEntities(100, entity, EnemyEntity.class);
+		engine.moveToDistantRegionWithoutEntities(400, entity, EnemyEntity.class);
 		engine.getEntityManager().addEntity(entity);
 		entityId = (entity.getState().getId());
+		return entity;
 	}
 
 	public EntityManagerSync getEntityManagerSync() {

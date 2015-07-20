@@ -5,8 +5,8 @@ import java.util.HashMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.EntityManagerInterface;
-import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.entities.enemy.EnemyEntity;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 
 public class AiManager implements EntityManagerInterface {
@@ -25,16 +25,17 @@ public class AiManager implements EntityManagerInterface {
 		if (enabled) {
 			if (entity instanceof EnemyEntity) {
 				EntityAi ai;
+				EnemyEntity ent = (EnemyEntity)entity;
 				switch (entity.getType()) {
 				case Enemy_FOLLOW:
-					ai = new FollowerEntityAi(engine, entity);
-					entity.getState().setAng(MathUtils.random(360));
-					entity.getState().setAngVel(360);
+					ai = new FollowerEntityAi(engine, ent);
+					ent.getState().setAng(MathUtils.random(360));
+					ent.getState().setAngVel(360);
 					break;
 				case Enemy_RANDOM:
-					ai = new RandomEntityAi(engine, entity);
-					entity.getState().setAng(MathUtils.random(360));
-					entity.getState().setAngVel(360);
+					ai = new RandomEntityAi(engine, ent);
+					ent.getState().setAng(MathUtils.random(360));
+					ent.getState().setAngVel(360);
 					break;
 				default:
 					throw new RuntimeException("Unknown Enemy");

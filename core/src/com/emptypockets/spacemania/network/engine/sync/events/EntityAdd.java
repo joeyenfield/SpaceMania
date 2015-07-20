@@ -1,8 +1,8 @@
 package com.emptypockets.spacemania.network.engine.sync.events;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.emptypockets.spacemania.network.engine.entities.EntityState;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.states.EntityState;
 
 public class EntityAdd implements Poolable {
 	int id;

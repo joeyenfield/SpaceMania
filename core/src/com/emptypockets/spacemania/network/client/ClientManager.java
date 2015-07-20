@@ -12,7 +12,7 @@ import com.emptypockets.spacemania.network.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.client.player.MyPlayer;
 import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
-import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
+import com.emptypockets.spacemania.network.engine.entities.players.PlayerEntity;
 import com.emptypockets.spacemania.network.server.payloads.ServerClientInputUpdatePayload;
 import com.emptypockets.spacemania.network.server.payloads.authentication.LoginRequestPayload;
 import com.emptypockets.spacemania.network.server.payloads.authentication.LogoutRequestPayload;
@@ -240,5 +240,14 @@ public class ClientManager implements Disposable {
 	public void spawn() {
 		SpawnPlayerRequestPayload payload = PoolsManager.obtain(SpawnPlayerRequestPayload.class);
 		connection.send(payload, ComsType.TCP);
+	}
+
+	public PlayerEntity getMyEntity() {
+		if(engine != null){
+			if(player != null){
+				return (PlayerEntity) engine.getEntityManager().getEntityById(player.getEntityId());
+			}
+		}
+		return null;
 	}
 }

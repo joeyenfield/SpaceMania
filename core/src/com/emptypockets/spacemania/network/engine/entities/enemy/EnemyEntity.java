@@ -1,0 +1,14 @@
+package com.emptypockets.spacemania.network.engine.entities.enemy;
+
+import com.badlogic.gdx.graphics.Color;
+import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
+
+
+public class EnemyEntity extends MovingEntity{
+	public EnemyEntity() {
+		super(EntityType.Enemy_RANDOM);
+		setColor(Color.RED);
+		setRadius(20);
+	}
+}

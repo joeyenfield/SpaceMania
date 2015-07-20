@@ -1,12 +1,14 @@
-package com.emptypockets.spacemania.network.engine.entities;
+package com.emptypockets.spacemania.network.engine.entities.players;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.client.input.ClientInput;
+import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
 import com.emptypockets.spacemania.network.engine.particles.ParticleSystem;
 
-public class PlayerEntity extends Entity {
+public class PlayerEntity extends MovingEntity {
 	long lastExhaust = 0;
 	long exhaustTime = 25;
 

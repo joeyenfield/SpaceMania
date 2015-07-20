@@ -3,7 +3,7 @@ package com.emptypockets.spacemania.network.engine.ai.steering;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 
 public class SteeringGroup {
@@ -11,9 +11,9 @@ public class SteeringGroup {
 	ArrayList<Steering> steeringList;
 
 	ServerEngine engine;
-	Entity entity;
+	MovingEntity entity;
 
-	public SteeringGroup(ServerEngine engine, Entity entity) {
+	public SteeringGroup(ServerEngine engine, MovingEntity entity) {
 		steeringList = new ArrayList<Steering>();
 		this.engine = engine;
 		this.entity = entity;

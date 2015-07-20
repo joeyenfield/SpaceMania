@@ -11,7 +11,8 @@ import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
-import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
+import com.emptypockets.spacemania.network.engine.entities.players.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePartition;
 import com.emptypockets.spacemania.plotter.DataLogger;
 
@@ -24,7 +25,7 @@ public class Engine implements Disposable {
 	ArrayList<EngineRegionListener> regionListeners;
 
 	float lastDeltaTime = 0;
-	
+
 	public Engine() {
 		entities = new EntityManager();
 		regionListeners = new ArrayList<EngineRegionListener>();
@@ -85,60 +86,65 @@ public class Engine implements Disposable {
 
 	SingleProcessor<Entity> updateEntitiesProcessor = null;
 
-	public float getLastDeltaTime(){
+	public float getLastDeltaTime() {
 		return lastDeltaTime;
 	}
-	public void updateEntities(EntityManager manager,  float deltaTime) {
+
+	public void updateEntities(EntityManager manager, float deltaTime) {
 		if (updateEntitiesProcessor == null) {
 			updateEntitiesProcessor = new SingleProcessor<Entity>() {
 				@Override
-				public void process(Entity entity) {
-					entity.update(getLastDeltaTime());
-					Vector2 pos = entity.getPos();
-					float rad = entity.getRadius();
-					float inset = rad + 2;
+				public void process(Entity ent) {
+					ent.update(getLastDeltaTime());
 
-					boolean hitWall = false;
-					if (pos.x - rad < region.x) {
-						entity.setPos(region.x + inset, pos.y);
-						if (entity.isBounceOffWall()) {
-							entity.getVel().x *= -1;
-						} else {
-							entity.getVel().x = 0;
-						}
-						hitWall = true;
-					}
-					if (pos.x + rad > region.x + region.width) {
-						entity.setPos(region.x + region.width - inset, pos.y);
-						if (entity.isBounceOffWall()) {
-							entity.getVel().x *= -1;
-						} else {
-							entity.getVel().x = 0;
-						}
-						hitWall = true;
-					}
-					if (pos.y - rad < region.y) {
-						entity.setPos(pos.x, region.y + inset);
-						if (entity.isBounceOffWall()) {
-							entity.getVel().y *= -1;
-						} else {
-							entity.getVel().y = 0;
-						}
-						hitWall = true;
-					}
-					if (pos.y + rad > region.y + region.height) {
-						entity.setPos(pos.x, region.y + region.height - inset);
-						if (entity.isBounceOffWall()) {
-							entity.getVel().y *= -1;
-						} else {
-							entity.getVel().y = 0;
-						}
-						hitWall = true;
-					}
+					if (ent instanceof MovingEntity) {
+						MovingEntity entity = (MovingEntity) ent;
+						Vector2 pos = entity.getPos();
+						float rad = entity.getRadius();
+						float inset = rad + 2;
 
-					if (hitWall && entity.getType() == EntityType.Bullet) {
-						entity.setAlive(false);
-						entity.setExplodes(true);
+						boolean hitWall = false;
+						if (pos.x - rad < region.x) {
+							entity.setPos(region.x + inset, pos.y);
+							if (entity.isBounceOffWall()) {
+								entity.getVel().x *= -1;
+							} else {
+								entity.getVel().x = 0;
+							}
+							hitWall = true;
+						}
+						if (pos.x + rad > region.x + region.width) {
+							entity.setPos(region.x + region.width - inset, pos.y);
+							if (entity.isBounceOffWall()) {
+								entity.getVel().x *= -1;
+							} else {
+								entity.getVel().x = 0;
+							}
+							hitWall = true;
+						}
+						if (pos.y - rad < region.y) {
+							entity.setPos(pos.x, region.y + inset);
+							if (entity.isBounceOffWall()) {
+								entity.getVel().y *= -1;
+							} else {
+								entity.getVel().y = 0;
+							}
+							hitWall = true;
+						}
+						if (pos.y + rad > region.y + region.height) {
+							entity.setPos(pos.x, region.y + region.height - inset);
+							if (entity.isBounceOffWall()) {
+								entity.getVel().y *= -1;
+							} else {
+								entity.getVel().y = 0;
+							}
+							hitWall = true;
+						}
+
+						if (hitWall && entity.getType() == EntityType.Bullet) {
+							entity.setAlive(false);
+							entity.setExplodes(true);
+						}
 					}
 				}
 			};
@@ -191,8 +197,10 @@ public class Engine implements Disposable {
 
 				DataLogger.log(prefix + "-ent-" + ent.getId() + "-pos-x", ent.getPos().x);
 				DataLogger.log(prefix + "-ent-" + ent.getId() + "-pos-y", ent.getPos().y);
-				DataLogger.log(prefix + "-ent-" + ent.getId() + "-vel-x", ent.getVel().x);
-				DataLogger.log(prefix + "-ent-" + ent.getId() + "-vel-y", ent.getVel().y);
+				if (ent instanceof MovingEntity) {
+					DataLogger.log(prefix + "-ent-" + ent.getId() + "-vel-x", ((MovingEntity)ent).getVel().x);
+					DataLogger.log(prefix + "-ent-" + ent.getId() + "-vel-y", ((MovingEntity)ent).getVel().y);
+				}
 			}
 		}
 	}

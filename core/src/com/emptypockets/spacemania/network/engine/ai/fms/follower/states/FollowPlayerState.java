@@ -3,7 +3,7 @@ package com.emptypockets.spacemania.network.engine.ai.fms.follower.states;
 import com.emptypockets.spacemania.network.engine.ai.fms.follower.FollowerStateMachine;
 import com.emptypockets.spacemania.network.engine.ai.steering.Follow;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
-import com.emptypockets.spacemania.network.engine.entities.PlayerEntity;
+import com.emptypockets.spacemania.network.engine.entities.players.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.fsm.State;
 
 public class FollowPlayerState extends State<FollowerStateMachine> {

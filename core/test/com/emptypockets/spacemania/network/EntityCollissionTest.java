@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.emptypockets.spacemania.RootTest;
-import com.emptypockets.spacemania.network.engine.entities.BulletEntity;
-import com.emptypockets.spacemania.network.engine.entities.EnemyEntity;
+import com.emptypockets.spacemania.network.engine.entities.bullets.BulletEntity;
+import com.emptypockets.spacemania.network.engine.entities.enemy.EnemyEntity;
 
 public class EntityCollissionTest extends RootTest{
 

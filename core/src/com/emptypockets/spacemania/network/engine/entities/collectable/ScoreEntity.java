@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.network.engine.entities.collect;
+package com.emptypockets.spacemania.network.engine.entities.collectable;
 
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;

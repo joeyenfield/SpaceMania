@@ -1,8 +1,9 @@
 package com.emptypockets.spacemania.network.engine.sync;
 
 import com.emptypockets.spacemania.network.engine.entities.Entity;
-import com.emptypockets.spacemania.network.engine.entities.EntityState;
-import com.emptypockets.spacemania.plotter.DataLogger;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
+import com.emptypockets.spacemania.network.engine.entities.states.EntityState;
+import com.emptypockets.spacemania.network.engine.entities.states.MovingEntityState;
 
 public class StateSyncUtils {
 	public static float MAX_POS_DELTA = 200;
@@ -20,9 +21,10 @@ public class StateSyncUtils {
 	 * @param clientState
 	 */
 	public static void updateState(long serverTime, EntityState serverState, long clientTime, Entity entity, boolean force) {
-		entity.getState().getVel().set(serverState.getVel());
-		entity.getState().setAngVel(serverState.getAngVel());
-
+		if (entity.getState() instanceof MovingEntityState) {
+			((MovingEntity) entity).getState().getVel().set(((MovingEntityState) serverState).getVel());
+			((MovingEntity) entity).getState().setAngVel(((MovingEntityState) serverState).getAngVel());
+		}
 		if (entity.getLastServerOffset().len2() > MAX_POS_DELTA_2 || force) {
 			entity.getState().getPos().set(serverState.getPos());
 		} else {

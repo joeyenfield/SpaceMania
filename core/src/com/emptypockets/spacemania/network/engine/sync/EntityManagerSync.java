@@ -7,7 +7,7 @@ import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineEntityManagerSyncPayload;
 import com.emptypockets.spacemania.network.engine.EntityManagerInterface;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
-import com.emptypockets.spacemania.network.engine.entities.EntityState;
+import com.emptypockets.spacemania.network.engine.entities.states.EntityState;
 import com.emptypockets.spacemania.network.engine.sync.events.EntityAdd;
 import com.emptypockets.spacemania.network.engine.sync.events.EntityRemoval;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;

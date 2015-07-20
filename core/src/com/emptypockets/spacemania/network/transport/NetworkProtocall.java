@@ -26,8 +26,9 @@ import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomChatM
 import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomPlayerJoinMessage;
 import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomPlayerLeaveMessage;
 import com.emptypockets.spacemania.network.engine.EngineRegionSync;
-import com.emptypockets.spacemania.network.engine.entities.EntityState;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.engine.entities.states.EntityState;
+import com.emptypockets.spacemania.network.engine.entities.states.MovingEntityState;
 import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.engine.sync.PlayerManagerSync;
 import com.emptypockets.spacemania.network.engine.sync.events.EntityAdd;
@@ -90,6 +91,7 @@ public class NetworkProtocall {
 		register(kryo, ClientEnginePlayerManagerSyncPayload.class);
 		register(kryo, SpawnPlayerRequestPayload.class);
 		register(kryo, MyPlayer.class);
+		register(kryo, MovingEntityState.class);
 	}
 
 	public static <T> void register(Kryo kryo, final Class<T> classType) {

@@ -1,12 +1,12 @@
 package com.emptypockets.spacemania.network.engine.ai.manager;
 
 import com.emptypockets.spacemania.network.engine.ai.steering.Wander;
-import com.emptypockets.spacemania.network.engine.entities.Entity;
+import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
 import com.emptypockets.spacemania.network.server.engine.ServerEngine;
 
 public class RandomEntityAi extends EntityAi {
 
-	public RandomEntityAi(ServerEngine engine, Entity entity) {
+	public RandomEntityAi(ServerEngine engine, MovingEntity entity) {
 		super(engine, entity);
 	}
 

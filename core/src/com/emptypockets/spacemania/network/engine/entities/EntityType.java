@@ -6,4 +6,5 @@ public enum EntityType {
 	Score,
 	Enemy_FOLLOW,
 	Enemy_RANDOM,
+	Base
 }

@@ -148,14 +148,17 @@ public class CellSpacePartition<ENT extends PartitionEntity> implements EngineRe
 
 	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<ENT> result) {
 		searchNearbyEntities(entity.getPos(), entity.getRadius() + distance, result);
+		result.remove(entity);
 	}
 
 	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<ENT> result, Class filterClass) {
 		searchNearbyEntities(entity.getPos(), (entity.getRadius() + distance), result, filterClass);
+		result.remove(entity);
 	}
 
 	public synchronized void getNearbyEntities(Entity entity, float distance, ArrayList<ENT> result, EntityType type) {
 		searchNearbyEntities(entity.getPos(), entity.getRadius() + distance, result, type);
+		result.remove(entity);
 	}
 
 	public synchronized void searchNearbyEntities(Vector2 pos, float dist, ArrayList<ENT> result, Class filterClass) {

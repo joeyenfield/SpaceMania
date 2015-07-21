@@ -5,8 +5,8 @@ import com.emptypockets.spacemania.network.engine.entities.states.MovingEntitySt
 
 public class MovingEntity extends Entity<MovingEntityState> {
 
-	float maxVelocity = 400;
-	float maxForce = 400;
+	float maxVelocity = 100;
+	float maxForce = 100;
 
 	Vector2 lastPosition = new Vector2();
 	Vector2 forceAculumator = new Vector2();

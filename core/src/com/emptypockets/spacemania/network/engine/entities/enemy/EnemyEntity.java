@@ -10,5 +10,7 @@ public class EnemyEntity extends MovingEntity{
 		super(EntityType.Enemy_RANDOM);
 		setColor(Color.RED);
 		setRadius(20);
+		setMaxVelocity(200);
+		setMaxForce(1000);
 	}
 }

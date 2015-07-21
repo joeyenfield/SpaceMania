@@ -1,5 +1,6 @@
 package com.emptypockets.spacemania.network.engine.ai.manager;
 
+import com.emptypockets.spacemania.network.engine.ai.steering.CoupledSteering;
 import com.emptypockets.spacemania.network.engine.ai.steering.Flee;
 import com.emptypockets.spacemania.network.engine.ai.steering.Follow;
 import com.emptypockets.spacemania.network.engine.ai.steering.Separation;
@@ -16,6 +17,9 @@ public class FollowerEntityAi extends EntityAi {
 	Separation seperation;
 	Steering currentSteering;
 
+	CoupledSteering steeringFlee;
+	CoupledSteering steeringFollow;
+
 	MovingEntity target;
 
 	public FollowerEntityAi(ServerEngine engine, MovingEntity entity) {
@@ -25,32 +29,36 @@ public class FollowerEntityAi extends EntityAi {
 	@Override
 	public void setupSteering() {
 		follow = new Follow();
-		follow.setMaxForce(400);
 		flee = new Flee();
-		flee.setMaxForce(4000);
+		
 		seperation = new Separation();
 		
+		steeringFlee = new CoupledSteering();
+		steeringFlee.addSteering(100, flee);
+//		steeringFlee.addSteering(1, seperation);
+
+		steeringFollow = new CoupledSteering();
+		steeringFollow.addSteering(1, follow);
+		steeringFollow.addSteering(1, seperation);
 
 	}
 
 	@Override
 	public void update() {
-		//Check for any nearby bullets
+		// Check for any nearby bullets
 		Entity entity = engine.getEntitySpatialPartition().searchNearestEntityWhereEntityInThereFOV(getEntity(), EntityType.Bullet, 200, 100);
 		if (entity != null) {
 			flee.setTarget(entity);
-			currentSteering = flee;
+			currentSteering = steeringFlee;
 			getEntity().setMaxVelocity(400);
-			getEntity().setMaxForce(flee.getMaxForce());
 		} else {
 			if (target == null || !target.isAlive()) {
 				follow.setTarget(null);
 				target = (MovingEntity) engine.getEntityManager().pickRandom(EntityType.Player);
 				follow.setTarget(target);
 			}
-			currentSteering = follow;
 			getEntity().setMaxVelocity(200);
-			getEntity().setMaxForce(follow.getMaxForce());
+			currentSteering = steeringFollow;
 		}
 		currentSteering.update(getEngine(), getEntity());
 	}

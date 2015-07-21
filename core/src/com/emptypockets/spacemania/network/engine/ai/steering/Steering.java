@@ -5,7 +5,7 @@ import com.emptypockets.spacemania.network.engine.Engine;
 import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
 
 public abstract class Steering {
-	float maxForce = 200;
+	float maxForce = 100;
 	Vector2 steeringForce = new Vector2();
 
 	public void update(Engine engine, MovingEntity entity) {

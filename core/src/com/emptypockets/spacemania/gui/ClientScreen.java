@@ -24,6 +24,7 @@ import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLinePanel;
 import com.emptypockets.spacemania.gui.renderer.EngineRender;
 import com.emptypockets.spacemania.gui.renderer.OverlayRender;
+import com.emptypockets.spacemania.gui.renderer.TextRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.input.OnScreenInput;

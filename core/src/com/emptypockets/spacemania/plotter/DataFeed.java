@@ -10,8 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.emptypockets.spacemania.plotter.data.timeseries.TimeSeriesDataset;
-import com.emptypockets.spacemania.plotter.data.timeseries.TimeSeriesPoint;
+import com.emptypockets.spacemania.plotter.data.TimeSeriesDataset;
+import com.emptypockets.spacemania.plotter.data.TimeSeriesPoint;
 
 public class DataFeed {
 	String name;

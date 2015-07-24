@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.plotter.data.timeseries.TimeSeriesDataset;
-import com.emptypockets.spacemania.plotter.data.timeseries.TimeSeriesPoint;
+import com.emptypockets.spacemania.plotter.data.TimeSeriesDataset;
+import com.emptypockets.spacemania.plotter.data.TimeSeriesPoint;
 
 public class LinePlotDataGraph {
 	String name;

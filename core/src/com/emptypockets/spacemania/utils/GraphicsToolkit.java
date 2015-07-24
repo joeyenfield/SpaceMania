@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Rectangle;
 
 public class GraphicsToolkit {
     static Color yAxis = new Color(Color.BLUE.r, Color.BLUE.g, Color.BLUE.b, 0.5f);
@@ -24,6 +25,13 @@ public class GraphicsToolkit {
         grid.a = 1;
         GraphicsToolkit.drawGrid(shape, camera, 10 * gap, grid);
         GraphicsToolkit.drawAxis(shape, camera);
+    }
+    
+    public static void drawRectangeLine(ShapeRenderer shape, Rectangle rect, float lineThick){
+    	shape.rectLine(rect.x, rect.y,  rect.x,  rect.y+rect.height, lineThick);
+    	shape.rectLine(rect.x, rect.y+rect.height,  rect.x+rect.width,  rect.y+rect.height, lineThick);
+    	shape.rectLine(rect.x+rect.width,  rect.y+rect.height,rect.x+rect.width,  rect.y, lineThick);
+    	shape.rectLine(rect.x+rect.width,  rect.y,rect.x, rect.y, lineThick);
     }
 
     public static void drawGrid(ShapeRenderer shape, OrthographicCamera camera, float gap, Color color) {

@@ -19,9 +19,11 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLine;
+import com.emptypockets.spacemania.metrics.events.EventSystem;
 import com.emptypockets.spacemania.network.IpManager;
 import com.emptypockets.spacemania.network.IpManagerInterface;
 import com.emptypockets.spacemania.plotter.DataLogger;
+import com.emptypockets.spacemania.plotter.EventViewer;
 import com.emptypockets.spacemania.plotter.PlotterViewer;
 import com.emptypockets.spacemania.utils.ErrorUtils;
 import com.esotericsoftware.minlog.Log;
@@ -29,6 +31,34 @@ import com.esotericsoftware.minlog.Log;
 public class DesktopLauncher {
 
 	public static void main(String[] arg) throws InterruptedException, FileNotFoundException, IOException {
+		EventSystem.start("Main");
+		{
+			Thread.sleep(100);
+			EventSystem.start("child1");
+			{
+				Thread.sleep(100);
+				EventSystem.start("child1.1");
+				{
+					Thread.sleep(100);
+				}
+				EventSystem.stop("child1.1");
+
+				EventSystem.start("child1.2");
+				{
+					Thread.sleep(1000);
+				}
+				EventSystem.stop("child1.2");
+			}
+			EventSystem.stop("child1");
+			Thread.sleep(32);
+			EventSystem.start("child2");
+			{
+				Thread.sleep(100);
+			}
+			EventSystem.stop("child2");
+			Thread.sleep(100);
+		}
+		EventSystem.stop("Main");
 		try {
 			IpManager.setIpFinder(new IpManagerInterface() {
 
@@ -57,15 +87,18 @@ public class DesktopLauncher {
 
 			Log.ERROR();
 			LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-			config.width = 800;
-			config.height = 600;
+			config.width = 1280;
+			config.height = 720;
 			config.x = 0;
 			config.y = 0;
+			config.foregroundFPS = 60;
+			config.fullscreen = false;
 
 			MainGame game = null;
 			ApplicationListener test;
 
-			int option = JOptionPane.showConfirmDialog(null, "Play Game (YES), View Data (NO), Exit (Cancel)", "Run Game", JOptionPane.YES_NO_CANCEL_OPTION);
+			// int option = JOptionPane.showConfirmDialog(null, "Play Game (YES), View Data (NO), Exit (Cancel)", "Run Game", JOptionPane.YES_NO_CANCEL_OPTION);
+			int option = JOptionPane.NO_OPTION;
 			if (option == JOptionPane.CANCEL_OPTION) {
 				return;
 			} else if (option == JOptionPane.OK_OPTION) {
@@ -73,7 +106,8 @@ public class DesktopLauncher {
 				game = new MainGame();
 				test = game;
 			} else {
-				test = new PlotterViewer();
+				// test = new PlotterViewer();
+				test = new EventViewer();
 			}
 			new LwjglApplication(test, config).addLifecycleListener(new LifecycleListener() {
 				@Override
@@ -106,7 +140,7 @@ public class DesktopLauncher {
 			//
 			// client.processCommand("start;set gridsize 128 128; set roomsize 2000;set gridrender 1;set particles 10000;");
 			// client.processCommand("connect emptypocketgames.noip.me");
-			 client.processCommand("start");
+			client.processCommand("start");
 			// client.processCommand("lobby");
 			//
 			// client.processCommand("host start; connect;login server; lobby");

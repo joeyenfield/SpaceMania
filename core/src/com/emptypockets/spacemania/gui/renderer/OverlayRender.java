@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.ClientManager;
@@ -20,6 +22,7 @@ public class OverlayRender implements Disposable {
 	SpriteBatch batch;
 	ShapeRenderer shape;
 	BitmapFont font;
+	
 
 	public OverlayRender() {
 		batch = new SpriteBatch();
@@ -55,16 +58,16 @@ public class OverlayRender implements Disposable {
 			manager.getEngine().getEntityManager().process(new SingleProcessor<Entity>() {
 				@Override
 				public void process(Entity entity) {
-					if(entity instanceof BulletEntity){
+					if (entity instanceof BulletEntity) {
 						return;
 					}
 					float pX = (entity.getPos().x - manager.getEngine().getRegion().x) / manager.getEngine().getRegion().width;
 					float pY = (entity.getPos().y - manager.getEngine().getRegion().y) / manager.getEngine().getRegion().height;
 					shape.setColor(entity.getColor());
-					shape.circle(mapX+100 * pX, mapY+100 * pY, 1);
+					shape.circle(mapX + 100 * pX, mapY + 100 * pY, 1);
 				}
 			});
-			
+
 			shape.setColor(Color.WHITE);
 			manager.getEngine().getPlayerData().process(new SingleProcessor<ClientPlayer>() {
 
@@ -76,7 +79,7 @@ public class OverlayRender implements Disposable {
 					}
 					float pX = (playerEnt.getPos().x - manager.getEngine().getRegion().x) / manager.getEngine().getRegion().width;
 					float pY = (playerEnt.getPos().y - manager.getEngine().getRegion().y) / manager.getEngine().getRegion().height;
-					shape.circle(mapX+100 * pX, mapY+100 * pY, 2);
+					shape.circle(mapX + 100 * pX, mapY + 100 * pY, 2);
 				}
 			});
 

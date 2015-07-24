@@ -17,15 +17,21 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.emptypockets.spacemania.plotter.data.timeseries.TimeSeriesDataset;
+import com.emptypockets.spacemania.gui.renderer.TextRender;
+import com.emptypockets.spacemania.metrics.events.EventSystem;
+import com.emptypockets.spacemania.metrics.events.render.EventRender;
+import com.emptypockets.spacemania.plotter.data.TimeSeriesDataset;
 import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDataGraph;
 import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDescription;
+import com.emptypockets.spacemania.utils.CameraHelper;
 import com.emptypockets.spacemania.utils.GraphicsToolkit;
 import com.emptypockets.spacemania.utils.OrthoCamController;
+import com.emptypockets.spacemania.utils.RandomString;
 
 public class PlotterViewer extends ApplicationAdapter implements GestureListener {
 	ShapeRenderer shape;
@@ -47,9 +53,14 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 	Stage stage;
 	DataLoggerGraphManager manager;
+	TextRender textRender;
+
+	CameraHelper helper;
 
 	@Override
 	public void create() {
+		helper = new CameraHelper();
+		textRender = new TextRender();
 		stage = new Stage(new ScreenViewport());
 
 		shape = new ShapeRenderer();
@@ -101,13 +112,12 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		int ticks = 0;
 		ticks++;
 
-		
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "client-logic", getRandomColor()));
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "server-update", getRandomColor()));
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "client-sync", getRandomColor()));
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "server-sync", getRandomColor()));
-		
-		manager = new DataLoggerGraphManager(stage,"Test", customGraph);
+
+		manager = new DataLoggerGraphManager(stage, "Test", customGraph);
 		stage.addActor(manager);
 		manager.setVisible(true);
 	}
@@ -182,9 +192,14 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		shape.setProjectionMatrix(camera.combined);
 		sprite.setProjectionMatrix(camera.combined);
 
+		Rectangle bounds = new Rectangle();
+		helper.getBounds(camera, bounds);
+
 		GraphicsToolkit.drawAxis(shape, camera);
 		GraphicsToolkit.drawGrid(shape, camera, 10, gridColor);
+		GraphicsToolkit.drawGrid(shape, camera, 50, gridColor);
 		GraphicsToolkit.drawGrid(shape, camera, 100, gridColor);
+
 		for (LinePlotDataGraph graph : graphs) {
 			graph.drawLine(shape);
 		}
@@ -235,8 +250,23 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 				}
 
 				sprite.end();
-
 			}
+
+			long peroid = 4000;
+			float size = 10 + 100 * MathUtils.sin(3.14159f * ((System.currentTimeMillis() % peroid) / (float) peroid));
+			size = 100;
+
+			Vector2 pos = new Vector2();
+			String[] data = new String[] { "The Quick brown fox jumped over the lazy dog.", "abcdefghijklmnopqrstuvwxyz", "AB\tCDEFGHIJKLMNOPQRSTUVWXYZ", "0123456789.-:?", RandomString.random(10), "FPS : " + Gdx.graphics.getFramesPerSecond() };
+			pos.set(size, size);
+			shape.begin(ShapeType.Filled);
+			shape.setColor(Color.RED);
+			for (String text : data) {
+				pos.y += 1.5 * size;
+				textRender.render(shape, text, pos, size, bounds);
+			}
+			textRender.render(shape, "S", Vector2.Zero, 100, bounds);
+			shape.end();
 		}
 
 		if (shown[0] && shown[1]) {
@@ -260,7 +290,19 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		}
 		sprite.end();
 
+		
 		stage.draw();
+
+		
+	}
+
+	public static String randomString(int length) {
+		StringBuilder builder = new StringBuilder(length);
+		for (int i = 0; i < length; i++) {
+			builder.append((char) MathUtils.random(Character.MAX_VALUE));
+		}
+
+		return builder.toString();
 	}
 
 	@Override
@@ -275,8 +317,7 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 		stage.getViewport().update(width, height, true);
 
-		manager.setBounds(0, height,500, 10);
-		
+		manager.setBounds(0, height, 500, 10);
 
 	}
 
@@ -305,23 +346,22 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 			touchData[value].y = 0;
 			selectGraph(x, y);
 		}
-		
-		
+
 		return false;
 	}
 
 	@Override
 	public boolean longPress(float x, float y) {
-		System.out.println(x+" - "+y);
+		System.out.println(x + " - " + y);
 		return selectGraph(x, y);
 	}
-	
-	public boolean selectGraph(float x, float y){
+
+	public boolean selectGraph(float x, float y) {
 		mapPos.x = x;
 		mapPos.y = y;
 		mapPos.z = 0;
 		camera.unproject(mapPos);
-		
+
 		for (LinePlotDataGraph graph : graphs) {
 			if (graph.getScreenBounds().contains(mapPos.x, mapPos.y)) {
 				manager.setGraph(graph);

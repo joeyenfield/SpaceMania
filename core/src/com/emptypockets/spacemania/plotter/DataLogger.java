@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.emptypockets.spacemania.plotter.data.timeseries.TimeSeriesDataset;
+import com.emptypockets.spacemania.plotter.data.TimeSeriesDataset;
 
 public class DataLogger {
 	String dataDirectory = "c:\\test\\data";

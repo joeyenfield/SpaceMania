@@ -30,7 +30,7 @@ public class Tester {
 		setVelTime.end();
 		System.out.println("Set Vel Time : " + setVelTime.getSeconds() * 1000);
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 100; i++) {
 			Event updateTime = new Event();
 			updateTime.start();
 			entitySystem.update(1f);

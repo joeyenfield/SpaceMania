@@ -3,6 +3,7 @@ package com.emptypockets.spacemania.engine.entitysystem;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.emptypockets.spacemania.engine.entitysystem.processors.EntityMaskFilterProcessor;
 import com.emptypockets.spacemania.engine.entitysystem.processors.EntityUpdateProcessor;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
@@ -29,11 +30,11 @@ public class EntitySystem {
 	public synchronized void update(float deltaTime) {
 		updateProcessor.updateTime = deltaTime;
 		try {
-			entities.processParallel(updateProcessor,4,1);
+			entities.processParallel(updateProcessor, 4, 1);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		// entities.process(updateProcessor);
 	}
 
 	public synchronized void filter(ArrayList<GameEntity> result, int abilityMask) {

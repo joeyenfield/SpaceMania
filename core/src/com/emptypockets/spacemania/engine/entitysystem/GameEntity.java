@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.transform.AngularTransformComponent;
@@ -53,6 +54,10 @@ public class GameEntity {
 	}
 
 	public void update(float deltaTime) {
+		float x= 0;
+		for(int i = 0; i < 100; i++){
+			x += Math.sin(x);
+		}
 		int size = components.size();
 		for (int i = 0; i < size; i++) {
 			components.get(i).update(deltaTime);

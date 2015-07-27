@@ -1,7 +1,7 @@
-package com.emptypockets.spacemania.plotter.graphs.line;
+package com.emptypockets.spacemania.metrics.plotter.graphs.line;
 
 import com.badlogic.gdx.graphics.Color;
-import com.emptypockets.spacemania.plotter.graphs.PlotData;
+import com.emptypockets.spacemania.metrics.plotter.graphs.PlotData;
 
 public class LinePlotDescription extends PlotData {
 	String name = "";

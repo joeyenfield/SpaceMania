@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.plotter;
+package com.emptypockets.spacemania.metrics.plotter;
 
 import java.util.HashMap;
 
@@ -17,10 +17,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
-import com.emptypockets.spacemania.plotter.data.TimeSeriesDataset;
-import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDataGraph;
-import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDescription;
-import com.emptypockets.spacemania.plotter.gui.LinePlotDescriptionPanel;
+import com.emptypockets.spacemania.metrics.plotter.data.TimeSeriesDataset;
+import com.emptypockets.spacemania.metrics.plotter.graphs.line.LinePlotDataGraph;
+import com.emptypockets.spacemania.metrics.plotter.graphs.line.LinePlotDescription;
+import com.emptypockets.spacemania.metrics.plotter.gui.LinePlotDescriptionPanel;
 
 public class DataLoggerGraphManager extends Window {
 	LinePlotDataGraph graph;

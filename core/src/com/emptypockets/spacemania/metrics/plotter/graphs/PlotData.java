@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.plotter.graphs;
+package com.emptypockets.spacemania.metrics.plotter.graphs;
 
 import java.util.ArrayList;
 

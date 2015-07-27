@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.plotter;
+package com.emptypockets.spacemania.metrics.plotter;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;

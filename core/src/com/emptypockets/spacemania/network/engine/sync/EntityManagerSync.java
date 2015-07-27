@@ -3,6 +3,7 @@ package com.emptypockets.spacemania.network.engine.sync;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineEntityManagerSyncPayload;
 import com.emptypockets.spacemania.network.engine.EntityManagerInterface;
@@ -12,7 +13,6 @@ import com.emptypockets.spacemania.network.engine.sync.events.EntityAdd;
 import com.emptypockets.spacemania.network.engine.sync.events.EntityRemoval;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
 import com.emptypockets.spacemania.network.transport.ComsType;
-import com.emptypockets.spacemania.plotter.DataLogger;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class EntityManagerSync implements EntityManagerInterface, Poolable {

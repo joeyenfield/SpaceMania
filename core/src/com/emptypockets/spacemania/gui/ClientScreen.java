@@ -28,11 +28,11 @@ import com.emptypockets.spacemania.gui.renderer.TextRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.input.OnScreenInput;
+import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.network.client.ClientManager;
 import com.emptypockets.spacemania.network.client.commands.rooms.ClientSpawnCommand;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.server.player.ServerPlayer;
-import com.emptypockets.spacemania.plotter.DataLogger;
 
 public class ClientScreen extends StageScreen {
 	int minTouchSize = 60;

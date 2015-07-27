@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.plotter;
+package com.emptypockets.spacemania.metrics.plotter;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -10,8 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.emptypockets.spacemania.plotter.data.TimeSeriesDataset;
-import com.emptypockets.spacemania.plotter.data.TimeSeriesPoint;
+import com.emptypockets.spacemania.metrics.plotter.data.TimeSeriesDataset;
+import com.emptypockets.spacemania.metrics.plotter.data.TimeSeriesPoint;
 
 public class DataFeed {
 	String name;

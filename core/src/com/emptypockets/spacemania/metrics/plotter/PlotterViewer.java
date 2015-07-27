@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.plotter;
+package com.emptypockets.spacemania.metrics.plotter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,9 +25,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.emptypockets.spacemania.gui.renderer.TextRender;
 import com.emptypockets.spacemania.metrics.events.EventSystem;
 import com.emptypockets.spacemania.metrics.events.render.EventRender;
-import com.emptypockets.spacemania.plotter.data.TimeSeriesDataset;
-import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDataGraph;
-import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDescription;
+import com.emptypockets.spacemania.metrics.plotter.data.TimeSeriesDataset;
+import com.emptypockets.spacemania.metrics.plotter.graphs.line.LinePlotDataGraph;
+import com.emptypockets.spacemania.metrics.plotter.graphs.line.LinePlotDescription;
 import com.emptypockets.spacemania.utils.CameraHelper;
 import com.emptypockets.spacemania.utils.GraphicsToolkit;
 import com.emptypockets.spacemania.utils.OrthoCamController;

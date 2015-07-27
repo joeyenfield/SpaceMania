@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.plotter.gui;
+package com.emptypockets.spacemania.metrics.plotter.gui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;

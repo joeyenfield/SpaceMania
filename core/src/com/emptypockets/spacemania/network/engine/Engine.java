@@ -8,13 +8,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.holders.SingleProcessor;
+import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.network.client.ClientEngine;
 import com.emptypockets.spacemania.network.engine.entities.Entity;
 import com.emptypockets.spacemania.network.engine.entities.EntityType;
 import com.emptypockets.spacemania.network.engine.entities.MovingEntity;
 import com.emptypockets.spacemania.network.engine.entities.players.PlayerEntity;
 import com.emptypockets.spacemania.network.engine.partitioning.cell.CellSpacePartition;
-import com.emptypockets.spacemania.plotter.DataLogger;
 
 public class Engine implements Disposable {
 	Rectangle region = new Rectangle();

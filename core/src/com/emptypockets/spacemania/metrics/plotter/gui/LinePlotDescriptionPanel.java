@@ -1,10 +1,10 @@
-package com.emptypockets.spacemania.plotter.gui;
+package com.emptypockets.spacemania.metrics.plotter.gui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree;
-import com.emptypockets.spacemania.plotter.graphs.line.LinePlotDescription;
+import com.emptypockets.spacemania.metrics.plotter.graphs.line.LinePlotDescription;
 
 public class LinePlotDescriptionPanel extends Tree {
 

@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.plotter;
+package com.emptypockets.spacemania.metrics.plotter;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.emptypockets.spacemania.plotter.data.TimeSeriesDataset;
+import com.emptypockets.spacemania.metrics.plotter.data.TimeSeriesDataset;
 
 public class DataLogger {
 	String dataDirectory = "c:\\test\\data";

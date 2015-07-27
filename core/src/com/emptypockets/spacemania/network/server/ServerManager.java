@@ -8,6 +8,7 @@ import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.holders.SingleProcessor;
+import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.network.CommandService;
 import com.emptypockets.spacemania.network.client.payloads.ClientMyPlayerStateUpdatePayload;
 import com.emptypockets.spacemania.network.client.payloads.NotifyClientPayload;
@@ -22,7 +23,6 @@ import com.emptypockets.spacemania.network.server.player.ServerPlayerManager;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoom;
 import com.emptypockets.spacemania.network.server.rooms.ServerRoomManager;
 import com.emptypockets.spacemania.network.transport.ComsType;
-import com.emptypockets.spacemania.plotter.DataLogger;
 import com.emptypockets.spacemania.utils.PoolsManager;
 import com.esotericsoftware.kryo.Kryo;
 

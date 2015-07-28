@@ -26,7 +26,7 @@ public abstract class ObjectProcessor<ENT> {
         }
     }
 
-    public synchronized void processParallel(final SingleProcessor<ENT> processor, int maxCores, int timeoutSeconds) throws InterruptedException {
+    public synchronized void processParallel(final SingleProcessor<ENT> processor, int maxCores) throws InterruptedException {
         Iterator<ENT> iterator = getIterator();
         ExecutorService service = Executors.newFixedThreadPool(maxCores);
         
@@ -39,7 +39,7 @@ public abstract class ObjectProcessor<ENT> {
                 }
             });
         }
-       System.out.println(service.awaitTermination(timeoutSeconds, TimeUnit.SECONDS));
+       System.out.println(service.awaitTermination(5, TimeUnit.SECONDS));
     }
 
     public synchronized  void process(IteratorProcessor<ENT> processor){

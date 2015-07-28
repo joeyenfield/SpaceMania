@@ -34,7 +34,6 @@ public abstract class StageScreen extends GameScreen {
         super.show();
         Stage stage = new Stage(stageViewport);
         setStage(stage);
-        super.show();
         createStage(getStage());
     }
 

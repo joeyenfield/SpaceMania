@@ -8,7 +8,11 @@ public enum ComponentType {
 	ANGULAR_TRANSFORM(1, 1 << 1),
 	LINEAR_MOVEMENT(2, 1 << 2),
 	ANGULAR_MOVEMENT(3, 1 << 3),
-	PARTITION(4, 1 << 4);
+	PARTITION(4, 1 << 4),
+	CONSTRAINED_MOVEMENT(5, 1 << 5), 
+	RENDER(6,1<<6);
+	
+	
 	int mask = 0;
 	int updateOrder = 0;
 
@@ -23,7 +27,10 @@ public enum ComponentType {
 
 	public int addAbility(int currentAbility) {
 		if ((currentAbility & mask) != 0) {
-			throw new RuntimeException("Component already in use");
+			System.out.println(BitUtilities.toString(currentAbility)+" - Current ");
+			System.out.println(BitUtilities.toString(mask)+" - Mask To Add ");
+			printMasks();
+			throw new RuntimeException("Component already in use ");
 		}
 		return currentAbility | mask;
 	}

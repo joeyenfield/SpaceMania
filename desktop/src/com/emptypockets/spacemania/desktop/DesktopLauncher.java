@@ -31,34 +31,6 @@ import com.esotericsoftware.minlog.Log;
 public class DesktopLauncher {
 
 	public static void main(String[] arg) throws InterruptedException, FileNotFoundException, IOException {
-		EventSystem.start("Main");
-		{
-			Thread.sleep(100);
-			EventSystem.start("child1");
-			{
-				Thread.sleep(100);
-				EventSystem.start("child1.1");
-				{
-					Thread.sleep(100);
-				}
-				EventSystem.stop("child1.1");
-
-				EventSystem.start("child1.2");
-				{
-					Thread.sleep(1000);
-				}
-				EventSystem.stop("child1.2");
-			}
-			EventSystem.stop("child1");
-			Thread.sleep(32);
-			EventSystem.start("child2");
-			{
-				Thread.sleep(100);
-			}
-			EventSystem.stop("child2");
-			Thread.sleep(100);
-		}
-		EventSystem.stop("Main");
 		try {
 			IpManager.setIpFinder(new IpManagerInterface() {
 
@@ -97,8 +69,8 @@ public class DesktopLauncher {
 			MainGame game = null;
 			ApplicationListener test;
 
-			// int option = JOptionPane.showConfirmDialog(null, "Play Game (YES), View Data (NO), Exit (Cancel)", "Run Game", JOptionPane.YES_NO_CANCEL_OPTION);
-			int option = JOptionPane.NO_OPTION;
+//			 int option = JOptionPane.showConfirmDialog(null, "Play Game (YES), View Data (NO), Exit (Cancel)", "Run Game", JOptionPane.YES_NO_CANCEL_OPTION);
+			int option = JOptionPane.OK_OPTION;
 			if (option == JOptionPane.CANCEL_OPTION) {
 				return;
 			} else if (option == JOptionPane.OK_OPTION) {

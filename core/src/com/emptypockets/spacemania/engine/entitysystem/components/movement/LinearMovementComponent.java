@@ -21,8 +21,8 @@ public class LinearMovementComponent extends EntityComponent<LinearMovementData>
 		}
 
 		if (data.vel.len2() > MIN_DELTA) {
-			entity.linearTransform.data.pos.x += entity.linearTransform.data.pos.x * deltaTime;
-			entity.linearTransform.data.pos.y += entity.linearTransform.data.pos.y * deltaTime;
+			entity.linearTransform.data.pos.x += data.vel.x * deltaTime;
+			entity.linearTransform.data.pos.y += data.vel.y * deltaTime;
 		} else {
 			data.vel.x = 0;
 			data.vel.y = 0;

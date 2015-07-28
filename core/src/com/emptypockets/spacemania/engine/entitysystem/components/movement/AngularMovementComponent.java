@@ -12,6 +12,16 @@ public class AngularMovementComponent extends EntityComponent<AngularMovementDat
 	}
 
 	public void update(float deltaTime) {
+		if (data.lockAngleToLinearVelocity) {
+			LinearMovementComponent linear = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
+			if (linear != null) {
+				if (linear.data.vel.len2() > 0.01) {
+					entity.angularTransform.data.ang = linear.data.vel.angle();
+					return;
+				}
+			}
+		}
+
 		data.angVel += data.angAcl * deltaTime;
 		entity.angularTransform.data.ang += data.angVel * deltaTime;
 	}

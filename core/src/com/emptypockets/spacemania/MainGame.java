@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
+import com.emptypockets.spacemania.engine.GameEngineScreen;
 import com.emptypockets.spacemania.gui.ClientScreen;
 import com.emptypockets.spacemania.gui.LoadingScreen;
 import com.emptypockets.spacemania.gui.screens.SplashScreen;
@@ -31,7 +32,8 @@ public class MainGame extends Game {
 		loadingScreen = new LoadingScreen(this, input);
 		splashScreen = new SplashScreen(this, input);
 		screen = new ClientScreen(this, input);
-		loadScreen(screen, false);
+//		loadScreen(screen, false);
+		loadScreen(new GameEngineScreen(this, input), false);
 		// loadScreen(new SpringScreen(this, input), false);
 	}
 

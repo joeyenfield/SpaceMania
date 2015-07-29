@@ -12,7 +12,7 @@ public class EntityMaskCollectProcessor implements SingleProcessor<GameEntity>, 
 
 	@Override
 	public void process(GameEntity entity) {
-		if (entity.hasAbility(abilityMask)) {
+		if (entity.hasAnyOfAbility(abilityMask)) {
 			entities.add(entity);
 		}
 	}

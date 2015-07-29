@@ -31,4 +31,10 @@ public class LinearMovementData extends ComponentData<LinearMovementData> {
 		return false;
 	}
 
+	@Override
+	public void reset() {
+		vel.setZero();
+		acl.setZero();
+	}
+
 }

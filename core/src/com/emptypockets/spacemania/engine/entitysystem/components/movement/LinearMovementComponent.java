@@ -7,8 +7,8 @@ import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponen
 public class LinearMovementComponent extends EntityComponent<LinearMovementData> {
 	static float MIN_DELTA = 0.01f;
 
-	public LinearMovementComponent(GameEntity entity) {
-		super(entity, ComponentType.LINEAR_MOVEMENT, new LinearMovementData());
+	public LinearMovementComponent() {
+		super(ComponentType.LINEAR_MOVEMENT, new LinearMovementData());
 	}
 
 	public void update(float deltaTime) {
@@ -27,6 +27,11 @@ public class LinearMovementComponent extends EntityComponent<LinearMovementData>
 			data.vel.x = 0;
 			data.vel.y = 0;
 		}
+	}
+
+	@Override
+	public void reset() {
+		
 	}
 
 }

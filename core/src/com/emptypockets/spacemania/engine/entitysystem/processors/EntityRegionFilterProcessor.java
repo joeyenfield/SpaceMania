@@ -14,7 +14,7 @@ public class EntityRegionFilterProcessor implements SingleProcessor<GameEntity>,
 
 	@Override
 	public void process(GameEntity entity) {
-		if ((abilityMask == 0 || entity.hasAbility(abilityMask)) && EntityUtils.isEntityInRegion(entity, region)) {
+		if ((abilityMask == 0 || entity.hasAnyOfAbility(abilityMask)) && EntityUtils.isEntityInRegion(entity, region)) {
 			processor.process(entity);
 		}
 	}

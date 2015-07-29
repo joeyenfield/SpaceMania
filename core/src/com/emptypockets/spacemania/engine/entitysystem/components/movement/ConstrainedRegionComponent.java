@@ -9,8 +9,8 @@ import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponen
 public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegionData> {
 	static float MIN_DELTA = 0.01f;
 
-	public ConstrainedRegionComponent(GameEntity entity, Rectangle region) {
-		super(entity, ComponentType.CONSTRAINED_MOVEMENT, new ConstrainedRegionData(region));
+	public ConstrainedRegionComponent() {
+		super(ComponentType.CONSTRAINED_MOVEMENT, new ConstrainedRegionData());
 	}
 
 	public void update(float deltaTime) {
@@ -57,6 +57,12 @@ public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegio
 			}
 			hitWall = true;
 		}
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

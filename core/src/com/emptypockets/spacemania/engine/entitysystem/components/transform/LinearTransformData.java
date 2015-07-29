@@ -32,4 +32,9 @@ public class LinearTransformData extends ComponentData<LinearTransformData> {
 		return false;
 	}
 
+	@Override
+	public void reset() {
+		pos.setZero();
+	}
+
 }

@@ -6,12 +6,17 @@ import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponen
 
 public class LinearTransformComponent extends EntityComponent<LinearTransformData> {
 
-	public LinearTransformComponent(GameEntity object) {
-		super(object, ComponentType.LINEAR_TRANSFORM, new LinearTransformData());
+	public LinearTransformComponent() {
+		super(ComponentType.LINEAR_TRANSFORM, new LinearTransformData());
 	}
 
 	@Override
 	public void update(float deltaTime) {
+	}
+
+	@Override
+	public void reset() {
+		
 	}
 
 }

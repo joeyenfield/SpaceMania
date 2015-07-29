@@ -10,8 +10,7 @@ public class ConstrainedRegionData extends ComponentData<ConstrainedRegionData> 
 	public float constrainRadius = 1;
 	public boolean reflect = true;
 
-	public ConstrainedRegionData(Rectangle region) {
-		constrainedRegion = region;
+	public ConstrainedRegionData() {
 	}
 
 	@Override
@@ -40,6 +39,17 @@ public class ConstrainedRegionData extends ComponentData<ConstrainedRegionData> 
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void reset() {
+		constrainedRegion = null;
+		constrainRadius = 1;
+		reflect = true;
+	}
+
+	public void setConstrainedRegion(Rectangle constrainedRegion) {
+		this.constrainedRegion = constrainedRegion;
 	}
 
 }

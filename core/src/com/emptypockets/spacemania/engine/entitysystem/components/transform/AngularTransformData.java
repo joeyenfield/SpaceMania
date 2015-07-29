@@ -31,4 +31,9 @@ public class AngularTransformData extends ComponentData<AngularTransformData> {
 		return false;
 	}
 
+	@Override
+	public void reset() {
+		ang = 0;
+	}
+
 }

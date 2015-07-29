@@ -9,10 +9,9 @@ public enum ComponentType {
 	LINEAR_MOVEMENT(2, 1 << 2),
 	ANGULAR_MOVEMENT(3, 1 << 3),
 	PARTITION(4, 1 << 4),
-	CONSTRAINED_MOVEMENT(5, 1 << 5), 
-	RENDER(6,1<<6);
-	
-	
+	CONSTRAINED_MOVEMENT(5, 1 << 5),
+	RENDER(6, 1 << 6);
+
 	int mask = 0;
 	int updateOrder = 0;
 
@@ -27,8 +26,8 @@ public enum ComponentType {
 
 	public int addAbility(int currentAbility) {
 		if ((currentAbility & mask) != 0) {
-			System.out.println(BitUtilities.toString(currentAbility)+" - Current ");
-			System.out.println(BitUtilities.toString(mask)+" - Mask To Add ");
+			System.out.println(BitUtilities.toString(currentAbility) + " - Current ");
+			System.out.println(BitUtilities.toString(mask) + " - Mask To Add ");
 			printMasks();
 			throw new RuntimeException("Component already in use ");
 		}

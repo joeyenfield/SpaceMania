@@ -35,4 +35,11 @@ public class AngularMovementData extends ComponentData<AngularMovementData> {
 		return false;
 	}
 
+	@Override
+	public void reset() {
+		angAcl = 0;
+		angVel = 0;
+		lockAngleToLinearVelocity = true;
+	}
+
 }

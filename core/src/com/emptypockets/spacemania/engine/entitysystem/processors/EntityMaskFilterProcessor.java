@@ -10,7 +10,7 @@ public class EntityMaskFilterProcessor implements SingleProcessor<GameEntity>, P
 	public SingleProcessor<GameEntity> processor;
 
 	public void process(GameEntity entity) {
-		if (entity.hasAbility(abilityMask)) {
+		if (entity.hasAnyOfAbility(abilityMask)) {
 			processor.process(entity);
 		}
 	}

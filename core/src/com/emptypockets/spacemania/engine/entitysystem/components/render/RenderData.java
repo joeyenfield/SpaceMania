@@ -9,8 +9,11 @@ public class RenderData extends ComponentData<RenderData> {
 	Affine2 transform;
 	TextureRegion region;
 
-	public RenderData(TextureRegion region, float sizeX, float sizeY, boolean center) {
-		this(new Affine2(), region);
+	public RenderData() {
+	}
+
+	public void setData(TextureRegion region, float sizeX, float sizeY, boolean center) {
+		setData(new Affine2(), region);
 		baseTransform.idt();
 		baseTransform.scale(sizeX / region.getRegionWidth(), sizeY / region.getRegionHeight());
 		if (center) {
@@ -18,8 +21,7 @@ public class RenderData extends ComponentData<RenderData> {
 		}
 	}
 
-	public RenderData(Affine2 transform, TextureRegion region) {
-		super();
+	public void setData(Affine2 transform, TextureRegion region) {
 		this.baseTransform = transform;
 		this.transform = new Affine2();
 		this.region = region;
@@ -36,6 +38,13 @@ public class RenderData extends ComponentData<RenderData> {
 	@Override
 	public boolean changed(RenderData data) {
 		return false;
+	}
+
+	@Override
+	public void reset() {
+		baseTransform = null;
+		transform = null;
+		region = null;
 	}
 
 }

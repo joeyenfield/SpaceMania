@@ -7,8 +7,8 @@ public class Constants {
 
 	public static int PARTICLE_SYSTEM_PARTITION_X = 20;
 	public static int PARTICLE_SYSTEM_PARTITION_Y = 20;
-	public static int ENTITY_SYSTEM_PARTITION_X = 20;
-	public static int ENTITY_SYSTEM_PARTITION_Y = 20;
+	public static int ENTITY_SYSTEM_PARTITION_X = 50;
+	public static int ENTITY_SYSTEM_PARTITION_Y = 50;
 	
 	public static float DEFAULT_ROOM_SIZE = 2000;
 

@@ -10,13 +10,10 @@ import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponen
 
 public class RenderComponent extends EntityComponent<RenderData> {
 
-	public RenderComponent(GameEntity entity, Affine2 transform, TextureRegion region) {
-		super(entity, ComponentType.RENDER, new RenderData(transform, region));
+	public RenderComponent() {
+		super(ComponentType.RENDER, new RenderData());
 	}
 	
-	public RenderComponent(GameEntity entity, TextureRegion region, float sizeX, float sizeY, boolean centered) {
-		super(entity, ComponentType.RENDER, new RenderData(region, sizeX, sizeY, centered));
-	}
 
 	public void update(float deltaTime) {
 		Vector2 pos = entity.linearTransform.data.pos;
@@ -29,6 +26,12 @@ public class RenderComponent extends EntityComponent<RenderData> {
 	
 	public void render(SpriteBatch batch){
 		batch.draw(data.region, data.region.getRegionWidth(), data.region.getRegionHeight(), data.transform);
+	}
+
+
+	@Override
+	public void reset() {
+		
 	}
 
 }

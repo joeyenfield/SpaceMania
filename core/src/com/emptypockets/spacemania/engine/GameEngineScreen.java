@@ -36,7 +36,7 @@ public class GameEngineScreen extends StageScreen {
 	OrthoCamController controller;
 
 	TextRender textHelper;
-
+	Vector2 pos = new Vector2();
 	public GameEngineScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
 	}
@@ -61,32 +61,40 @@ public class GameEngineScreen extends StageScreen {
 		super.show();
 		setClearColor(Color.BLACK);
 		assetStore = new AssetStore();
-		gameEngine = new GameEngine();
+		gameEngine = new GameEngine(eventLogger);
 		entityFactory = new GameEntityFactory(gameEngine, assetStore);
 		render = new GameEngineRender();
 		spriteBatch = new SpriteBatch();
 		shapeRender = new ShapeRenderer();
 		textHelper = new TextRender();
-		int width = 1000;
-		int height = 1000;
+		int width = 80000;
+		int height = 80000;
 		gameEngine.universeRegion.x = 0;
 		gameEngine.universeRegion.y = 0;
-		gameEngine.universeRegion.width = width * 10;
-		gameEngine.universeRegion.height = height * 10;
+		gameEngine.universeRegion.width = width;
+		gameEngine.universeRegion.height = height;
 
-		for (int i = 0; i < 2000; i++) {
-			create();
+		int ents = 10000;
+		for (int i = 0; i < ents; i++) {
+			GameEntity entity = create();
+			LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
+//			float progress = (0.1f + 0.8f * (i / (ents - 1f)));
+//			entity.linearTransform.data.pos.x = width * progress;
+//			entity.linearTransform.data.pos.y = height * progress;
+//			comp.data.vel.x = 10;?
+			comp.data.vel.x = MathUtils.random(5, 50) * MathUtils.randomSign();
+			comp.data.vel.y = MathUtils.random(5, 50) * MathUtils.randomSign();
+			entity.linearTransform.data.pos.x = MathUtils.random(gameEngine.universeRegion.x, gameEngine.universeRegion.x + gameEngine.universeRegion.width);
+			entity.linearTransform.data.pos.y = MathUtils.random(gameEngine.universeRegion.y, gameEngine.universeRegion.y + gameEngine.universeRegion.height);
 		}
+
+		setDrawEvents(false);
 	}
 
-	public void create() {
+	public GameEntity create() {
 		GameEntity entity = entityFactory.createEntity(entityCount++);
-		LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
-		comp.data.vel.x = MathUtils.random(40, 200) * MathUtils.randomSign();
-		comp.data.vel.y = MathUtils.random(40, 200) * MathUtils.randomSign();
-		entity.linearTransform.data.pos.x = MathUtils.random(gameEngine.universeRegion.x, gameEngine.universeRegion.x + gameEngine.universeRegion.width);
-		entity.linearTransform.data.pos.y = MathUtils.random(gameEngine.universeRegion.y, gameEngine.universeRegion.y + gameEngine.universeRegion.height);
 		gameEngine.entitySystem.add(entity);
+		return entity;
 	}
 
 	@Override
@@ -117,20 +125,23 @@ public class GameEngineScreen extends StageScreen {
 		spriteBatch.setProjectionMatrix(getScreenCamera().combined);
 		shapeRender.setProjectionMatrix(getScreenCamera().combined);
 		cameraHelper.getBounds(getScreenCamera(), screenViewport);
-		render.batch = spriteBatch;
-		spriteBatch.begin();
-		render.render(gameEngine, screenViewport);
-		spriteBatch.end();
 
 		shapeRender.begin(ShapeType.Line);
 		shapeRender.setColor(Color.RED);
 		shapeRender.rect(gameEngine.universeRegion.x, gameEngine.universeRegion.y, gameEngine.universeRegion.width, gameEngine.universeRegion.height);
 		shapeRender.end();
 
-		Vector2 pos = new Vector2(screenViewport.x + screenViewport.width / 2, screenViewport.y + cameraHelper.getScreenToCameraPixelX(screenCamera, 40));
+		gameEngine.spatialPartition.renderDebug(shapeRender, textHelper, screenViewport);
+
+		render.batch = spriteBatch;
+		spriteBatch.begin();
+		render.render(gameEngine, screenViewport);
+		spriteBatch.end();
+
+		pos.set(screenViewport.x + screenViewport.width / 2, screenViewport.y + cameraHelper.getScreenToCameraPixelX(screenCamera, 40));
 		shapeRender.begin(ShapeType.Filled);
 		shapeRender.setColor(Color.WHITE);
-		textHelper.render(shapeRender, "FPS: " + Gdx.graphics.getFramesPerSecond(), pos, cameraHelper.getScreenToCameraPixelX(screenCamera, 50), screenViewport);
+		textHelper.render(shapeRender, Integer.toString(Gdx.graphics.getFramesPerSecond()), pos, cameraHelper.getScreenToCameraPixelX(screenCamera, 50), screenViewport);
 		shapeRender.end();
 
 	}

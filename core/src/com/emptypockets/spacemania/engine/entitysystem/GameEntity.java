@@ -26,17 +26,13 @@ public class GameEntity {
 	public GameEntity(GameEngine engine, int entityId) {
 		this.entityId = entityId;
 		this.engine = engine;
-		linearTransform = new LinearTransformComponent(this);
-		angularTransform = new AngularTransformComponent(this);
-
-		addComponent(linearTransform);
-		addComponent(angularTransform);
 	}
 
 	public void addComponent(EntityComponent<?> component) {
 		componentsMask = component.getComponentType().addAbility(componentsMask);
 		componentsMap.put(component.getComponentType(), component);
 		components.add(component);
+		component.setEntity(this);
 		Collections.sort(components);
 	}
 
@@ -50,8 +46,12 @@ public class GameEntity {
 		return componentsMap.get(type);
 	}
 
-	public boolean hasAbility(int abilities) {
+	public boolean hasAnyOfAbility(int abilities) {
 		return (componentsMask & abilities) != 0;
+	}
+
+	public boolean hasAllOfAbility(int abilities) {
+		return (componentsMask & abilities) == abilities;
 	}
 
 	public void update(float deltaTime) {

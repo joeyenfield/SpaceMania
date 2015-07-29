@@ -12,8 +12,12 @@ import com.emptypockets.spacemania.utils.PoolsManager;
 public class ArrayListProcessor<ENT> extends ObjectProcessor<ENT> {
 	ArrayList<ENT> holder;
 
+
 	public ArrayListProcessor() {
-		holder = new ArrayList<ENT>();
+		this(100);
+	}
+	public ArrayListProcessor(int size) {
+		holder = new ArrayList<ENT>(size);
 	}
 
 	public synchronized int getSize() {

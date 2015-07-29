@@ -1,8 +1,6 @@
 package com.emptypockets.spacemania.engine;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
-import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.movement.AngularMovementComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.movement.ConstrainedRegionComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementComponent;
@@ -10,6 +8,7 @@ import com.emptypockets.spacemania.engine.entitysystem.components.partition.Part
 import com.emptypockets.spacemania.engine.entitysystem.components.render.RenderComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.transform.AngularTransformComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.transform.LinearTransformComponent;
+import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEntityFactory {
 	GameEngine engine;
@@ -24,32 +23,40 @@ public class GameEntityFactory {
 		float radius = 20;
 		float vel = 100;
 
-		GameEntity entity = new GameEntity(engine, entityId);
-		entity.linearTransform = new LinearTransformComponent();
-		entity.angularTransform = new AngularTransformComponent();
-		
+		GameEntity entity = PoolsManager.obtain(GameEntity.class);
+
+		entity.setData(engine, entityId);
+		entity.linearTransform = PoolsManager.obtain(LinearTransformComponent.class);
+		entity.linearTransform.setupData();
 		entity.addComponent(entity.linearTransform);
+
+		entity.angularTransform = PoolsManager.obtain(AngularTransformComponent.class);
+		entity.angularTransform.setupData();
 		entity.addComponent(entity.angularTransform);
-		
-		LinearMovementComponent linearMovement = new LinearMovementComponent();
+
+		LinearMovementComponent linearMovement = PoolsManager.obtain(LinearMovementComponent.class);
+		linearMovement.setupData();
 		entity.addComponent(linearMovement);
 
-		AngularMovementComponent angularMovement = new AngularMovementComponent();
+		AngularMovementComponent angularMovement = PoolsManager.obtain(AngularMovementComponent.class);
+		angularMovement.setupData();
 		entity.addComponent(angularMovement);
 
-		PartitionComponent partition = new PartitionComponent();
-		entity.addComponent(partition);
+		PartitionComponent partition = PoolsManager.obtain(PartitionComponent.class);
+		partition.setupData();
 		partition.data.radius = radius;
+		entity.addComponent(partition);
 
-
-		ConstrainedRegionComponent constraint = new ConstrainedRegionComponent();
-		entity.addComponent(constraint);
+		ConstrainedRegionComponent constraint = PoolsManager.obtain(ConstrainedRegionComponent.class);
+		constraint.setupData();
 		constraint.data.constrainedRegion = engine.universeRegion;
 		constraint.data.constrainRadius = radius;
+		entity.addComponent(constraint);
 
-		RenderComponent render = new RenderComponent();
-		entity.addComponent(render);
+		RenderComponent render = PoolsManager.obtain(RenderComponent.class);
+		render.setupData();
 		render.data.setData(assetStore.getRegion("playership"), 2 * radius, 2 * radius, true);
+		entity.addComponent(render);
 		return entity;
 	}
 }

@@ -1,5 +1,7 @@
 package com.emptypockets.spacemania.engine.entitysystem.components.render;
 
+import org.objenesis.strategy.BaseInstantiatorStrategy;
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentData;
@@ -10,10 +12,12 @@ public class RenderData extends ComponentData<RenderData> {
 	TextureRegion region;
 
 	public RenderData() {
+		this.transform = new Affine2();
+		this.baseTransform = new Affine2();
 	}
 
 	public void setData(TextureRegion region, float sizeX, float sizeY, boolean center) {
-		setData(new Affine2(), region);
+		this.region = region;
 		baseTransform.idt();
 		baseTransform.scale(sizeX / region.getRegionWidth(), sizeY / region.getRegionHeight());
 		if (center) {
@@ -21,11 +25,6 @@ public class RenderData extends ComponentData<RenderData> {
 		}
 	}
 
-	public void setData(Affine2 transform, TextureRegion region) {
-		this.baseTransform = transform;
-		this.transform = new Affine2();
-		this.region = region;
-	}
 
 	@Override
 	public void getComponentData(RenderData result) {
@@ -42,9 +41,9 @@ public class RenderData extends ComponentData<RenderData> {
 
 	@Override
 	public void reset() {
-		baseTransform = null;
-		transform = null;
 		region = null;
+		baseTransform.idt();
+		transform.idt();
 	}
 
 }

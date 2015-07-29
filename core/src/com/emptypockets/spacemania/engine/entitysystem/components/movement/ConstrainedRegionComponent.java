@@ -2,7 +2,6 @@ package com.emptypockets.spacemania.engine.entitysystem.components.movement;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponent;
 
@@ -10,13 +9,15 @@ public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegio
 	static float MIN_DELTA = 0.01f;
 
 	public ConstrainedRegionComponent() {
-		super(ComponentType.CONSTRAINED_MOVEMENT, new ConstrainedRegionData());
+		super(ComponentType.CONSTRAINED_MOVEMENT);
 	}
 
 	public void update(float deltaTime) {
+		if (data == null) {
+			return;
+		}
 		Vector2 pos = entity.linearTransform.data.pos;
 		Vector2 vel = ((LinearMovementData) entity.getComponent(ComponentType.LINEAR_MOVEMENT).data).vel;
-
 		float rad = data.constrainRadius;
 		float inset = rad;
 		Rectangle region = data.constrainedRegion;
@@ -60,9 +61,7 @@ public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegio
 	}
 
 	@Override
-	public void reset() {
-		// TODO Auto-generated method stub
-		
+	public Class<ConstrainedRegionData> getDataClass() {
+		return ConstrainedRegionData.class;
 	}
-
 }

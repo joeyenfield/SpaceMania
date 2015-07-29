@@ -2,7 +2,6 @@ package com.emptypockets.spacemania.engine.spatialpartition;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -10,14 +9,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.GameEngine;
-import com.emptypockets.spacemania.engine.entitysystem.EntitySystem;
-import com.emptypockets.spacemania.engine.entitysystem.EntitySystemManager;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.entitysystem.components.partition.PartitionComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.partition.PartitionData;
 import com.emptypockets.spacemania.gui.renderer.TextRender;
-import com.emptypockets.spacemania.holders.SingleProcessor;
 
 public class CellsGameEntitySpatitionPartition {
 
@@ -26,7 +22,7 @@ public class CellsGameEntitySpatitionPartition {
 	GameEngine engine;
 	ArrayList<GameEntity>[][] cells;
 	Vector2 tempVector2 = new Vector2();
-	PartitionKey tempCellRange = new PartitionKey();
+	PartitionKey tempPartitionKey = new PartitionKey();
 	Rectangle tempRect = new Rectangle();
 
 	int currentSearchId = 0;
@@ -76,11 +72,11 @@ public class CellsGameEntitySpatitionPartition {
 	}
 
 	public synchronized void searchAnyMask(Rectangle region, int any, ArrayList<GameEntity> results) {
-		encodeRange(region, tempCellRange);
+		encodeRange(region, tempPartitionKey);
 		int size = 0;
 		currentSearchId++;
-		for (int x = tempCellRange.xS; x <= tempCellRange.xE; x++) {
-			for (int y = tempCellRange.yS; y <= tempCellRange.yE; y++) {
+		for (int x = tempPartitionKey.xS; x <= tempPartitionKey.xE; x++) {
+			for (int y = tempPartitionKey.yS; y <= tempPartitionKey.yE; y++) {
 				ArrayList<GameEntity> data = cells[x][y];
 				size = data.size();
 				for (int i = 0; i < size; i++) {
@@ -98,11 +94,11 @@ public class CellsGameEntitySpatitionPartition {
 	}
 
 	public synchronized void searchAllMask(Rectangle region, int any, ArrayList<GameEntity> results) {
-		encodeRange(region, tempCellRange);
+		encodeRange(region, tempPartitionKey);
 		int size = 0;
 		currentSearchId++;
-		for (int x = tempCellRange.xS; x <= tempCellRange.xE; x++) {
-			for (int y = tempCellRange.yS; y <= tempCellRange.yE; y++) {
+		for (int x = tempPartitionKey.xS; x <= tempPartitionKey.xE; x++) {
+			for (int y = tempPartitionKey.yS; y <= tempPartitionKey.yE; y++) {
 				ArrayList<GameEntity> data = cells[x][y];
 				size = data.size();
 				for (int i = 0; i < size; i++) {
@@ -120,10 +116,10 @@ public class CellsGameEntitySpatitionPartition {
 	}
 
 	public void renderDebug(ShapeRenderer render, TextRender text, Rectangle region) {
-		encodeRange(region, tempCellRange);
+		encodeRange(region, tempPartitionKey);
 		render.begin(ShapeType.Line);
-		for (int x = tempCellRange.xS; x <= tempCellRange.xE; x++) {
-			for (int y = tempCellRange.yS; y <= tempCellRange.yE; y++) {
+		for (int x = tempPartitionKey.xS; x <= tempPartitionKey.xE; x++) {
+			for (int y = tempPartitionKey.yS; y <= tempPartitionKey.yE; y++) {
 				getRegion(x, y, tempRect);
 				ArrayList<GameEntity> entities = cells[x][y];
 				render.setColor(entities.size() > 0 ? Color.GREEN : Color.BLUE);
@@ -144,13 +140,23 @@ public class CellsGameEntitySpatitionPartition {
 
 	}
 
+	public void removeEntity(GameEntity ent) {
+		encodeRange(ent, tempPartitionKey);
+		removeEntity(ent, tempPartitionKey);
+
+	}
+
+	public void removeEntity(GameEntity entity, PartitionKey lastKey) {
+		for (int x = lastKey.xS; x <= lastKey.xE; x++) {
+			for (int y = lastKey.yS; y <= lastKey.yE; y++) {
+				cells[x][y].remove(entity);
+			}
+		}
+	}
+
 	public void moveEntity(GameEntity entity, PartitionKey lastKey, PartitionKey key) {
 		if (lastKey.isSet()) {
-			for (int x = lastKey.xS; x <= lastKey.xE; x++) {
-				for (int y = lastKey.yS; y <= lastKey.yE; y++) {
-					cells[x][y].remove(entity);
-				}
-			}
+			removeEntity(entity, lastKey);
 		}
 
 		if (key.isSet()) {

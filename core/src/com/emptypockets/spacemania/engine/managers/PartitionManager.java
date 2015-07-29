@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.engine.spatialpartition;
+package com.emptypockets.spacemania.engine.managers;
 
 import com.emptypockets.spacemania.engine.entitysystem.EntitySystem;
 import com.emptypockets.spacemania.engine.entitysystem.EntitySystemManager;
@@ -6,7 +6,7 @@ import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 
-public class PartitionProcessor extends EntitySystemManager implements SingleProcessor<GameEntity>{
+public class PartitionManager extends EntitySystemManager implements SingleProcessor<GameEntity>{
 
 	float deltaTime = 0;
 	@Override

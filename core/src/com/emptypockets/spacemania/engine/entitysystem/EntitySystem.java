@@ -14,8 +14,8 @@ import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class EntitySystem {
 
-	HashMap<Integer, GameEntity> entitiesById = new HashMap<Integer, GameEntity>();
-	ArrayListProcessor<GameEntity> entities = new ArrayListProcessor<GameEntity>();
+	HashMap<Integer, GameEntity> entitiesById = new HashMap<Integer, GameEntity>(1000);
+	ArrayListProcessor<GameEntity> entities = new ArrayListProcessor<GameEntity>(1000);
 
 	public synchronized void add(GameEntity entity) {
 		entities.add(entity);
@@ -29,6 +29,10 @@ public class EntitySystem {
 
 	public synchronized GameEntity getEntityById(int id) {
 		return entitiesById.get(id);
+	}
+
+	public int getEntityCount() {
+		return entities.getSize();
 	}
 
 	public void filter(ArrayListProcessor<GameEntity> result, Rectangle region) {
@@ -77,21 +81,5 @@ public class EntitySystem {
 	public void process(SingleProcessor<GameEntity> processor) {
 		entities.process(processor);
 	}
-	//
-	// public void process(SingleProcessor<GameEntity> processor, Rectangle region, int abilityMask) {
-	// synchronized (tempEntities) {
-	// filter(tempEntities, region, abilityMask);
-	// tempEntities.process(processor);
-	// tempEntities.clear();
-	// }
-	// }
-	//
-	// public void process(SingleProcessor<GameEntity> processor, Rectangle region) {
-	// synchronized (tempEntities) {
-	// filter(tempEntities, region);
-	// tempEntities.process(processor);
-	// tempEntities.clear();
-	// }
-	// }
 
 }

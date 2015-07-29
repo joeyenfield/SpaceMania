@@ -5,7 +5,7 @@ import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponen
 
 public class AngularTransformComponent extends EntityComponent<AngularTransformData> {
 	public AngularTransformComponent() {
-		super(ComponentType.ANGULAR_TRANSFORM, new AngularTransformData());
+		super(ComponentType.ANGULAR_TRANSFORM);
 	}
 
 	@Override
@@ -13,9 +13,8 @@ public class AngularTransformComponent extends EntityComponent<AngularTransformD
 	}
 
 	@Override
-	public void reset() {
-		// TODO Auto-generated method stub
-		
+	public Class<AngularTransformData> getDataClass() {
+		return AngularTransformData.class;
 	}
 
 }

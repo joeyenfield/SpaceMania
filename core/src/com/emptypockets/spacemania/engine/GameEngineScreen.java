@@ -14,18 +14,20 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.entitysystem.components.destruction.DestructionComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementComponent;
 import com.emptypockets.spacemania.gui.renderer.TextRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.utils.CameraHelper;
 import com.emptypockets.spacemania.utils.OrthoCamController;
+import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEngineScreen extends StageScreen {
 	GameEngine gameEngine;
 	GameEntityFactory entityFactory;
 	AssetStore assetStore;
 	int entityCount = 0;
-
+	int destructionCount = 0;
 	GameEngineRender render;
 
 	CameraHelper cameraHelper = new CameraHelper();
@@ -37,6 +39,7 @@ public class GameEngineScreen extends StageScreen {
 
 	TextRender textHelper;
 	Vector2 pos = new Vector2();
+
 	public GameEngineScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
 	}
@@ -67,25 +70,16 @@ public class GameEngineScreen extends StageScreen {
 		spriteBatch = new SpriteBatch();
 		shapeRender = new ShapeRenderer();
 		textHelper = new TextRender();
-		int width = 80000;
-		int height = 80000;
+		int width = 10000;
+		int height = 10000;
 		gameEngine.universeRegion.x = 0;
 		gameEngine.universeRegion.y = 0;
 		gameEngine.universeRegion.width = width;
 		gameEngine.universeRegion.height = height;
 
-		int ents = 10000;
+		int ents = 1000;
 		for (int i = 0; i < ents; i++) {
 			GameEntity entity = create();
-			LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
-//			float progress = (0.1f + 0.8f * (i / (ents - 1f)));
-//			entity.linearTransform.data.pos.x = width * progress;
-//			entity.linearTransform.data.pos.y = height * progress;
-//			comp.data.vel.x = 10;?
-			comp.data.vel.x = MathUtils.random(5, 50) * MathUtils.randomSign();
-			comp.data.vel.y = MathUtils.random(5, 50) * MathUtils.randomSign();
-			entity.linearTransform.data.pos.x = MathUtils.random(gameEngine.universeRegion.x, gameEngine.universeRegion.x + gameEngine.universeRegion.width);
-			entity.linearTransform.data.pos.y = MathUtils.random(gameEngine.universeRegion.y, gameEngine.universeRegion.y + gameEngine.universeRegion.height);
 		}
 
 		setDrawEvents(false);
@@ -94,6 +88,16 @@ public class GameEngineScreen extends StageScreen {
 	public GameEntity create() {
 		GameEntity entity = entityFactory.createEntity(entityCount++);
 		gameEngine.entitySystem.add(entity);
+		LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
+		// float progress = (0.1f + 0.8f * (i / (ents - 1f)));
+		// entity.linearTransform.data.pos.x = width * progress;
+		// entity.linearTransform.data.pos.y = height * progress;
+		// comp.data.vel.x = 10;?
+		comp.data.vel.x = MathUtils.random(5, 50) * MathUtils.randomSign();
+		comp.data.vel.y = MathUtils.random(5, 50) * MathUtils.randomSign();
+		entity.linearTransform.data.pos.x = MathUtils.random(gameEngine.universeRegion.x, gameEngine.universeRegion.x + gameEngine.universeRegion.width);
+		entity.linearTransform.data.pos.y = MathUtils.random(gameEngine.universeRegion.y, gameEngine.universeRegion.y + gameEngine.universeRegion.height);
+
 		return entity;
 	}
 
@@ -118,6 +122,22 @@ public class GameEngineScreen extends StageScreen {
 	public void updateLogic(float delta) {
 		super.updateLogic(delta);
 		gameEngine.update(delta);
+
+		// for (int i = 0; i < 10; i++) {
+		create();
+		// }
+
+		// for (int i = 0; i < 10; i++) {
+		if (destructionCount + 1 < entityCount) {
+			destructionCount++;
+			GameEntity ent = gameEngine.entitySystem.getEntityById(destructionCount);
+			if (ent != null) {
+				DestructionComponent dest = PoolsManager.obtain(DestructionComponent.class);
+				dest.setupData();
+				ent.addComponent(dest);
+			}
+		}
+		// }
 	}
 
 	@Override
@@ -131,7 +151,8 @@ public class GameEngineScreen extends StageScreen {
 		shapeRender.rect(gameEngine.universeRegion.x, gameEngine.universeRegion.y, gameEngine.universeRegion.width, gameEngine.universeRegion.height);
 		shapeRender.end();
 
-		gameEngine.spatialPartition.renderDebug(shapeRender, textHelper, screenViewport);
+		// gameEngine.spatialPartition.renderDebug(shapeRender, textHelper,
+		// screenViewport);
 
 		render.batch = spriteBatch;
 		spriteBatch.begin();

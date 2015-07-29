@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.engine.dynamics;
+package com.emptypockets.spacemania.engine.managers;
 
 import com.emptypockets.spacemania.engine.entitysystem.EntitySystem;
 import com.emptypockets.spacemania.engine.entitysystem.EntitySystemManager;
@@ -8,7 +8,7 @@ import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponen
 import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementData;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 
-public class MovementProcessor extends EntitySystemManager implements SingleProcessor<GameEntity> {
+public class MovementManager extends EntitySystemManager implements SingleProcessor<GameEntity> {
 	float deltaTime = 0;
 	int mask = ComponentType.LINEAR_MOVEMENT.getMask() | ComponentType.ANGULAR_MOVEMENT.getMask() | ComponentType.CONSTRAINED_MOVEMENT.getMask();
 

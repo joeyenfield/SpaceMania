@@ -9,13 +9,13 @@ public class PartitionComponent extends EntityComponent<PartitionData> {
 	public int currentSearchId;
 
 	public PartitionComponent() {
-		super(ComponentType.PARTITION, new PartitionData());
-	}
-
-	public void reset() {
+		super(ComponentType.PARTITION);
 	}
 
 	public void update(float deltaTime) {
+		if (data == null) {
+			return;
+		}
 		entity.engine.spatialPartition.encodeRange(entity, data.key);
 		// Region hasn't changed its ok
 		if (data.key.equals(data.lastKey)) {
@@ -24,6 +24,11 @@ public class PartitionComponent extends EntityComponent<PartitionData> {
 
 		entity.engine.spatialPartition.moveEntity(entity, data.lastKey, data.key);
 		data.lastKey.set(data.key);
+	}
+
+	@Override
+	public Class<PartitionData> getDataClass() {
+		return PartitionData.class;
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.engine.entitysystem.components.movement;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentData;
 import com.emptypockets.spacemania.utils.RectangeUtils;
 

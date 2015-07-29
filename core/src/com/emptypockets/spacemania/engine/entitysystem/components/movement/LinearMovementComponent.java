@@ -1,6 +1,5 @@
 package com.emptypockets.spacemania.engine.entitysystem.components.movement;
 
-import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponent;
 
@@ -8,10 +7,13 @@ public class LinearMovementComponent extends EntityComponent<LinearMovementData>
 	static float MIN_DELTA = 0.01f;
 
 	public LinearMovementComponent() {
-		super(ComponentType.LINEAR_MOVEMENT, new LinearMovementData());
+		super(ComponentType.LINEAR_MOVEMENT);
 	}
 
 	public void update(float deltaTime) {
+		if (data == null) {
+			return;
+		}
 		if (data.acl.len2() > MIN_DELTA) {
 			data.vel.x += data.acl.x * deltaTime;
 			data.vel.y += data.acl.y * deltaTime;
@@ -30,8 +32,7 @@ public class LinearMovementComponent extends EntityComponent<LinearMovementData>
 	}
 
 	@Override
-	public void reset() {
-		
+	public Class<LinearMovementData> getDataClass() {
+		return LinearMovementData.class;
 	}
-
 }

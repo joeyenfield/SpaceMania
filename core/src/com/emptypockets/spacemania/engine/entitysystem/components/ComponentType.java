@@ -4,20 +4,19 @@ import com.emptypockets.spacemania.utils.BitUtilities;
 
 public enum ComponentType {
 
-	LINEAR_TRANSFORM(0, 1 << 0),
-	ANGULAR_TRANSFORM(1, 1 << 1),
-	LINEAR_MOVEMENT(2, 1 << 2),
-	ANGULAR_MOVEMENT(3, 1 << 3),
-	PARTITION(4, 1 << 4),
-	CONSTRAINED_MOVEMENT(5, 1 << 5),
-	RENDER(6, 1 << 6);
-
+	LINEAR_TRANSFORM(1 << 0),
+	ANGULAR_TRANSFORM(1 << 1),
+	LINEAR_MOVEMENT(1 << 2),
+	ANGULAR_MOVEMENT(1 << 3),
+	PARTITION(1 << 4),
+	CONSTRAINED_MOVEMENT(1 << 5),
+	RENDER(1 << 6),
+	NETWORK_SERVER(1 << 7),
+	DESTRUCTION(1 << 8);
 	int mask = 0;
-	int updateOrder = 0;
 
-	private ComponentType(int updateOrder, int mask) {
+	private ComponentType(int mask) {
 		this.mask = mask;
-		this.updateOrder = updateOrder;
 	}
 
 	public int getMask() {
@@ -51,7 +50,4 @@ public enum ComponentType {
 		}
 	}
 
-	public int getUpdateOrder() {
-		return updateOrder;
-	}
 }

@@ -1,5 +1,6 @@
 package com.emptypockets.spacemania.engine.entitysystem.components.render;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
@@ -21,6 +22,11 @@ public class RenderComponent extends EntityComponent<RenderData> {
 	}
 
 	public void render(SpriteBatch batch) {
+		if(entity.hasAnyOfAbility(ComponentType.DESTRUCTION.getMask())){
+			batch.setColor(Color.RED);
+		}else{
+			batch.setColor(Color.WHITE);
+		}
 		batch.draw(data.region, data.region.getRegionWidth(), data.region.getRegionHeight(), data.transform);
 	}
 

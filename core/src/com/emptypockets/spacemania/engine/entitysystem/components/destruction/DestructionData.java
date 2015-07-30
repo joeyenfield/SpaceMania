@@ -3,7 +3,8 @@ package com.emptypockets.spacemania.engine.entitysystem.components.destruction;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentData;
 
 public class DestructionData extends ComponentData<DestructionData> {
-
+	public boolean remove = false;
+	public long destroyTime = 0;
 	@Override
 	public void getComponentData(DestructionData result) {
 	}
@@ -19,6 +20,8 @@ public class DestructionData extends ComponentData<DestructionData> {
 
 	@Override
 	public void reset() {
+		remove = false;
+		destroyTime = 0;
 	}
 
 }

@@ -65,4 +65,12 @@ public class GameEntity implements Poolable {
 		componentsMask = 0;
 	}
 
+	public <COMP extends EntityComponent> COMP getComponent(ComponentType type, Class<COMP> classType) {
+		return components.get(type, classType);
+	}
+
+	public boolean hasComponent(ComponentType destruction) {
+		return hasAllOfAbility(destruction.getMask());
+	}
+
 }

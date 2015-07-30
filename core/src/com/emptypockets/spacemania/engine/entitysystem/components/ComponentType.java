@@ -12,13 +12,14 @@ public enum ComponentType {
 	CONSTRAINED_MOVEMENT(5),
 	RENDER(6),
 	NETWORK_SERVER(7),
-	DESTRUCTION(8);
-
+	DESTRUCTION(8),
+	COLLISSION(9),
+	CONTROL(10);
 	int mask = 0;
 	int id = 0;
 
 	public static EntityComponent[] getComponentHolder() {
-		return new EntityComponent[9];
+		return new EntityComponent[11];
 	}
 
 	private ComponentType(int id) {

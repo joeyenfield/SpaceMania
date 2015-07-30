@@ -23,11 +23,14 @@ import com.emptypockets.spacemania.utils.OrthoCamController;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEngineScreen extends StageScreen {
+
+	int width = 10000;
+	int height = 10000;
+	int desiredEntityCount = 1000;
+
 	GameEngine gameEngine;
 	GameEntityFactory entityFactory;
 	AssetStore assetStore;
-	int entityCount = 0;
-	int destructionCount = 0;
 	GameEngineRender render;
 
 	CameraHelper cameraHelper = new CameraHelper();
@@ -38,7 +41,7 @@ public class GameEngineScreen extends StageScreen {
 	OrthoCamController controller;
 
 	TextRender textHelper;
-	Vector2 pos = new Vector2();
+	Vector2 tempPos = new Vector2();
 
 	public GameEngineScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
@@ -70,23 +73,21 @@ public class GameEngineScreen extends StageScreen {
 		spriteBatch = new SpriteBatch();
 		shapeRender = new ShapeRenderer();
 		textHelper = new TextRender();
-		int width = 100000;
-		int height = 10000;
+
 		gameEngine.universeRegion.x = 0;
 		gameEngine.universeRegion.y = 0;
 		gameEngine.universeRegion.width = width;
 		gameEngine.universeRegion.height = height;
 
-		int ents = 3000;
-		for (int i = 0; i < ents; i++) {
-			GameEntity entity = create();
-		}
+//		for (int i = 0; i < desiredEntityCount; i++) {
+//			GameEntity entity = create();
+//		}
 
 		setDrawEvents(false);
 	}
 
 	public GameEntity create() {
-		GameEntity entity = entityFactory.createEntity(entityCount++);
+		GameEntity entity = entityFactory.createEntity(gameEngine.entityCount++);
 		gameEngine.entitySystem.add(entity);
 		LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
 		// float progress = (0.1f + 0.8f * (i / (ents - 1f)));
@@ -123,21 +124,9 @@ public class GameEngineScreen extends StageScreen {
 		super.updateLogic(delta);
 		gameEngine.update(delta);
 
-		// for (int i = 0; i < 10; i++) {
-		create();
-		// }
-
-		// for (int i = 0; i < 10; i++) {
-		if (destructionCount + 1 < entityCount) {
-			destructionCount++;
-			GameEntity ent = gameEngine.entitySystem.getEntityById(destructionCount);
-			if (ent != null) {
-				DestructionComponent dest = PoolsManager.obtain(DestructionComponent.class);
-				dest.setupData();
-				ent.addComponent(dest);
-			}
+		if (gameEngine.entitySystem.getEntityCount() < desiredEntityCount) {
+			create();
 		}
-		// }
 	}
 
 	@Override
@@ -159,14 +148,26 @@ public class GameEngineScreen extends StageScreen {
 		render.render(gameEngine, screenViewport);
 		spriteBatch.end();
 
-		pos.set(screenViewport.x + screenViewport.width / 2, screenViewport.y + cameraHelper.getScreenToCameraPixelX(screenCamera, 40));
+		tempPos.set(screenViewport.x + screenViewport.width / 2, screenViewport.y + cameraHelper.getScreenToCameraPixelX(screenCamera, 40));
 		shapeRender.begin(ShapeType.Filled);
 		shapeRender.setColor(Color.WHITE);
-		textHelper.render(shapeRender, Integer.toString(Gdx.graphics.getFramesPerSecond()), pos, cameraHelper.getScreenToCameraPixelX(screenCamera, 50), screenViewport);
+		textHelper.render(shapeRender, Integer.toString(Gdx.graphics.getFramesPerSecond()), tempPos, cameraHelper.getScreenToCameraPixelX(screenCamera, 50), screenViewport);
 		shapeRender.end();
 
 	}
 
+	@Override
+	public boolean tap(float x, float y, int count, int button) {
+		System.out.println("HERE "+count);
+		if(count > 2){
+			tempPos.x = x;
+			tempPos.y = y;
+			cameraHelper.screenToWorld(getScreenCamera(), tempPos);
+			GameEntity ent = gameEngine.getEntityAtPos(tempPos);
+			System.out.println(ent);
+		}
+		return false;
+	}
 	@Override
 	public void drawOverlay(float delta) {
 

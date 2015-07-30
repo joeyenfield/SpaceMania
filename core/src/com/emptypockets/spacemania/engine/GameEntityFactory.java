@@ -1,6 +1,7 @@
 package com.emptypockets.spacemania.engine;
 
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
+import com.emptypockets.spacemania.engine.entitysystem.components.collission.CollissionComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.movement.AngularMovementComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.movement.ConstrainedRegionComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementComponent;
@@ -57,6 +58,12 @@ public class GameEntityFactory {
 		render.setupData();
 		render.data.setData(assetStore.getRegion("playership"), 2 * radius, 2 * radius, true);
 		entity.addComponent(render);
+		
+		CollissionComponent collission = PoolsManager.obtain(CollissionComponent.class);
+		collission.setupData();
+		collission.data.collissionRadius = radius;
+		entity.addComponent(collission);
+		
 		return entity;
 	}
 }

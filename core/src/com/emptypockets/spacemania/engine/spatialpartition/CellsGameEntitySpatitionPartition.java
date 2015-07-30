@@ -71,6 +71,14 @@ public class CellsGameEntitySpatitionPartition {
 		range.yE = MathUtils.clamp(MathUtils.floor(((tempVector2.y) / region.height) * sizeY), 0, sizeY - 1);
 	}
 
+	private void encodeRange(Vector2 pos, PartitionKey range) {
+		Rectangle region = engine.universeRegion;
+		range.xS = MathUtils.clamp(MathUtils.floor(((pos.x) / region.width) * sizeX), 0, sizeX - 1);
+		range.yS = MathUtils.clamp(MathUtils.floor(((pos.y) / region.height) * sizeY), 0, sizeY - 1);
+		range.xE = MathUtils.clamp(MathUtils.floor(((pos.x) / region.width) * sizeX), 0, sizeX - 1);
+		range.yE = MathUtils.clamp(MathUtils.floor(((pos.y) / region.height) * sizeY), 0, sizeY - 1);
+	}
+
 	public synchronized void searchAnyMask(Rectangle region, int any, ArrayList<GameEntity> results) {
 		encodeRange(region, tempPartitionKey);
 		int size = 0;
@@ -168,4 +176,24 @@ public class CellsGameEntitySpatitionPartition {
 		} else
 			System.out.println(key);
 	}
+
+	public GameEntity getFirstEntityAtPos(Vector2 pos) {
+		encodeRange(pos, tempPartitionKey);
+		int size = 0;
+		for (int x = tempPartitionKey.xS; x <= tempPartitionKey.xE; x++) {
+			for (int y = tempPartitionKey.yS; y <= tempPartitionKey.yE; y++) {
+				ArrayList<GameEntity> data = cells[x][y];
+				size = data.size();
+				for (int i = 0; i < size; i++) {
+					GameEntity ent = data.get(i);
+					PartitionComponent comp = (PartitionComponent) ent.getComponent(ComponentType.PARTITION);
+					if (pos.dst2(ent.linearTransform.data.pos) < comp.data.radius * comp.data.radius) {
+						return ent;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 }

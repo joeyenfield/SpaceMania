@@ -1,10 +1,11 @@
 package com.emptypockets.spacemania.engine;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.engine.entitysystem.EntitySystem;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
-import com.emptypockets.spacemania.engine.entitysystem.components.destruction.DestructionComponent;
+import com.emptypockets.spacemania.engine.managers.CollissionManager;
 import com.emptypockets.spacemania.engine.managers.DestructionManager;
 import com.emptypockets.spacemania.engine.managers.MovementManager;
 import com.emptypockets.spacemania.engine.managers.PartitionManager;
@@ -21,7 +22,8 @@ public class GameEngine {
 	MovementManager movementProcessor = new MovementManager();
 	PartitionManager partitionProcessor = new PartitionManager();
 	DestructionManager destructionProcessor = new DestructionManager();
-
+	CollissionManager collissionProcessor = new CollissionManager();
+	
 	CameraHelper cameraHelper = new CameraHelper();
 	EventRecorder eventLogger;
 
@@ -42,11 +44,19 @@ public class GameEngine {
 		partitionProcessor.manage(entitySystem, deltaTime);
 		eventLogger.end("LOGIC-Partition");
 
+		eventLogger.begin("LOGIC-Collission");
+		collissionProcessor.manage(entitySystem, deltaTime);
+		eventLogger.end("LOGIC-Collission");
+		
 		eventLogger.begin("LOGIC-Destruction");
 		destructionProcessor.manage(entitySystem, deltaTime);
 		destructionProcessor.removeEntities(spatialPartition, entitySystem);
 		eventLogger.end("LOGIC-Destruction");
-
 	}
 
+	public GameEntity getEntityAtPos(Vector2 tempPos) {
+		return spatialPartition.getFirstEntityAtPos(tempPos);
+	}
+
+	
 }

@@ -70,14 +70,14 @@ public class GameEngineScreen extends StageScreen {
 		spriteBatch = new SpriteBatch();
 		shapeRender = new ShapeRenderer();
 		textHelper = new TextRender();
-		int width = 10000;
+		int width = 100000;
 		int height = 10000;
 		gameEngine.universeRegion.x = 0;
 		gameEngine.universeRegion.y = 0;
 		gameEngine.universeRegion.width = width;
 		gameEngine.universeRegion.height = height;
 
-		int ents = 1000;
+		int ents = 3000;
 		for (int i = 0; i < ents; i++) {
 			GameEntity entity = create();
 		}

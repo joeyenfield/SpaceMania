@@ -79,9 +79,9 @@ public class GameEngineScreen extends StageScreen {
 		gameEngine.universeRegion.width = width;
 		gameEngine.universeRegion.height = height;
 
-//		for (int i = 0; i < desiredEntityCount; i++) {
-//			GameEntity entity = create();
-//		}
+		// for (int i = 0; i < desiredEntityCount; i++) {
+		// GameEntity entity = create();
+		// }
 
 		setDrawEvents(false);
 	}
@@ -124,9 +124,11 @@ public class GameEngineScreen extends StageScreen {
 		super.updateLogic(delta);
 		gameEngine.update(delta);
 
-		if (gameEngine.entitySystem.getEntityCount() < desiredEntityCount) {
-			create();
-		}
+		int count = 10;
+		while (count-- > 0)
+			if (gameEngine.entitySystem.getEntityCount() < desiredEntityCount) {
+				create();
+			}
 	}
 
 	@Override
@@ -151,15 +153,19 @@ public class GameEngineScreen extends StageScreen {
 		tempPos.set(screenViewport.x + screenViewport.width / 2, screenViewport.y + cameraHelper.getScreenToCameraPixelX(screenCamera, 40));
 		shapeRender.begin(ShapeType.Filled);
 		shapeRender.setColor(Color.WHITE);
-		textHelper.render(shapeRender, Integer.toString(Gdx.graphics.getFramesPerSecond()), tempPos, cameraHelper.getScreenToCameraPixelX(screenCamera, 50), screenViewport);
+		float textHeight = cameraHelper.getScreenToCameraPixelX(screenCamera, 50);
+		textHelper.render(shapeRender, Integer.toString(Gdx.graphics.getFramesPerSecond()), tempPos, textHeight, screenViewport);
+		tempPos.y+=textHeight*1.2f;
+		textHelper.render(shapeRender, Integer.toString(gameEngine.entitySystem.getEntityCount()), tempPos, textHeight, screenViewport);
+	
 		shapeRender.end();
 
 	}
 
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
-		System.out.println("HERE "+count);
-		if(count > 2){
+		System.out.println("HERE " + count);
+		if (count > 2) {
 			tempPos.x = x;
 			tempPos.y = y;
 			cameraHelper.screenToWorld(getScreenCamera(), tempPos);
@@ -168,6 +174,7 @@ public class GameEngineScreen extends StageScreen {
 		}
 		return false;
 	}
+
 	@Override
 	public void drawOverlay(float delta) {
 

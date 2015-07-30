@@ -56,6 +56,22 @@ public class GameEntity implements Poolable {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj instanceof GameEntity) {
+			GameEntity ent = (GameEntity) obj;
+			return ent.entityId == entityId;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return entityId;
+	}
+
+	@Override
 	public void reset() {
 		engine = null;
 		entityId = -1;

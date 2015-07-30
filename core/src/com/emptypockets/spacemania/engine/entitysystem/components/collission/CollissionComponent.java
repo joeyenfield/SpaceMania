@@ -8,6 +8,8 @@ import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.destruction.DestructionComponent;
+import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementComponent;
+import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementData;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class CollissionComponent extends EntityComponent<CollissionData> {

@@ -52,6 +52,8 @@ public class GameEngine {
 		destructionProcessor.manage(entitySystem, deltaTime);
 		destructionProcessor.removeEntities(spatialPartition, entitySystem);
 		eventLogger.end("LOGIC-Destruction");
+		
+		
 	}
 
 	public GameEntity getEntityAtPos(Vector2 tempPos) {

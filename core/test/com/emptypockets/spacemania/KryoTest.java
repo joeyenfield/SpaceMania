@@ -2,7 +2,14 @@ package com.emptypockets.spacemania;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.math.Vector2;
+import com.emptypockets.spacemania.engine.entitysystem.components.ComponentData;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.entitysystem.components.collission.CollissionData;
+import com.emptypockets.spacemania.engine.entitysystem.components.controls.ControlData;
+import com.emptypockets.spacemania.engine.entitysystem.components.destruction.DestructionData;
+import com.emptypockets.spacemania.engine.entitysystem.components.movement.AngularMovementData;
+import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementData;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 
@@ -11,17 +18,23 @@ public class KryoTest {
 		byte[] buffer = new byte[1024 * 1024 * 10];
 		Kryo kryo = new Kryo();
 		
-		HashMap<ComponentType, String> data = new HashMap<ComponentType, String>();
-		data.put(ComponentType.DESTRUCTION, "W");
-		data.put(ComponentType.COLLISSION, "H");
-		data.put(ComponentType.ANGULAR_MOVEMENT, "H");
-		
+		HashMap<ComponentType, ComponentData> data = new HashMap<ComponentType, ComponentData>();
+//		data.put(ComponentType.DESTRUCTION, new DestructionData());
+//		data.put(ComponentType.COLLISSION,  new CollissionData());
+		data.put(ComponentType.LINEAR_MOVEMENT, new LinearMovementData());
+		data.put(ComponentType.ANGULAR_MOVEMENT, new AngularMovementData());
+		data.put(ComponentType.CONTROL, new ControlData());
 		
 		kryo.setRegistrationRequired(true);
 		kryo.register(String.class);
 		kryo.register(ComponentType.class);
 		kryo.register(HashMap.class);
-		
+		kryo.register(CollissionData.class);
+		kryo.register(DestructionData.class);
+		kryo.register(LinearMovementData.class);
+		kryo.register(AngularMovementData.class);;
+		kryo.register(ControlData.class);
+		kryo.register(Vector2.class);
 		Output output = new Output(buffer);
 
 //		EntityState data = new MovingEntityState();

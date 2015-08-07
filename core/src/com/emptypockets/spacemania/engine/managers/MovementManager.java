@@ -4,9 +4,12 @@ import com.emptypockets.spacemania.engine.entitysystem.EntitySystem;
 import com.emptypockets.spacemania.engine.entitysystem.EntitySystemManager;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
-import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponent;
-import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementData;
+import com.emptypockets.spacemania.engine.entitysystem.components.controls.ControlComponent;
+import com.emptypockets.spacemania.engine.entitysystem.components.movement.AngularMovementComponent;
+import com.emptypockets.spacemania.engine.entitysystem.components.movement.ConstrainedRegionComponent;
+import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementComponent;
 import com.emptypockets.spacemania.holders.SingleProcessor;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ContentModelContainer;
 
 public class MovementManager extends EntitySystemManager implements SingleProcessor<GameEntity> {
 	float deltaTime = 0;
@@ -15,27 +18,31 @@ public class MovementManager extends EntitySystemManager implements SingleProces
 	@Override
 	public void manage(EntitySystem entitySystem, float deltaTime) {
 		this.deltaTime = deltaTime;
+
 		entitySystem.process(this, mask);
 	}
 
 	@Override
 	public void process(GameEntity entity) {
-		EntityComponent<?> comp = null;
-		
-		comp = entity.getComponent(ComponentType.LINEAR_MOVEMENT);
-		if(comp != null){
-			comp.update(deltaTime);
+		ControlComponent controls = entity.getComponent(ComponentType.CONTROL, ControlComponent.class);
+		if (controls != null) {
+			controls.update(deltaTime);
 		}
-		
-		comp = entity.getComponent(ComponentType.ANGULAR_MOVEMENT);
-		if(comp != null){
-			comp.update(deltaTime);
+		LinearMovementComponent linearMovementComponent = entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class);
+		if (linearMovementComponent != null) {
+			linearMovementComponent.update(deltaTime);
 		}
-		
-		comp = entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT);
-		if(comp != null){
-			comp.update(deltaTime);
+
+		AngularMovementComponent angularMovementComponent = entity.getComponent(ComponentType.ANGULAR_MOVEMENT, AngularMovementComponent.class);
+		if (angularMovementComponent != null) {
+			angularMovementComponent.update(deltaTime);
 		}
+
+		ConstrainedRegionComponent constrainedRegionComponent = entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT, ConstrainedRegionComponent.class);
+		if (constrainedRegionComponent != null) {
+			constrainedRegionComponent.update(deltaTime);
+		}
+
 	}
 
 }

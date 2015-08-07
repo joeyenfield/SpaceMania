@@ -1,10 +1,13 @@
 package com.emptypockets.spacemania.engine.entitysystem;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponentStore;
+import com.emptypockets.spacemania.engine.entitysystem.components.partition.PartitionComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.transform.AngularTransformComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.transform.LinearTransformComponent;
 import com.emptypockets.spacemania.utils.BitUtilities;
@@ -13,14 +16,18 @@ public class GameEntity implements Poolable {
 
 	public int entityId;
 	public int componentsMask;
-
-	public EntityComponentStore components;
+	public EntityComponentStore componentStore;
+	
 	public LinearTransformComponent linearTransform;
 	public AngularTransformComponent angularTransform;
+	
 	public GameEngine engine;
+	public GameEntityType type;
+
+	public ArrayList<EntityDestructionListener> destructionListeners = new ArrayList<EntityDestructionListener>();
 
 	public GameEntity() {
-		components = new EntityComponentStore();
+		componentStore = new EntityComponentStore();
 	}
 
 	public void setData(GameEngine engine, int entityId) {
@@ -30,17 +37,17 @@ public class GameEntity implements Poolable {
 
 	public void addComponent(EntityComponent<?> component) {
 		componentsMask = component.getComponentType().addAbility(componentsMask);
-		components.add(component);
+		componentStore.add(component);
 		component.setEntity(this);
 	}
 
 	public void removeComponent(EntityComponent<?> component) {
 		componentsMask = component.getComponentType().removeAbility(componentsMask);
-		components.remove(component.getComponentType());
+		componentStore.remove(component.getComponentType());
 	}
 
 	public EntityComponent<?> getComponent(ComponentType type) {
-		return components.get(type);
+		return componentStore.get(type);
 	}
 
 	public boolean hasAnyOfAbility(int abilities) {
@@ -75,18 +82,47 @@ public class GameEntity implements Poolable {
 	public void reset() {
 		engine = null;
 		entityId = -1;
-		components.clear();
+		componentStore.clear();
 		linearTransform = null;
 		angularTransform = null;
 		componentsMask = 0;
+		synchronized (destructionListeners) {
+			destructionListeners.clear();
+		}
+	}
+
+	public void addListener(EntityDestructionListener listener) {
+		synchronized (destructionListeners) {
+			destructionListeners.add(listener);
+		}
+	}
+
+	public void removeListener(EntityDestructionListener listener) {
+		synchronized (destructionListeners) {
+			destructionListeners.remove(listener);
+		}
+	}
+
+	public void notifyDestroyed() {
+		synchronized (destructionListeners) {
+			int size = destructionListeners.size();
+			for (int i = 0; i < size; i++) {
+				destructionListeners.get(i).entityDestruction(this);
+			}
+			destructionListeners.clear();
+		}
 	}
 
 	public <COMP extends EntityComponent> COMP getComponent(ComponentType type, Class<COMP> classType) {
-		return components.get(type, classType);
+		return componentStore.get(type, classType);
 	}
 
 	public boolean hasComponent(ComponentType destruction) {
 		return hasAllOfAbility(destruction.getMask());
+	}
+
+	public void removeComponent(ComponentType type) {
+		removeComponent(componentStore.get(type));
 	}
 
 }

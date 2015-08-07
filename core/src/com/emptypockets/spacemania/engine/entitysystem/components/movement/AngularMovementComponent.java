@@ -8,6 +8,7 @@ public class AngularMovementComponent extends EntityComponent<AngularMovementDat
 
 	public AngularMovementComponent() {
 		super(ComponentType.ANGULAR_MOVEMENT);
+		networkSync = true;
 	}
 
 	public void update(float deltaTime) {

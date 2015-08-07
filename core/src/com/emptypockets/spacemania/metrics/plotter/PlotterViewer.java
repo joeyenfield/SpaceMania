@@ -22,7 +22,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.emptypockets.spacemania.gui.renderer.TextRender;
+import com.emptypockets.spacemania.gui.tools.TextRender;
 import com.emptypockets.spacemania.metrics.events.EventSystem;
 import com.emptypockets.spacemania.metrics.events.render.EventRender;
 import com.emptypockets.spacemania.metrics.plotter.data.TimeSeriesDataset;

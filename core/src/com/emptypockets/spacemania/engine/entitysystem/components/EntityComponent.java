@@ -16,8 +16,6 @@ public abstract class EntityComponent<DATA_TYPE extends ComponentData<?>> implem
 
 	public abstract Class<DATA_TYPE> getDataClass();
 
-	public abstract void update(float deltaTime);
-
 	public ComponentType getComponentType() {
 		return componentType;
 	}

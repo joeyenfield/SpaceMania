@@ -9,13 +9,15 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.GameEngine;
+import com.emptypockets.spacemania.engine.entitysystem.EntityDestructionListener;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.entitysystem.components.partition.PartitionComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.partition.PartitionData;
-import com.emptypockets.spacemania.gui.renderer.TextRender;
+import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.utils.RectangeUtils;
 
-public class CellsGameEntitySpatitionPartition {
+public class CellsGameEntitySpatitionPartition implements EntityDestructionListener {
 
 	int sizeX;
 	int sizeY;
@@ -73,10 +75,10 @@ public class CellsGameEntitySpatitionPartition {
 
 	private void encodeRange(Vector2 pos, PartitionKey range) {
 		Rectangle region = engine.universeRegion;
-		range.xS = MathUtils.clamp(MathUtils.floor(((pos.x) / region.width) * sizeX), 0, sizeX - 1);
-		range.yS = MathUtils.clamp(MathUtils.floor(((pos.y) / region.height) * sizeY), 0, sizeY - 1);
-		range.xE = MathUtils.clamp(MathUtils.floor(((pos.x) / region.width) * sizeX), 0, sizeX - 1);
-		range.yE = MathUtils.clamp(MathUtils.floor(((pos.y) / region.height) * sizeY), 0, sizeY - 1);
+		range.xS = MathUtils.clamp(MathUtils.floor(((pos.x - region.x) / region.width) * sizeX), 0, sizeX - 1);
+		range.yS = MathUtils.clamp(MathUtils.floor(((pos.y - region.y) / region.height) * sizeY), 0, sizeY - 1);
+		range.xE = MathUtils.clamp(MathUtils.floor(((pos.x - region.x) / region.width) * sizeX), 0, sizeX - 1);
+		range.yE = MathUtils.clamp(MathUtils.floor(((pos.y - region.y) / region.height) * sizeY), 0, sizeY - 1);
 	}
 
 	public synchronized void searchAnyMask(Rectangle region, int any, ArrayList<GameEntity> results) {
@@ -90,9 +92,9 @@ public class CellsGameEntitySpatitionPartition {
 				for (int i = 0; i < size; i++) {
 					GameEntity ent = data.get(i);
 					PartitionComponent comp = (PartitionComponent) ent.getComponent(ComponentType.PARTITION);
-					if (comp.currentSearchId != currentSearchId) {
+					if (comp != null && comp.currentSearchId != currentSearchId) {
 						comp.currentSearchId = currentSearchId;
-						if (ent.hasAnyOfAbility(any)) {
+						if (ent.hasAnyOfAbility(any) && RectangeUtils.inside(region, ent.linearTransform.data.pos, comp.data.radius)) {
 							results.add(ent);
 						}
 					}
@@ -114,7 +116,7 @@ public class CellsGameEntitySpatitionPartition {
 					PartitionComponent comp = (PartitionComponent) ent.getComponent(ComponentType.PARTITION);
 					if (comp.currentSearchId != currentSearchId) {
 						comp.currentSearchId = currentSearchId;
-						if (ent.hasAllOfAbility(any)) {
+						if (ent.hasAllOfAbility(any) && RectangeUtils.inside(region, ent.linearTransform.data.pos, comp.data.radius)) {
 							results.add(ent);
 						}
 					}
@@ -151,7 +153,6 @@ public class CellsGameEntitySpatitionPartition {
 	public void removeEntity(GameEntity ent) {
 		encodeRange(ent, tempPartitionKey);
 		removeEntity(ent, tempPartitionKey);
-
 	}
 
 	public void removeEntity(GameEntity entity, PartitionKey lastKey) {
@@ -173,8 +174,7 @@ public class CellsGameEntitySpatitionPartition {
 					cells[x][y].add(entity);
 				}
 			}
-		} else
-			System.out.println(key);
+		}
 	}
 
 	public GameEntity getFirstEntityAtPos(Vector2 pos) {
@@ -194,6 +194,10 @@ public class CellsGameEntitySpatitionPartition {
 			}
 		}
 		return null;
+	}
+
+	public void entityDestruction(GameEntity entity) {
+		removeEntity(entity);
 	}
 
 }

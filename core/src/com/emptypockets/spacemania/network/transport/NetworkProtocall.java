@@ -8,41 +8,50 @@ import org.objenesis.instantiator.ObjectInstantiator;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.network.client.input.ClientInput;
-import com.emptypockets.spacemania.network.client.payloads.ClientMyPlayerStateUpdatePayload;
-import com.emptypockets.spacemania.network.client.payloads.NotifyClientPayload;
-import com.emptypockets.spacemania.network.client.payloads.authentication.LoginFailedResponsePayload;
-import com.emptypockets.spacemania.network.client.payloads.authentication.LoginSuccessResponsePayload;
-import com.emptypockets.spacemania.network.client.payloads.authentication.LogoutSuccessPayload;
-import com.emptypockets.spacemania.network.client.payloads.engine.ClientEngineEntityManagerSyncPayload;
-import com.emptypockets.spacemania.network.client.payloads.engine.ClientEnginePlayerManagerSyncPayload;
-import com.emptypockets.spacemania.network.client.payloads.engine.ClientRoomEngineRegionStatePayload;
-import com.emptypockets.spacemania.network.client.payloads.rooms.ClientRoomMessagesPayload;
-import com.emptypockets.spacemania.network.client.payloads.rooms.JoinRoomSuccessPayload;
-import com.emptypockets.spacemania.network.client.player.ClientPlayer;
-import com.emptypockets.spacemania.network.client.player.MyPlayer;
-import com.emptypockets.spacemania.network.client.rooms.ClientRoom;
-import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomChatMessage;
-import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomPlayerJoinMessage;
-import com.emptypockets.spacemania.network.client.rooms.messages.ClientRoomPlayerLeaveMessage;
-import com.emptypockets.spacemania.network.engine.EngineRegionSync;
-import com.emptypockets.spacemania.network.engine.entities.EntityType;
-import com.emptypockets.spacemania.network.engine.entities.states.EntityState;
-import com.emptypockets.spacemania.network.engine.entities.states.MovingEntityState;
-import com.emptypockets.spacemania.network.engine.sync.EntityManagerSync;
-import com.emptypockets.spacemania.network.engine.sync.PlayerManagerSync;
-import com.emptypockets.spacemania.network.engine.sync.events.EntityAdd;
-import com.emptypockets.spacemania.network.engine.sync.events.EntityRemoval;
-import com.emptypockets.spacemania.network.server.payloads.ServerClientInputUpdatePayload;
-import com.emptypockets.spacemania.network.server.payloads.authentication.LoginRequestPayload;
-import com.emptypockets.spacemania.network.server.payloads.authentication.LogoutRequestPayload;
-import com.emptypockets.spacemania.network.server.payloads.rooms.ChatMessagePayload;
-import com.emptypockets.spacemania.network.server.payloads.rooms.CreateRoomRequestPayload;
-import com.emptypockets.spacemania.network.server.payloads.rooms.JoinLobyRequestPayload;
-import com.emptypockets.spacemania.network.server.payloads.rooms.JoinRoomRequestPayload;
-import com.emptypockets.spacemania.network.server.payloads.rooms.RequestRoomListPayload;
-import com.emptypockets.spacemania.network.server.payloads.rooms.ResizeRoomPayload;
-import com.emptypockets.spacemania.network.server.payloads.rooms.SpawnPlayerRequestPayload;
+import com.emptypockets.spacemania.engine.entitysystem.GameEntityType;
+import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementData;
+import com.emptypockets.spacemania.engine.entitysystem.components.transform.LinearTransformData;
+import com.emptypockets.spacemania.network.old.client.input.ClientInput;
+import com.emptypockets.spacemania.network.old.client.payloads.ClientMyPlayerStateUpdatePayload;
+import com.emptypockets.spacemania.network.old.client.payloads.NotifyClientPayload;
+import com.emptypockets.spacemania.network.old.client.payloads.authentication.LoginFailedResponsePayload;
+import com.emptypockets.spacemania.network.old.client.payloads.authentication.LoginSuccessResponsePayload;
+import com.emptypockets.spacemania.network.old.client.payloads.authentication.LogoutSuccessPayload;
+import com.emptypockets.spacemania.network.old.client.payloads.engine.ClientEngineEntityManagerSyncPayload;
+import com.emptypockets.spacemania.network.old.client.payloads.engine.ClientEnginePlayerManagerSyncPayload;
+import com.emptypockets.spacemania.network.old.client.payloads.engine.ClientRoomEngineRegionStatePayload;
+import com.emptypockets.spacemania.network.old.client.payloads.rooms.ClientRoomMessagesPayload;
+import com.emptypockets.spacemania.network.old.client.payloads.rooms.JoinRoomSuccessPayload;
+import com.emptypockets.spacemania.network.old.client.player.ClientPlayer;
+import com.emptypockets.spacemania.network.old.client.player.MyPlayer;
+import com.emptypockets.spacemania.network.old.client.rooms.ClientRoom;
+import com.emptypockets.spacemania.network.old.client.rooms.messages.ClientRoomChatMessage;
+import com.emptypockets.spacemania.network.old.client.rooms.messages.ClientRoomPlayerJoinMessage;
+import com.emptypockets.spacemania.network.old.client.rooms.messages.ClientRoomPlayerLeaveMessage;
+import com.emptypockets.spacemania.network.old.engine.EngineRegionSync;
+import com.emptypockets.spacemania.network.old.engine.entities.EntityType;
+import com.emptypockets.spacemania.network.old.engine.entities.states.EntityState;
+import com.emptypockets.spacemania.network.old.engine.entities.states.MovingEntityState;
+import com.emptypockets.spacemania.network.old.engine.sync.EntityManagerSync;
+import com.emptypockets.spacemania.network.old.engine.sync.PlayerManagerSync;
+import com.emptypockets.spacemania.network.old.engine.sync.events.EntityAdd;
+import com.emptypockets.spacemania.network.old.engine.sync.events.EntityRemoval;
+import com.emptypockets.spacemania.network.old.server.payloads.ServerClientInputUpdatePayload;
+import com.emptypockets.spacemania.network.old.server.payloads.authentication.LoginRequestPayload;
+import com.emptypockets.spacemania.network.old.server.payloads.authentication.LogoutRequestPayload;
+import com.emptypockets.spacemania.network.old.server.payloads.rooms.ChatMessagePayload;
+import com.emptypockets.spacemania.network.old.server.payloads.rooms.CreateRoomRequestPayload;
+import com.emptypockets.spacemania.network.old.server.payloads.rooms.JoinLobyRequestPayload;
+import com.emptypockets.spacemania.network.old.server.payloads.rooms.JoinRoomRequestPayload;
+import com.emptypockets.spacemania.network.old.server.payloads.rooms.RequestRoomListPayload;
+import com.emptypockets.spacemania.network.old.server.payloads.rooms.ResizeRoomPayload;
+import com.emptypockets.spacemania.network.old.server.payloads.rooms.SpawnPlayerRequestPayload;
+import com.emptypockets.spacemania.network.transport.data.engine.GameEngineState;
+import com.emptypockets.spacemania.network.transport.data.engine.entity.EntitySystemState;
+import com.emptypockets.spacemania.network.transport.data.engine.entity.GameEntityAdded;
+import com.emptypockets.spacemania.network.transport.data.engine.entity.GameEntityNetworkSync;
+import com.emptypockets.spacemania.network.transport.data.engine.entity.GameEntityRemoved;
 import com.emptypockets.spacemania.utils.PoolsManager;
 import com.esotericsoftware.kryo.Kryo;
 
@@ -92,6 +101,24 @@ public class NetworkProtocall {
 		register(kryo, SpawnPlayerRequestPayload.class);
 		register(kryo, MyPlayer.class);
 		register(kryo, MovingEntityState.class);
+		
+		
+		
+		
+		
+		/**
+		 * NEW CLASS TYPES
+		 */
+		
+		register(kryo, GameEngineState.class);
+		register(kryo, EntitySystemState.class);
+		register(kryo, GameEntityAdded.class);
+		register(kryo, GameEntityRemoved.class);
+		register(kryo, GameEntityNetworkSync.class);
+		register(kryo, ComponentType.class);
+		register(kryo, LinearMovementData.class);
+		register(kryo, LinearTransformData.class);
+		register(kryo, GameEntityType.class);
 	}
 
 	public static <T> void register(Kryo kryo, final Class<T> classType) {

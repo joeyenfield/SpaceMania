@@ -4,6 +4,7 @@ import com.emptypockets.spacemania.engine.entitysystem.EntitySystem;
 import com.emptypockets.spacemania.engine.entitysystem.EntitySystemManager;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.entitysystem.components.partition.PartitionComponent;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 
 public class PartitionManager extends EntitySystemManager implements SingleProcessor<GameEntity>{
@@ -17,7 +18,7 @@ public class PartitionManager extends EntitySystemManager implements SingleProce
 
 	@Override
 	public void process(GameEntity entity) {
-		entity.getComponent(ComponentType.PARTITION).update(deltaTime);
+		entity.getComponent(ComponentType.PARTITION, PartitionComponent.class).update(deltaTime);
 	}
 
 }

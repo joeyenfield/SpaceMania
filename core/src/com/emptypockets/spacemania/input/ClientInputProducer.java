@@ -1,6 +1,6 @@
 package com.emptypockets.spacemania.input;
 
-import com.emptypockets.spacemania.network.client.input.ClientInput;
+import com.emptypockets.spacemania.network.old.client.input.ClientInput;
 
 public class ClientInputProducer {
 	ClientInput input;

@@ -17,6 +17,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.LifecycleListener;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.math.MathUtils;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.metrics.events.EventSystem;
@@ -59,8 +60,8 @@ public class DesktopLauncher {
 
 			Log.ERROR();
 			LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-			config.width = 1000;
-			config.height = 1000;
+			config.width = 1024;
+			config.height = 1024;
 			config.x = 0;
 			config.y = 0;
 			config.foregroundFPS = 60;
@@ -109,10 +110,12 @@ public class DesktopLauncher {
 					client = game.screen.getClient().getCommand();
 				}
 			} while (client == null);
+			
+//			client.processCommand("start");
+			client.processCommand("connect; login joey"+MathUtils.random(1000)+"; lobby");
 			//
 			// client.processCommand("start;set gridsize 128 128; set roomsize 2000;set gridrender 1;set particles 10000;");
 			// client.processCommand("connect emptypocketgames.noip.me");
-			client.processCommand("start");
 			// client.processCommand("lobby");
 			//
 			// client.processCommand("host start; connect;login server; lobby");

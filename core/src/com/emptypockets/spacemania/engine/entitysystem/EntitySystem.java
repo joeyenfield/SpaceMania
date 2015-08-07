@@ -3,16 +3,19 @@ package com.emptypockets.spacemania.engine.entitysystem;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.entitysystem.processors.EntityMaskCollectProcessor;
 import com.emptypockets.spacemania.engine.entitysystem.processors.EntityMaskFilterProcessor;
 import com.emptypockets.spacemania.engine.entitysystem.processors.EntityRegionCollectProcessor;
 import com.emptypockets.spacemania.engine.entitysystem.processors.EntityRegionFilterProcessor;
+import com.emptypockets.spacemania.engine.entitysystem.processors.filter.GameEntityFilterProcessor;
+import com.emptypockets.spacemania.engine.entitysystem.processors.filter.GameEntityTypeFilter;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
-public class EntitySystem {
+public class EntitySystem implements EntityDestructionListener {
 
 	HashMap<Integer, GameEntity> entitiesById = new HashMap<Integer, GameEntity>(1000);
 	ArrayListProcessor<GameEntity> entities = new ArrayListProcessor<GameEntity>(1000);
@@ -20,11 +23,15 @@ public class EntitySystem {
 	public synchronized void add(GameEntity entity) {
 		entities.add(entity);
 		entitiesById.put(entity.entityId, entity);
+		entity.addListener(this);
 	}
 
-	public synchronized void remove(GameEntity entity) {
+	public synchronized void remove(GameEntity entity, boolean detatchListener) {
 		entities.remove(entity);
 		entitiesById.remove(entity.entityId);
+		if (detatchListener) {
+			entity.removeListener(this);
+		}
 	}
 
 	public synchronized GameEntity getEntityById(int id) {
@@ -80,6 +87,23 @@ public class EntitySystem {
 
 	public void process(SingleProcessor<GameEntity> processor) {
 		entities.process(processor);
+	}
+
+	public GameEntity pickRandom(GameEntityType type) {
+		GameEntityTypeFilter typeFilter = PoolsManager.obtain(GameEntityTypeFilter.class);
+		typeFilter.type = type;
+		
+		GameEntityFilterProcessor processor= PoolsManager.obtain(GameEntityFilterProcessor.class);
+		processor.filter = typeFilter;
+		processor.filter(this);
+		GameEntity entity = processor.pickRandom();
+		Pools.free(processor);
+		return entity;
+	}
+
+	@Override
+	public void entityDestruction(GameEntity entity) {
+		remove(entity, false);
 	}
 
 }

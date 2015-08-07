@@ -8,7 +8,6 @@ public class AngularTransformComponent extends EntityComponent<AngularTransformD
 		super(ComponentType.ANGULAR_TRANSFORM);
 	}
 
-	@Override
 	public void update(float deltaTime) {
 	}
 

@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
-import com.emptypockets.spacemania.gui.renderer.TextRender;
+import com.emptypockets.spacemania.gui.tools.TextRender;
 import com.emptypockets.spacemania.metrics.events.Event;
 import com.emptypockets.spacemania.metrics.events.EventSystem;
 import com.emptypockets.spacemania.utils.CameraHelper;

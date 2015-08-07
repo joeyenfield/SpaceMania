@@ -4,9 +4,9 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
-import com.emptypockets.spacemania.engine.GameEngineScreen;
-import com.emptypockets.spacemania.gui.ClientScreen;
-import com.emptypockets.spacemania.gui.LoadingScreen;
+import com.emptypockets.spacemania.gui.GameEngineScreen;
+import com.emptypockets.spacemania.gui.old.ClientScreen;
+import com.emptypockets.spacemania.gui.screens.LoadingScreen;
 import com.emptypockets.spacemania.gui.screens.SplashScreen;
 import com.emptypockets.spacemania.gui.tools.GameScreen;
 import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
@@ -31,10 +31,16 @@ public class MainGame extends Game {
 		assetManager = new AssetManager();
 		loadingScreen = new LoadingScreen(this, input);
 		splashScreen = new SplashScreen(this, input);
-		screen = new ClientScreen(this, input);
-//		loadScreen(screen, false);
-		loadScreen(new GameEngineScreen(this, input), false);
-		// loadScreen(new SpringScreen(this, input), false);
+
+		boolean legacyGame = false;
+
+		if (legacyGame) {
+			screen = new ClientScreen(this, input);
+			loadScreen(screen, false);
+		} else {
+			loadScreen(new GameEngineScreen(this, input), false);
+		}
+
 	}
 
 	public void loadScreen(GameScreen gameScreen, boolean proceededOnLood) {

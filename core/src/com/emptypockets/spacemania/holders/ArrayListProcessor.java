@@ -3,7 +3,9 @@ package com.emptypockets.spacemania.holders;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.math.MathUtils;
+import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
+import com.emptypockets.spacemania.engine.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 /**
@@ -12,10 +14,10 @@ import com.emptypockets.spacemania.utils.PoolsManager;
 public class ArrayListProcessor<ENT> extends ObjectProcessor<ENT> {
 	ArrayList<ENT> holder;
 
-
 	public ArrayListProcessor() {
 		this(100);
 	}
+
 	public ArrayListProcessor(int size) {
 		holder = new ArrayList<ENT>(size);
 	}
@@ -56,6 +58,15 @@ public class ArrayListProcessor<ENT> extends ObjectProcessor<ENT> {
 		}
 
 		clear();
+	}
+
+	public ENT pickRandom() {
+		int idx = MathUtils.random(holder.size() - 1);
+		if (idx >= 0) {
+			return holder.get(idx);
+		} else {
+			return null;
+		}
 	}
 
 }

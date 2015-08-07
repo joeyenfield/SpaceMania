@@ -18,30 +18,21 @@ public class DestructionManager extends EntitySystemManager implements SinglePro
 	@Override
 	public void manage(EntitySystem entitySystem, float deltaTime) {
 		entitySystem.process(this, ComponentType.DESTRUCTION);
-		
+
 		int size = entities.size();
 		for (int i = 0; i < size; i++) {
 			GameEntity ent = entities.get(i);
-			ent.getComponent(ComponentType.DESTRUCTION).update(deltaTime);
-		}
-	}
-
-	@Override
-	public void process(GameEntity entity) {
-		entities.add(entity);
-	}
-
-	public void removeEntities(CellsGameEntitySpatitionPartition spatial, EntitySystem entitySystem) {
-		int size = entities.size();
-		for (int i = 0; i < size; i++) {
-			GameEntity ent = entities.get(i);
+			ent.getComponent(ComponentType.DESTRUCTION, DestructionComponent.class).update(deltaTime);
 			if (ent.getComponent(ComponentType.DESTRUCTION, DestructionComponent.class).data.remove) {
-				entitySystem.remove(ent);
-				spatial.removeEntity(ent);
+				ent.notifyDestroyed();
 				PoolsManager.free(ent);
 			}
 		}
 		entities.clear();
 	}
 
+	@Override
+	public void process(GameEntity entity) {
+		entities.add(entity);
+	}
 }

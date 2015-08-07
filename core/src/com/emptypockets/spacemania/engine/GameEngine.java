@@ -9,56 +9,66 @@ import com.emptypockets.spacemania.engine.managers.CollissionManager;
 import com.emptypockets.spacemania.engine.managers.DestructionManager;
 import com.emptypockets.spacemania.engine.managers.MovementManager;
 import com.emptypockets.spacemania.engine.managers.PartitionManager;
+import com.emptypockets.spacemania.engine.managers.ServerManager;
+import com.emptypockets.spacemania.engine.managers.WeaponManager;
 import com.emptypockets.spacemania.engine.spatialpartition.CellsGameEntitySpatitionPartition;
-import com.emptypockets.spacemania.utils.CameraHelper;
+import com.emptypockets.spacemania.gui.AssetStore;
 import com.emptypockets.spacemania.utils.event.EventRecorder;
 
 public class GameEngine {
-	int entityCount = 0;
 	public Rectangle universeRegion = new Rectangle();
 	public EntitySystem entitySystem;
+
 	public CellsGameEntitySpatitionPartition spatialPartition;
 
-	MovementManager movementProcessor = new MovementManager();
-	PartitionManager partitionProcessor = new PartitionManager();
-	DestructionManager destructionProcessor = new DestructionManager();
-	CollissionManager collissionProcessor = new CollissionManager();
-	
-	CameraHelper cameraHelper = new CameraHelper();
-	EventRecorder eventLogger;
+	public MovementManager movementManager = new MovementManager();
+	public PartitionManager partitionManager = new PartitionManager();
+	public CollissionManager collissionManager = new CollissionManager();
+	public DestructionManager destructionManager = new DestructionManager();
+	public ServerManager serverNetworkManager = new ServerManager();
+	public WeaponManager weaponManager = new WeaponManager();
 
+	public GameEntityFactory entityFactory;
+	public AssetStore assetStore;
+
+	EventRecorder eventLogger;
 
 	public GameEngine(EventRecorder eventLogger) {
 		universeRegion.set(-Constants.DEFAULT_ROOM_SIZE, -Constants.DEFAULT_ROOM_SIZE, 2 * Constants.DEFAULT_ROOM_SIZE, 2 * Constants.DEFAULT_ROOM_SIZE);
 		entitySystem = new EntitySystem();
 		spatialPartition = new CellsGameEntitySpatitionPartition(this, Constants.ENTITY_SYSTEM_PARTITION_X, Constants.ENTITY_SYSTEM_PARTITION_Y);
 		this.eventLogger = eventLogger;
+		assetStore = new AssetStore();
+		entityFactory = new GameEntityFactory(this, assetStore);
 	}
 
 	public void update(float deltaTime) {
-		eventLogger.begin("LOGIC-MOVEMENT");
-		movementProcessor.manage(entitySystem, deltaTime);
-		eventLogger.end("LOGIC-MOVEMENT");
+		if (serverNetworkManager != null) {
+			serverNetworkManager.processIncommingData(this);
+		}
 
-		eventLogger.begin("LOGIC-Partition");
-		partitionProcessor.manage(entitySystem, deltaTime);
-		eventLogger.end("LOGIC-Partition");
+		movementManager.manage(entitySystem, deltaTime);
+		weaponManager.manage(entitySystem, deltaTime);
+		partitionManager.manage(entitySystem, deltaTime);
+		collissionManager.manage(entitySystem, deltaTime);
+		destructionManager.manage(entitySystem, deltaTime);
 
-		eventLogger.begin("LOGIC-Collission");
-		collissionProcessor.manage(entitySystem, deltaTime);
-		eventLogger.end("LOGIC-Collission");
-		
-		eventLogger.begin("LOGIC-Destruction");
-		destructionProcessor.manage(entitySystem, deltaTime);
-		destructionProcessor.removeEntities(spatialPartition, entitySystem);
-		eventLogger.end("LOGIC-Destruction");
-		
-		
+		if (serverNetworkManager != null) {
+			serverNetworkManager.processOutgoingData(this);
+		}
 	}
 
 	public GameEntity getEntityAtPos(Vector2 tempPos) {
 		return spatialPartition.getFirstEntityAtPos(tempPos);
 	}
 
-	
+	public float getTime() {
+		return System.currentTimeMillis();
+	}
+
+	public void addEntity(GameEntity entity) {
+		entitySystem.add(entity);
+		entity.addListener(spatialPartition);
+	}
+
 }

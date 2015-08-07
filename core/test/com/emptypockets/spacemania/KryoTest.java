@@ -9,7 +9,10 @@ import com.emptypockets.spacemania.engine.entitysystem.components.collission.Col
 import com.emptypockets.spacemania.engine.entitysystem.components.controls.ControlData;
 import com.emptypockets.spacemania.engine.entitysystem.components.destruction.DestructionData;
 import com.emptypockets.spacemania.engine.entitysystem.components.movement.AngularMovementData;
+import com.emptypockets.spacemania.engine.entitysystem.components.movement.ConstrainedRegionData;
 import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementData;
+import com.emptypockets.spacemania.engine.entitysystem.components.transform.AngularTransformData;
+import com.emptypockets.spacemania.engine.entitysystem.components.transform.LinearTransformData;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 
@@ -21,9 +24,13 @@ public class KryoTest {
 		HashMap<ComponentType, ComponentData> data = new HashMap<ComponentType, ComponentData>();
 //		data.put(ComponentType.DESTRUCTION, new DestructionData());
 //		data.put(ComponentType.COLLISSION,  new CollissionData());
+		data.put(ComponentType.LINEAR_TRANSFORM, new LinearTransformData());
+		data.put(ComponentType.ANGULAR_TRANSFORM, new AngularTransformData());
 		data.put(ComponentType.LINEAR_MOVEMENT, new LinearMovementData());
 		data.put(ComponentType.ANGULAR_MOVEMENT, new AngularMovementData());
 		data.put(ComponentType.CONTROL, new ControlData());
+		data.put(ComponentType.DESTRUCTION, new DestructionData());
+		
 		
 		kryo.setRegistrationRequired(true);
 		kryo.register(String.class);
@@ -35,8 +42,10 @@ public class KryoTest {
 		kryo.register(AngularMovementData.class);;
 		kryo.register(ControlData.class);
 		kryo.register(Vector2.class);
+		kryo.register(LinearTransformData.class);
+		kryo.register(AngularTransformData.class);
 		Output output = new Output(buffer);
-
+		
 //		EntityState data = new MovingEntityState();
 		kryo.writeObject(output, data);
 		output.close();

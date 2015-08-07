@@ -1,6 +1,8 @@
 package com.emptypockets.spacemania.utils;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.emptypockets.spacemania.network.old.engine.IntersectorUtils;
 
 public class RectangeUtils {
 
@@ -77,6 +79,10 @@ public class RectangeUtils {
 			return false;
 		}
 		return true;
+	}
+
+	public static boolean inside(Rectangle region, Vector2 pos, float radius) {
+		return IntersectorUtils.intersects(region, pos, radius);
 	}
 
 }

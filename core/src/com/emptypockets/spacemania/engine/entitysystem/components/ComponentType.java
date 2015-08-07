@@ -3,7 +3,6 @@ package com.emptypockets.spacemania.engine.entitysystem.components;
 import com.emptypockets.spacemania.utils.BitUtilities;
 
 public enum ComponentType {
-
 	LINEAR_TRANSFORM(0),
 	ANGULAR_TRANSFORM(1),
 	LINEAR_MOVEMENT(2),
@@ -14,12 +13,18 @@ public enum ComponentType {
 	NETWORK_SERVER(7),
 	DESTRUCTION(8),
 	COLLISSION(9),
-	CONTROL(10);
+	CONTROL(10),
+	WEAPON(11);
 	int mask = 0;
 	int id = 0;
+	public static final int COMPONENT_TYPES = 12;
 
 	public static EntityComponent[] getComponentHolder() {
-		return new EntityComponent[11];
+		return new EntityComponent[COMPONENT_TYPES];
+	}
+
+	public static ComponentData[] getComponentDataHolder() {
+		return new ComponentData[COMPONENT_TYPES];
 	}
 
 	private ComponentType(int id) {
@@ -57,5 +62,6 @@ public enum ComponentType {
 			System.out.printf("%s - %s\n", type.getMaskString(), type.name());
 		}
 	}
+
 
 }

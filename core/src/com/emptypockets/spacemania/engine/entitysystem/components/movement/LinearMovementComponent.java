@@ -8,6 +8,7 @@ public class LinearMovementComponent extends EntityComponent<LinearMovementData>
 
 	public LinearMovementComponent() {
 		super(ComponentType.LINEAR_MOVEMENT);
+		networkSync = true;
 	}
 
 	public void update(float deltaTime) {

@@ -7,9 +7,9 @@ public class LinearTransformComponent extends EntityComponent<LinearTransformDat
 
 	public LinearTransformComponent() {
 		super(ComponentType.LINEAR_TRANSFORM);
+		networkSync = true;
 	}
 
-	@Override
 	public void update(float deltaTime) {
 	}
 

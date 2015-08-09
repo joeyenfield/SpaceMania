@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.emptypockets.spacemania.MainGame;
-import com.emptypockets.spacemania.engine.GameEngine;
+import com.emptypockets.spacemania.engine.engines.GameEngine;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.entitysystem.components.controls.ControlComponent;
@@ -34,7 +34,7 @@ public class GameEngineScreen extends StageScreen {
 	public static float minVel = 100;
 	public static float maxVel = 200;
 
-	GameEngine serverEngine;
+	GameEngine serverGameEngine;
 	GameEngineRender render;
 
 	CameraHelper cameraHelper = new CameraHelper();
@@ -74,51 +74,24 @@ public class GameEngineScreen extends StageScreen {
 		setDrawEvents(false);
 
 		setClearColor(Color.BLACK);
-		serverEngine = new GameEngine(eventLogger);
 
 		render = new GameEngineRender();
 		spriteBatch = new SpriteBatch();
 		shapeRender = new ShapeRenderer();
 		textHelper = new TextRender();
 
-		serverEngine.universeRegion.x = -width;
-		serverEngine.universeRegion.y = -height;
-		serverEngine.universeRegion.width = 2 * width;
-		serverEngine.universeRegion.height = 2 * height;
-
-		serverEngine.serverNetworkManager.connections = new ArrayList<ClientEngineSyncManager>();
+		serverGameEngine = new GameEngine(eventLogger);
+		serverGameEngine.setupEngine(width, height);
+		
+		serverGameEngine.serverNetworkManager.connections = new ArrayList<ClientEngineSyncManager>();
 		for (int i = 0; i < 0; i++) {
 			ClientEngineSyncManager con = new ClientEngineSyncManager();
 
 			con.clientId = i;
-			con.entityId = create().entityId;
+			con.entityId = serverGameEngine.create(minVel, maxVel).entityId;
 			con.region = new Rectangle(0, 0, 2048, 2048);
-			serverEngine.serverNetworkManager.connections.add(con);
+			serverGameEngine.serverNetworkManager.connections.add(con);
 		}
-	}
-
-	public GameEntity create() {
-		GameEntity entity = serverEngine.entityFactory.createShipEntity();
-
-		LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
-		// float progress = (0.1f + 0.8f * (i / (ents - 1f)));
-		// entity.linearTransform.data.pos.x = width * progress;
-		// entity.linearTransform.data.pos.y = height * progress;
-		// comp.data.vel.x = 10;?
-		comp.data.vel.x = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
-		comp.data.vel.y = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
-		entity.linearTransform.data.pos.x = MathUtils.random(serverEngine.universeRegion.x, serverEngine.universeRegion.x + serverEngine.universeRegion.width);
-		entity.linearTransform.data.pos.y = MathUtils.random(serverEngine.universeRegion.y, serverEngine.universeRegion.y + serverEngine.universeRegion.height);
-
-		serverEngine.addEntity(entity);
-		return entity;
-	}
-
-	@Override
-	public void initializeRender() {
-
-		super.initializeRender();
-
 	}
 
 	@Override
@@ -134,13 +107,16 @@ public class GameEngineScreen extends StageScreen {
 	@Override
 	public void updateLogic(float delta) {
 		super.updateLogic(delta);
-		serverEngine.update(delta);
+		serverGameEngine.update(delta);
 
-		for (int i = 0; i < 10; i++)
-			if (serverEngine.entitySystem.getEntityCount() < desiredEntityCount) {
-				create();
+		for (int i = 0; i < 10; i++) {
+			if (serverGameEngine.entitySystem.getEntityCount() < desiredEntityCount) {
+				serverGameEngine.create(minVel, maxVel);
 			}
+		}
 	}
+	
+	
 
 	@Override
 	public void drawScreen(float delta) {
@@ -148,43 +124,43 @@ public class GameEngineScreen extends StageScreen {
 		shapeRender.setProjectionMatrix(getScreenCamera().combined);
 		cameraHelper.getBounds(getScreenCamera(), screenViewport);
 
-		shapeRender.begin(ShapeType.Line);
-		shapeRender.setColor(Color.RED);
-		shapeRender.rect(serverEngine.universeRegion.x, serverEngine.universeRegion.y, serverEngine.universeRegion.width, serverEngine.universeRegion.height);
-		shapeRender.end();
+		render.render(spriteBatch, serverGameEngine, screenViewport);
+		render.renderDebug(shapeRender, serverGameEngine, textHelper, screenViewport);
+		
+		renderConnections();
+		renderTextOverlay();
 
-		// serverEngine.spatialPartition.renderDebug(shapeRender, textHelper, screenViewport);
+	}
 
-		spriteBatch.begin();
-		render.render(spriteBatch, serverEngine, screenViewport);
-		spriteBatch.end();
-
-		shapeRender.begin(ShapeType.Line);
-		shapeRender.setColor(Color.BLUE);
-		if (serverEngine.serverNetworkManager.connections != null) {
-			synchronized (serverEngine.serverNetworkManager.connections) {
-				int size = serverEngine.serverNetworkManager.connections.size();
-				for (int i = 0; i < size; i++) {
-					ClientEngineSyncManager connection = serverEngine.serverNetworkManager.connections.get(i);
-					shapeRender.rect(connection.region.x, connection.region.y, connection.region.width, connection.region.height);
-				}
-			}
-		}
-		shapeRender.end();
-
-		tempPos.set(screenViewport.x + screenViewport.width / 2, screenViewport.y + cameraHelper.getScreenToCameraPixelX(screenCamera, 40));
+	private void renderTextOverlay() {
 		shapeRender.begin(ShapeType.Filled);
 		shapeRender.setColor(Color.WHITE);
+
+		tempPos.set(screenViewport.x + screenViewport.width / 2, screenViewport.y + cameraHelper.getScreenToCameraPixelX(screenCamera, 40));
 		float textHeight = cameraHelper.getScreenToCameraPixelX(screenCamera, 50);
 		textHelper.render(shapeRender, Integer.toString(Gdx.graphics.getFramesPerSecond()), tempPos, textHeight, screenViewport);
 		tempPos.y += textHeight * 1.2f;
-		textHelper.render(shapeRender, Integer.toString(serverEngine.entitySystem.getEntityCount()), tempPos, textHeight, screenViewport);
+		textHelper.render(shapeRender, Integer.toString(serverGameEngine.entitySystem.getEntityCount()), tempPos, textHeight, screenViewport);
 
 		tempPos.y += textHeight * 1.2f;
 		textHelper.render(shapeRender, Integer.toString((int) ClientEngineSyncManager.dataRate), tempPos, textHeight, screenViewport);
 
 		shapeRender.end();
+	}
 
+	private void renderConnections() {
+		shapeRender.begin(ShapeType.Line);
+		shapeRender.setColor(Color.BLUE);
+		if (serverGameEngine.serverNetworkManager.connections != null) {
+			synchronized (serverGameEngine.serverNetworkManager.connections) {
+				int size = serverGameEngine.serverNetworkManager.connections.size();
+				for (int i = 0; i < size; i++) {
+					ClientEngineSyncManager connection = serverGameEngine.serverNetworkManager.connections.get(i);
+					shapeRender.rect(connection.region.x, connection.region.y, connection.region.width, connection.region.height);
+				}
+			}
+		}
+		shapeRender.end();
 	}
 
 	@Override
@@ -205,7 +181,7 @@ public class GameEngineScreen extends StageScreen {
 				comp.data.vel.x = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
 				comp.data.vel.y = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
 			}
-			this.selectedEntity = serverEngine.getEntityAtPos(tempPos);
+			this.selectedEntity = serverGameEngine.getEntityAtPos(tempPos);
 
 			if (this.selectedEntity != null) {
 				ControlComponent control = PoolsManager.obtain(ControlComponent.class);

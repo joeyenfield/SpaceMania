@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.engine.GameEngine;
+import com.emptypockets.spacemania.engine.engines.GameEngine;
 import com.emptypockets.spacemania.engine.entitysystem.EntityDestructionListener;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;

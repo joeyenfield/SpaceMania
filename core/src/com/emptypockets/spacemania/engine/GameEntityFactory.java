@@ -1,6 +1,7 @@
 package com.emptypockets.spacemania.engine;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.emptypockets.spacemania.engine.engines.GameEngine;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.engine.entitysystem.components.collission.CollissionComponent;
@@ -28,6 +29,9 @@ public class GameEntityFactory {
 		this.assetStore = assetStore;
 	}
 
+	public void createEntity(GameEntityType type, GameEngine engine){
+		
+	}
 	public int getNextEntityId() {
 		return lastEntityCount++;
 	}

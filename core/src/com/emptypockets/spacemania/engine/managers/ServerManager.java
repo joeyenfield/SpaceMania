@@ -2,7 +2,7 @@ package com.emptypockets.spacemania.engine.managers;
 
 import java.util.ArrayList;
 
-import com.emptypockets.spacemania.engine.GameEngine;
+import com.emptypockets.spacemania.engine.engines.GameEngine;
 import com.emptypockets.spacemania.network.ClientEngineSyncManager;
 
 public class ServerManager {

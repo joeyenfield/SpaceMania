@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Pools;
-import com.emptypockets.spacemania.engine.GameEngine;
+import com.emptypockets.spacemania.engine.engines.GameEngine;
 import com.emptypockets.spacemania.engine.entitysystem.EntityDestructionListener;
 import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;

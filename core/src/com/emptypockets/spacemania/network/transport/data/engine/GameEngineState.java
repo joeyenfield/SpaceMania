@@ -1,7 +1,7 @@
 package com.emptypockets.spacemania.network.transport.data.engine;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.emptypockets.spacemania.engine.GameEngine;
+import com.emptypockets.spacemania.engine.engines.GameEngine;
 import com.emptypockets.spacemania.network.transport.data.engine.entity.EntitySystemState;
 import com.emptypockets.spacemania.utils.PoolsManager;
 

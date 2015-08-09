@@ -3,7 +3,7 @@ package com.emptypockets.spacemania.engine.entitysystem;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.emptypockets.spacemania.engine.GameEngine;
+import com.emptypockets.spacemania.engine.engines.GameEngine;
 import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.entitysystem.components.EntityComponentStore;

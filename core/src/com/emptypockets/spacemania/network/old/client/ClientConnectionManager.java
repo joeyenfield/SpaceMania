@@ -7,11 +7,11 @@ import java.util.List;
 
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.Constants;
+import com.emptypockets.spacemania.network.common.ComsType;
+import com.emptypockets.spacemania.network.common.NetworkProtocall;
 import com.emptypockets.spacemania.network.old.client.exceptions.ClientNotConnectedException;
 import com.emptypockets.spacemania.network.old.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.old.server.payloads.ServerPayload;
-import com.emptypockets.spacemania.network.transport.ComsType;
-import com.emptypockets.spacemania.network.transport.NetworkProtocall;
 import com.emptypockets.spacemania.utils.PoolsManager;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;

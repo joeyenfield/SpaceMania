@@ -1,6 +1,6 @@
 package com.emptypockets.spacemania.network.old.client.commands.connection;
 
-import com.emptypockets.spacemania.network.IpManager;
+import com.emptypockets.spacemania.network.common.utils.IpManager;
 import com.emptypockets.spacemania.network.old.client.ClientManager;
 import com.emptypockets.spacemania.network.old.client.commands.ClientCommand;
 

@@ -24,8 +24,8 @@ import com.emptypockets.spacemania.metrics.events.EventSystem;
 import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.metrics.plotter.EventViewer;
 import com.emptypockets.spacemania.metrics.plotter.PlotterViewer;
-import com.emptypockets.spacemania.network.IpManager;
-import com.emptypockets.spacemania.network.IpManagerInterface;
+import com.emptypockets.spacemania.network.common.utils.IpManager;
+import com.emptypockets.spacemania.network.common.utils.IpManagerInterface;
 import com.emptypockets.spacemania.utils.ErrorUtils;
 import com.esotericsoftware.minlog.Log;
 

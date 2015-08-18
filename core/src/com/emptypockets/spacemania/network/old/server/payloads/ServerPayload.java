@@ -1,8 +1,8 @@
 package com.emptypockets.spacemania.network.old.server.payloads;
 
+import com.emptypockets.spacemania.network.common.data.NetworkPayload;
 import com.emptypockets.spacemania.network.old.server.ClientConnection;
 import com.emptypockets.spacemania.network.old.server.ServerManager;
-import com.emptypockets.spacemania.network.transport.data.NetworkPayload;
 
 /**
  * Created by jenfield on 11/05/2015.

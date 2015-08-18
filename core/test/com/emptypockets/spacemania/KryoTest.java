@@ -3,16 +3,16 @@ package com.emptypockets.spacemania;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.engine.entitysystem.components.ComponentData;
-import com.emptypockets.spacemania.engine.entitysystem.components.ComponentType;
-import com.emptypockets.spacemania.engine.entitysystem.components.collission.CollissionData;
-import com.emptypockets.spacemania.engine.entitysystem.components.controls.ControlData;
-import com.emptypockets.spacemania.engine.entitysystem.components.destruction.DestructionData;
-import com.emptypockets.spacemania.engine.entitysystem.components.movement.AngularMovementData;
-import com.emptypockets.spacemania.engine.entitysystem.components.movement.ConstrainedRegionData;
-import com.emptypockets.spacemania.engine.entitysystem.components.movement.LinearMovementData;
-import com.emptypockets.spacemania.engine.entitysystem.components.transform.AngularTransformData;
-import com.emptypockets.spacemania.engine.entitysystem.components.transform.LinearTransformData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.collission.CollissionData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.controls.ControlData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.destruction.DestructionData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.AngularMovementData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.ConstrainedRegionData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.AngularTransformData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.LinearTransformData;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 

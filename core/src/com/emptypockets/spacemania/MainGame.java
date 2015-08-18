@@ -4,12 +4,12 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
-import com.emptypockets.spacemania.gui.GameEngineScreen;
 import com.emptypockets.spacemania.gui.old.ClientScreen;
-import com.emptypockets.spacemania.gui.screens.LoadingScreen;
-import com.emptypockets.spacemania.gui.screens.SplashScreen;
 import com.emptypockets.spacemania.gui.tools.GameScreen;
 import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
+import com.emptypockets.spacemania.screens.GameEngineScreen;
+import com.emptypockets.spacemania.screens.LoadingScreen;
+import com.emptypockets.spacemania.screens.SplashScreen;
 
 public class MainGame extends Game {
 

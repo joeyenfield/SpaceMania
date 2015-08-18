@@ -3,15 +3,13 @@ package com.emptypockets.spacemania.network.old.engine.sync;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.badlogic.gdx.utils.Pools;
 import com.emptypockets.spacemania.holders.CleanerProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
-import com.emptypockets.spacemania.network.old.client.ClientEngine;
 import com.emptypockets.spacemania.network.old.client.player.ClientPlayer;
 import com.emptypockets.spacemania.network.old.client.player.ClientPlayerManager;
-import com.emptypockets.spacemania.network.old.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.old.server.player.ServerPlayer;
 import com.emptypockets.spacemania.network.old.server.player.ServerPlayerManager;
+import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class PlayerManagerSync implements Poolable {
 	ArrayList<ClientPlayer> players = new ArrayList<ClientPlayer>();
@@ -48,7 +46,7 @@ public class PlayerManagerSync implements Poolable {
 			ClientPlayer serverData = players.get(i);
 			ClientPlayer clientData = clientPlayers.getPlayerById(serverData.getId());
 			if (clientData == null) {
-				clientData = Pools.obtain(ClientPlayer.class);
+				clientData = PoolsManager.obtain(ClientPlayer.class);
 				clientData.read(serverData);
 				clientPlayers.addPlayer(clientData);
 			} else {
@@ -61,7 +59,7 @@ public class PlayerManagerSync implements Poolable {
 	public void releaseDataToPool() {
 		int size = players.size();
 		for (int i = 0; i < size; i++) {
-			Pools.free(players.get(i));
+			PoolsManager.free(players.get(i));
 		}
 	}
 

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.network.NetworkProperties;
+import com.emptypockets.spacemania.network.common.NetworkProtocall;
 import com.emptypockets.spacemania.network.old.server.payloads.ServerPayload;
-import com.emptypockets.spacemania.network.transport.NetworkProtocall;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;

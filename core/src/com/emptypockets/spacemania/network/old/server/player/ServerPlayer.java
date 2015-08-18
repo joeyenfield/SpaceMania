@@ -1,6 +1,7 @@
 package com.emptypockets.spacemania.network.old.server.player;
 
 import com.badlogic.gdx.utils.Disposable;
+import com.emptypockets.spacemania.network.common.ComsType;
 import com.emptypockets.spacemania.network.old.client.input.ClientInput;
 import com.emptypockets.spacemania.network.old.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.old.client.player.ClientPlayer;
@@ -18,7 +19,6 @@ import com.emptypockets.spacemania.network.old.engine.sync.PlayerManagerSync;
 import com.emptypockets.spacemania.network.old.server.ClientConnection;
 import com.emptypockets.spacemania.network.old.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.old.server.rooms.ServerRoom;
-import com.emptypockets.spacemania.network.transport.ComsType;
 
 /**
  * Created by jenfield on 12/05/2015.

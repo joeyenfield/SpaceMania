@@ -2,10 +2,10 @@ package com.emptypockets.spacemania.network.old.server;
 
 import java.util.ArrayList;
 
+import com.emptypockets.spacemania.network.common.ComsType;
 import com.emptypockets.spacemania.network.old.client.payloads.ClientPayload;
 import com.emptypockets.spacemania.network.old.server.payloads.ServerPayload;
 import com.emptypockets.spacemania.network.old.server.player.ServerPlayer;
-import com.emptypockets.spacemania.network.transport.ComsType;
 import com.emptypockets.spacemania.utils.KryoUtils;
 import com.esotericsoftware.kryonet.Connection;
 

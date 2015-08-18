@@ -3,7 +3,7 @@ package com.emptypockets.spacemania.utils;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Pools;
-import com.emptypockets.spacemania.network.transport.data.engine.entity.GameEntityRemoved;
+import com.emptypockets.spacemania.network.common.data.engine.entity.GameEntityRemoved;
 
 public class PoolsManager {
 

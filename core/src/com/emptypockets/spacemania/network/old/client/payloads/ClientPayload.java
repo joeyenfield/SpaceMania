@@ -1,7 +1,7 @@
 package com.emptypockets.spacemania.network.old.client.payloads;
 
+import com.emptypockets.spacemania.network.common.data.NetworkPayload;
 import com.emptypockets.spacemania.network.old.client.ClientManager;
-import com.emptypockets.spacemania.network.transport.data.NetworkPayload;
 
 /**
  * Created by jenfield on 11/05/2015.

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.emptypockets.spacemania.engine.entitysystem.GameEntity;
-import com.emptypockets.spacemania.engine.entitysystem.GameEntityType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
+import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 /**

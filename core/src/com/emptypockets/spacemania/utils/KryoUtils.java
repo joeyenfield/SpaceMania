@@ -1,6 +1,6 @@
 package com.emptypockets.spacemania.utils;
 
-import com.emptypockets.spacemania.network.transport.NetworkProtocall;
+import com.emptypockets.spacemania.network.common.NetworkProtocall;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 
@@ -32,12 +32,18 @@ public class KryoUtils {
 		return kryoUtils;
 	}
 
+	public <C> C cloneData(C data){
+		return kryo.copy(data);
+	}
 	public int getDataSize(Object data) {
 		output.clear();
 		kryo.writeObject(output, data);
 		return output.position();
 	}
 
+	public static <C> C clone(C data){
+		return get().cloneData(data);
+	}
 	public static int getSize(Object data) {
 
 		return get().getDataSize(data);

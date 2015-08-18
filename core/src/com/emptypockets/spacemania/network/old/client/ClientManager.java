@@ -7,6 +7,7 @@ import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
 import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.metrics.plotter.DataLogger;
+import com.emptypockets.spacemania.network.common.ComsType;
 import com.emptypockets.spacemania.network.old.CommandService;
 import com.emptypockets.spacemania.network.old.client.exceptions.ClientNotConnectedException;
 import com.emptypockets.spacemania.network.old.client.player.ClientPlayer;
@@ -24,7 +25,6 @@ import com.emptypockets.spacemania.network.old.server.payloads.rooms.JoinRoomReq
 import com.emptypockets.spacemania.network.old.server.payloads.rooms.RequestRoomListPayload;
 import com.emptypockets.spacemania.network.old.server.payloads.rooms.ResizeRoomPayload;
 import com.emptypockets.spacemania.network.old.server.payloads.rooms.SpawnPlayerRequestPayload;
-import com.emptypockets.spacemania.network.transport.ComsType;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class ClientManager implements Disposable {

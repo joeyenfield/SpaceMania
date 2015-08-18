@@ -1,11 +1,11 @@
 package com.emptypockets.spacemania.network.old.engine;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.emptypockets.spacemania.network.common.ComsType;
 import com.emptypockets.spacemania.network.old.client.ClientEngine;
 import com.emptypockets.spacemania.network.old.client.payloads.engine.ClientRoomEngineRegionStatePayload;
 import com.emptypockets.spacemania.network.old.server.engine.ServerEngine;
 import com.emptypockets.spacemania.network.old.server.player.ServerPlayer;
-import com.emptypockets.spacemania.network.transport.ComsType;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class EngineRegionSync {

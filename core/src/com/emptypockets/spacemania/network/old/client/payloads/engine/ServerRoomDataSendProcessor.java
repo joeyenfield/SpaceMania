@@ -2,10 +2,10 @@ package com.emptypockets.spacemania.network.old.client.payloads.engine;
 
 import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.holders.SingleProcessor;
+import com.emptypockets.spacemania.network.common.ComsType;
 import com.emptypockets.spacemania.network.old.client.payloads.rooms.ClientRoomMessagesPayload;
 import com.emptypockets.spacemania.network.old.engine.sync.EntityManagerSync;
 import com.emptypockets.spacemania.network.old.server.player.ServerPlayer;
-import com.emptypockets.spacemania.network.transport.ComsType;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class ServerRoomDataSendProcessor implements SingleProcessor<ServerPlayer> {

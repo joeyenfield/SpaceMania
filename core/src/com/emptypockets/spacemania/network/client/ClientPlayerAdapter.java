@@ -15,11 +15,11 @@ public class ClientPlayerAdapter {
 		int size = states.size();
 		
 		for(int i = 0; i < size; i++){
-			System.out.println("PROCESSING");
 			GameEngineState lastState = states.get(i);
 			clientDataSyncManager.apply(clientEngine, lastState);
 			PoolsManager.free(lastState);
 		}
+		states.clear();
 	}
 
 	public synchronized void recieve(GameEngineState state) {

@@ -9,8 +9,14 @@ public class DestructionComponent extends EntityComponent<DestructionData> {
 		super(ComponentType.DESTRUCTION);
 	}
 
+	@Override
+	public void setupData() {
+		super.setupData();
+		networkSync = true;
+	}
+
 	public void update(float deltaTime) {
-		if (System.currentTimeMillis() > data.destroyTime) {
+		if (entity.engine.getTime() > data.destroyTime) {
 			data.remove = true;
 		}
 	}

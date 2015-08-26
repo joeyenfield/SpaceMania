@@ -25,7 +25,7 @@ public class DataLogger {
 	String dataDirectory = "c:\\test\\data";
 	String ext = "dat";
 
-	static boolean enabled = false;
+	static boolean enabled = true;
 	static boolean nanoTime = false;
 
 	static DataLogger logger;
@@ -107,7 +107,7 @@ public class DataLogger {
 			return getDataLogger().getDataFeed(name).read();
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			return new TimeSeriesDataset();
 		}
 	}
 
@@ -190,6 +190,7 @@ public class DataLogger {
 		Collections.sort(result);
 		return result;
 	}
+
 	public static Set<String> getData() {
 		try {
 			return getDataLogger().getDataLists();
@@ -208,10 +209,24 @@ public class DataLogger {
 		DataLogger.write();
 
 		TimeSeriesDataset data = DataLogger.read("test");
-
+		data.printRange();
 	}
 
-	public static boolean isEnabled() {
+	public synchronized static void startup() {
+		enabled = true;
+		clean();
+	}
+
+	public synchronized static void shutdown() {
+		try {
+			write();
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+		enabled = false;
+	}
+
+	public synchronized static boolean isEnabled() {
 		return enabled;
 	}
 

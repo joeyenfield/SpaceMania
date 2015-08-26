@@ -8,6 +8,11 @@ public class AngularMovementComponent extends EntityComponent<AngularMovementDat
 
 	public AngularMovementComponent() {
 		super(ComponentType.ANGULAR_MOVEMENT);
+	}
+
+	@Override
+	public void setupData() {
+		super.setupData();
 		networkSync = true;
 	}
 

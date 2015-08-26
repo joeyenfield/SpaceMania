@@ -32,7 +32,7 @@ public class TextRender {
 	Vector2 currentPos = new Vector2();
 	float currentSize = 1;
 	Rectangle currentBounds = new Rectangle();
-	boolean strictDraw = true;
+	public boolean strictDraw = true;
 	public void charBounds(ShapeRenderer render, Vector2 pos, float size) {
 		render.rect(pos.x, pos.y, size, size);
 	}
@@ -86,6 +86,9 @@ public class TextRender {
 		}
 		c = Character.toUpperCase(c);
 		switch (c) {
+		case '.':
+			dot(render);
+			break;
 		case '0':
 			num0(render);
 			break;
@@ -200,6 +203,9 @@ public class TextRender {
 		case ':':
 			colinUpper(render);
 			break;
+		case '-' : 
+			dash(render);
+			break;
 		default:
 			break;
 		}
@@ -215,6 +221,12 @@ public class TextRender {
 	/*
 	 * Character Sets
 	 */
+	public void dash(ShapeRenderer render){
+		roundline(0.2f, 0.5f, 0.8f, 0.5f, 0.1f, render);
+	}
+	public void dot(ShapeRenderer render){
+		circle(0.5f, 0.2f, .1f, render);
+	}
 	public void num0(ShapeRenderer render) {
 		arcLine(0.5f, 0.5f, 0.5f - bottomLineInset, lineThickness, 0, 360, 20, render);
 		roundline(0.2f, 0.2f, 0.8f, 0.8f, lineThickness, render);

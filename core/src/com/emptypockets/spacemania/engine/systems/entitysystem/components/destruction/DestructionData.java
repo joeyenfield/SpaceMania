@@ -4,17 +4,29 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Compon
 
 public class DestructionData extends ComponentData<DestructionData> {
 	public boolean remove = false;
-	public long destroyTime = 0;
+	public float destroyTime = 0;
+
 	@Override
 	public void getComponentData(DestructionData result) {
+		result.remove = remove;
+		result.destroyTime = destroyTime;
 	}
 
 	@Override
 	public void setComponentData(DestructionData data) {
+		remove = data.remove;
+		destroyTime = data.destroyTime;
 	}
 
 	@Override
 	public boolean changed(DestructionData data) {
+		if (remove != data.remove) {
+			return true;
+		}
+
+		if (destroyTime != data.destroyTime) {
+			return true;
+		}
 		return false;
 	}
 

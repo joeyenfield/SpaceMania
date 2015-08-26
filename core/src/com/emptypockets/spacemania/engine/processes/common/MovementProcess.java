@@ -10,6 +10,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.contro
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.AngularMovementComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.ConstrainedRegionComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.LinearTransformComponent;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ContentModelContainer;
 
@@ -30,6 +31,7 @@ public class MovementProcess extends EntitySystemManager implements SingleProces
 		if (controls != null) {
 			controls.update(deltaTime);
 		}
+		
 		LinearMovementComponent linearMovementComponent = entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class);
 		if (linearMovementComponent != null) {
 			linearMovementComponent.update(deltaTime);
@@ -44,6 +46,8 @@ public class MovementProcess extends EntitySystemManager implements SingleProces
 		if (constrainedRegionComponent != null) {
 			constrainedRegionComponent.update(deltaTime);
 		}
+		
+		
 
 	}
 

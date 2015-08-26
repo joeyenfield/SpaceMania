@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.emptypockets.spacemania.engine.GameEngineClient;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.network.NetworkDataComponent;
 import com.emptypockets.spacemania.network.common.data.engine.GameEngineState;
 import com.emptypockets.spacemania.network.common.data.engine.entity.GameEntityAdded;
 import com.emptypockets.spacemania.network.common.data.engine.entity.GameEntityNetworkSync;
@@ -18,12 +20,11 @@ public class ClientDataSyncManager {
 		}
 
 		if (state.entitySystemState != null) {
-			
+//			clientEngine.println("Client Recieved");
 			// Add entities
 			ArrayList<GameEntityAdded> added = state.entitySystemState.addedEntities;
 			if (added != null) {
 				size = added.size();
-				System.out.println("SIZE : "+size);
 				for (int i = 0; i < size; i++) {
 					GameEntityAdded add = added.get(i);
 					clientEngine.createEntity(add.type, add.id);
@@ -39,7 +40,7 @@ public class ClientDataSyncManager {
 					clientEngine.removeEntity(remove.id);
 				}
 			}
-			
+
 			// Update Entities
 			ArrayList<GameEntityNetworkSync> statesSync = state.entitySystemState.entityStates;
 			if (removed != null) {
@@ -47,10 +48,14 @@ public class ClientDataSyncManager {
 				for (int i = 0; i < size; i++) {
 					GameEntityNetworkSync stateSync = statesSync.get(i);
 					GameEntity gameEntity = clientEngine.getEntityById(stateSync.entityId);
-					
+					if (gameEntity != null) {
+						gameEntity.getComponent(ComponentType.NETWORK_DATA, NetworkDataComponent.class).writeData(stateSync);
+					}else{
+						throw new RuntimeException("Entity ["+stateSync.entityId+"] is missing");
+					}
 				}
 			}
-			
+
 		}
 	}
 }

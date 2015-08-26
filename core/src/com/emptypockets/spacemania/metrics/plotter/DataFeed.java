@@ -36,6 +36,8 @@ public class DataFeed {
 			dataset.add(point);
 		}
 		in.close();
+		dataset.sortData();
+		dataset.updateRange();
 		return dataset;
 	}
 

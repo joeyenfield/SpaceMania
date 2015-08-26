@@ -5,13 +5,12 @@ import java.util.Collections;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
@@ -23,17 +22,14 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.emptypockets.spacemania.gui.tools.TextRender;
-import com.emptypockets.spacemania.metrics.events.EventSystem;
-import com.emptypockets.spacemania.metrics.events.render.EventRender;
 import com.emptypockets.spacemania.metrics.plotter.data.TimeSeriesDataset;
 import com.emptypockets.spacemania.metrics.plotter.graphs.line.LinePlotDataGraph;
 import com.emptypockets.spacemania.metrics.plotter.graphs.line.LinePlotDescription;
 import com.emptypockets.spacemania.utils.CameraHelper;
 import com.emptypockets.spacemania.utils.GraphicsToolkit;
 import com.emptypockets.spacemania.utils.OrthoCamController;
-import com.emptypockets.spacemania.utils.RandomString;
 
-public class PlotterViewer extends ApplicationAdapter implements GestureListener {
+public class PlotterViewer extends ApplicationAdapter implements GestureListener, InputProcessor {
 	ShapeRenderer shape;
 	OrthographicCamera camera;
 	OrthoCamController cameraControl;
@@ -42,8 +38,6 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 	Color markColor = new Color(Color.WHITE);
 	float markSize = 1;
 	ArrayList<LinePlotDataGraph> graphs = new ArrayList<LinePlotDataGraph>();
-	SpriteBatch sprite;
-	BitmapFont font;
 
 	TimeSeriesDataset range;
 
@@ -57,16 +51,24 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 	CameraHelper helper;
 
+	int graphWidthPixels = 1000;
+	float mainGraphHeight = 100;
+	float generalDataHeight = 100;
+	float tickDataGraphHeight = 10;
+	
+	boolean rebuildOnChange = true;
+	int graphGap = 10;
+
+	float gridSize = 100;
+	
 	@Override
 	public void create() {
 		helper = new CameraHelper();
 		textRender = new TextRender();
+		textRender.strictDraw = false;
 		stage = new Stage(new ScreenViewport());
 
 		shape = new ShapeRenderer();
-		sprite = new SpriteBatch();
-		font = new BitmapFont();
-		font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		camera = new OrthographicCamera();
 		cameraControl = new OrthoCamController(camera);
@@ -75,51 +77,45 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		input.addProcessor(stage);
 		input.addProcessor(new GestureDetector(this));
 		input.addProcessor(cameraControl);
+		input.addProcessor(this);
 
 		Gdx.input.setInputProcessor(input);
 
 		gridColor.a = 0.1f;
-		range = DataLogger.read("server-update");
-		int sizeX = 10000;
-		int dataGraphHeight = 500;
-		float ticksGraphHeight = 20;
 
-		int graphGap = 10;
+		manager = new DataLoggerGraphManager(stage, "Test", null);
+		stage.addActor(manager);
+		manager.setVisible(true);
+	}
+
+	public synchronized void rebuild() {
+		graphs.clear();
+		range = DataLogger.read("HOST-UPDATE");
 
 		int graphCount = 0;
 
-		LinePlotDataGraph customGraph = createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Offsets", (Color) null, "client-ent-1-off-x", "ent-offset-server-x");
+		LinePlotDataGraph customGraph = createLineGraph(0, (graphCount++) * (mainGraphHeight + graphGap), graphWidthPixels, mainGraphHeight, "Graph", (Color) null, "HOST-UPDATE", "CLIENT-UPDATE");
 		graphs.add(customGraph);
-		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Offsets", (Color) null, "client-ent-1-off-x", "ent-offset-server-x"));
-		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Pos Stuff", (Color) null, "server-ent-1-pos-x", "client-ent-1-pos-x"));
-		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Vel", (Color) null, "server-ent-1-vel-x", "client-ent-1-vel-x"));
-		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "Vel", (Color) null, "tmp-x", "client-ent-1-vel-x"));
-
-		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "client-input-x", getRandomColor()));
-		graphs.add(createLineGraph(0, (graphCount++) * (dataGraphHeight + graphGap), sizeX, dataGraphHeight, "server-input-x", getRandomColor()));
+		graphs.add(createLineGraph(0, (graphCount++) * (mainGraphHeight + graphGap), graphWidthPixels, mainGraphHeight, "Graph 1", (Color) null, "HOST-UPDATE"));
+		graphs.add(createLineGraph(0, (graphCount++) * (mainGraphHeight + graphGap), graphWidthPixels, mainGraphHeight, "Graph 2", (Color) null, "CLIENT-UPDATE"));
 
 		graphCount++;
-		float allDataHeight = 100;
+		
 		int count = 0;
 		ArrayList<String> names = new ArrayList<String>(DataLogger.getData());
 		Collections.sort(names);
 		for (String name : names) {
-			int lastHeight = (graphCount * (dataGraphHeight + graphGap));
-			lastHeight += count++ * (allDataHeight + graphGap);
-			graphs.add(createLineGraph(0, lastHeight, sizeX, allDataHeight, name, getRandomColor()));
+			float lastHeight = (graphCount * (mainGraphHeight + graphGap));
+			lastHeight += count++ * (generalDataHeight + graphGap);
+			graphs.add(createLineGraph(0, lastHeight, graphWidthPixels, generalDataHeight, name, getRandomColor()));
 		}
 
 		int ticks = 0;
 		ticks++;
 
-		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "client-logic", getRandomColor()));
-		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "server-update", getRandomColor()));
-		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "client-sync", getRandomColor()));
-		graphs.add(createSpikeGraph(0, (ticks++) * (-(ticksGraphHeight + graphGap)), sizeX, ticksGraphHeight, "server-sync", getRandomColor()));
+		graphs.add(createSpikeGraph(0, (ticks++) * (-(tickDataGraphHeight + graphGap)), graphWidthPixels, tickDataGraphHeight, "HOST-UPDATE", getRandomColor()));
+		graphs.add(createSpikeGraph(0, (ticks++) * (-(tickDataGraphHeight + graphGap)), graphWidthPixels, tickDataGraphHeight, "CLIENT-UPDATE", getRandomColor()));
 
-		manager = new DataLoggerGraphManager(stage, "Test", customGraph);
-		stage.addActor(manager);
-		manager.setVisible(true);
 	}
 
 	public LinePlotDataGraph createSpikeGraph(float x, float y, float sizeX, float sizeY, String name, Color color) {
@@ -169,6 +165,8 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		for (int i = 0; i < dataset.length; i++) {
 			LinePlotDescription desc = dataset[i];
 			TimeSeriesDataset data = DataLogger.read(desc.getName());
+			System.out.println(name + "-MIN:" + data.getMinValue());
+			System.out.println(name + "-MAX:" + data.getMaxValue());
 			graph.addLineDataset(data, desc);
 			spike = spike || desc.isSpike();
 		}
@@ -183,26 +181,27 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 	}
 
 	@Override
-	public void render() {
+	public synchronized void render() {
 		stage.act();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		camera.update();
 		shape.setProjectionMatrix(camera.combined);
-		sprite.setProjectionMatrix(camera.combined);
 
 		Rectangle bounds = new Rectangle();
 		helper.getBounds(camera, bounds);
 
 		GraphicsToolkit.drawAxis(shape, camera);
-		GraphicsToolkit.drawGrid(shape, camera, 10, gridColor);
-		GraphicsToolkit.drawGrid(shape, camera, 50, gridColor);
-		GraphicsToolkit.drawGrid(shape, camera, 100, gridColor);
+		GraphicsToolkit.drawGrid(shape, camera, gridSize/10, gridColor);
+		GraphicsToolkit.drawGrid(shape, camera, gridSize/2, gridColor);
+		GraphicsToolkit.drawGrid(shape, camera, gridSize, gridColor);
 
 		for (LinePlotDataGraph graph : graphs) {
 			graph.drawLine(shape);
 		}
+
+		float helperTextHeight = helper.getScreenToCameraPixelX(camera, 30);
 
 		boolean touchValid = false;
 		boolean shown[] = new boolean[] { false, false };
@@ -237,63 +236,42 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 				shape.rectLine(touchPos.x, -1e10f, touchPos.x, 1e10f, size);
 				shape.end();
 
-				sprite.begin();
-				sprite.enableBlending();
+				shape.begin(ShapeType.Filled);
+				shape.setColor(Color.WHITE);
 				for (LinePlotDataGraph graph : graphs) {
 					String message;
 					if (touchValid && graph.getScreenBounds().contains(touchPos.x, touchPos.y)) {
 						graphData.x = graph.screenToGraphX(touchPos.x);
 						graphData.y = graph.screenToGraphY(touchPos.y);
-						message = graph.getName() + " [ " + graphData.x + " - " + graphData.y + "]";
-						font.draw(sprite, message, touchPos.x, touchPos.y);
+						message = graph.getName() + ":" + graphData.x + "-" + graphData.y;
+						textRender.render(shape, message, touchPos.x, touchPos.y, helperTextHeight, bounds);
 					}
 				}
 
-				sprite.end();
+				shape.end();
 			}
-
-			long peroid = 4000;
-			float size = 10 + 100 * MathUtils.sin(3.14159f * ((System.currentTimeMillis() % peroid) / (float) peroid));
-			size = 100;
-
-			Vector2 pos = new Vector2();
-			String[] data = new String[] { "The Quick brown fox jumped over the lazy dog.", "abcdefghijklmnopqrstuvwxyz", "AB\tCDEFGHIJKLMNOPQRSTUVWXYZ", "0123456789.-:?", RandomString.random(10), "FPS : " + Gdx.graphics.getFramesPerSecond() };
-			pos.set(size, size);
-			shape.begin(ShapeType.Filled);
-			shape.setColor(Color.RED);
-			for (String text : data) {
-				pos.y += 1.5 * size;
-				textRender.render(shape, text, pos, size, bounds);
-			}
-			textRender.render(shape, "S", Vector2.Zero, 100, bounds);
-			shape.end();
 		}
 
+		shape.begin(ShapeType.Filled);
+		shape.setColor(Color.WHITE);
 		if (shown[0] && shown[1]) {
-			sprite.begin();
-			sprite.enableBlending();
 			float dx = Math.abs(touchGraphData[0].x - touchGraphData[1].x);
 			float dy = Math.abs(touchGraphData[0].y - touchGraphData[1].y);
-			String message = " [ " + dx + " - " + dy + "]";
+			String message = "(" + dx + "-" + dy + ")";
 
 			float x = Math.min(touchData[0].x, touchData[1].x);
 			float y = Math.max(touchData[0].y, touchData[1].y);
 
-			font.draw(sprite, message, x, y + 50);
-			sprite.end();
+			textRender.render(shape, message, x, y + helperTextHeight, helperTextHeight, bounds);
 		}
-		sprite.begin();
-		sprite.enableBlending();
 		for (LinePlotDataGraph graph : graphs) {
 			String message = graph.getName();
-			font.draw(sprite, message, graph.getScreenBounds().x, graph.getScreenBounds().y + graph.getScreenBounds().height);
+			textRender.render(shape, message, graph.getScreenBounds().x, graph.getScreenBounds().y + graph.getScreenBounds().height - 10, 10, bounds);
 		}
-		sprite.end();
+		shape.end();
 
-		
 		stage.draw();
 
-		
 	}
 
 	public static String randomString(int length) {
@@ -396,6 +374,143 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 	@Override
 	public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		boolean change = false;
+
+		if (keycode == Keys.F1) {
+			rebuild();
+		}
+		if (keycode == Keys.F2) {
+			rebuildOnChange = !rebuildOnChange;
+		}
+		
+		/**
+		 * Pixels Width
+		 */
+		if (keycode == Keys.Q) {
+			graphWidthPixels += 200;
+			change = true;
+		}
+		if (keycode == Keys.A) {
+			graphWidthPixels -= 200;
+			if (graphWidthPixels < 200) {
+				graphWidthPixels = 200;
+			}
+			change = true;
+		}
+
+		/**
+		 * Main Graph Height
+		 */
+		if (keycode == Keys.W) {
+			mainGraphHeight += 20;
+			change = true;
+		}
+		if (keycode == Keys.S) {
+			mainGraphHeight -= 20;
+			if (mainGraphHeight < 20) {
+				mainGraphHeight = 20;
+			}
+			change = true;
+		}
+		
+		/**
+		 * Data Graph Height
+		 */
+
+		if (keycode == Keys.E) {
+			generalDataHeight += 20;
+			change = true;
+		}
+		if (keycode == Keys.D) {
+			generalDataHeight -= 20;
+			if (generalDataHeight < 20) {
+				generalDataHeight = 20;
+			}
+			change = true;
+		}
+
+		
+		/**
+		 * Tick Graph Height
+		 */
+
+		if (keycode == Keys.E) {
+			tickDataGraphHeight += 2;
+			change = true;
+		}
+		if (keycode == Keys.D) {
+			tickDataGraphHeight -= 2;
+			if (tickDataGraphHeight < 2) {
+				tickDataGraphHeight = 2;
+			}
+			change = true;
+		}
+		
+		/**
+		 * Grid Size
+		 */
+
+		if (keycode == Keys.R) {
+			gridSize += 20;
+		}
+		if (keycode == Keys.F) {
+			gridSize -= 20;
+			if (gridSize < 20) {
+				gridSize = 20;
+			}
+		}
+
+		if (change && rebuildOnChange) {
+			rebuild();
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
 		// TODO Auto-generated method stub
 		return false;
 	}

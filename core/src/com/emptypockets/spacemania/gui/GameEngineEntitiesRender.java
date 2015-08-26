@@ -15,18 +15,21 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.render
 import com.emptypockets.spacemania.gui.tools.TextRender;
 
 public class GameEngineEntitiesRender {
-	boolean showDebug = true;
-	boolean showCellsSpace = true;
+	public boolean showDebug = false;
+	boolean showCellsSpace = false;
 	ArrayList<GameEntity> entities = new ArrayList<GameEntity>();
 	Rectangle screenView = new Rectangle();
 
 	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, TextRender textHelper, float pixelSize, Vector2 offset) {
 		screenView.set(screen);
+		
+
 		screenView.x -= offset.x;
 		screenView.y -= offset.y;
-
 		engine.spatialPartition.searchAnyMask(screenView, ComponentType.RENDER.getMask(), entities);
-
+		screenView.x += offset.x;
+		screenView.y += offset.y;
+		
 		int size = entities.size();
 		for (int i = 0; i < size; i++) {
 			GameEntity entity = entities.get(i);

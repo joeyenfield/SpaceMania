@@ -33,11 +33,16 @@ import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEngineScreen extends StageScreen implements EntityDestructionListener {
 
-	int width = 300;
-	int height = 300;
-	int desiredEntityCount = 10;
-	public static float minVel = 1;
-	public static float maxVel = 10;
+	int width = 800;
+	int height = 800;
+
+	int regionSizeX = 3000;
+	int regionSizeY = 3000;
+
+	int viewOffsetX = width + 30;
+	int desiredEntityCount = 1;
+	public static float minVel = 10;
+	public static float maxVel = 20;
 
 	GameEngineHost serverGameEngine;
 	GameEngineClient clientGameEngine;
@@ -49,9 +54,10 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRender;
+	TextRender textHelper;
+
 	OrthoCamController controller;
 
-	TextRender textHelper;
 	Vector2 tempPos = new Vector2();
 
 	GameEntity selectedEntity = null;
@@ -109,7 +115,7 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		clientGameEngine = new GameEngineClient();
 		clientGameEngine.setUniverseSize(-width / 2, -height / 2, width, height);
 
-		createShip();
+		// createShip();
 
 		// Client Connection
 		clientGameEngine.clientNetworkProcess.adapters = new ArrayList<ClientPlayerAdapter>();
@@ -119,15 +125,18 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 			// Setup Client Side
 			ClientPlayerAdapter clientAdapter = new ClientPlayerAdapter();
 
+			GameEntity ent = createShip();
 			// Setup Host Side
 			HostPlayerAdapter hostConnection = new HostPlayerAdapter();
 			hostConnection.clientId = i;
-			hostConnection.entityId = createShip().entityId;
-			hostConnection.region = new Rectangle(0, 0, 2048, 2048);
+			hostConnection.entityId = ent.entityId;
+			hostConnection.region = new Rectangle(0, 0, regionSizeX, regionSizeY);
 			hostConnection.adapter = clientAdapter;
 
 			serverGameEngine.hostNetworkProcess.connections.add(hostConnection);
-			clientGameEngine.clientNetworkProcess.adapters.add(clientAdapter);
+			if (i == 0) {
+				clientGameEngine.clientNetworkProcess.adapters.add(clientAdapter);
+			}
 		}
 
 	}
@@ -147,6 +156,12 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		super.updateLogic(delta);
 		serverGameEngine.update(delta);
 		clientGameEngine.update(delta);
+
+		for (int i = 0; i < 10; i++) {
+			if (serverGameEngine.entitySystem.getEntityCount() < desiredEntityCount) {
+				createShip();
+			}
+		}
 	}
 
 	@Override
@@ -158,10 +173,12 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		float pixSize = cameraHelper.getScreenToCameraPixelX(getScreenCamera(), 1);
 		tempPos.x = 0;
 		tempPos.y = 0;
+		render.showDebug = false;
 		render.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize, tempPos);
 
-		tempPos.x = width + 20;
-		// tempPos.y = height + 20;
+		tempPos.x = viewOffsetX;
+		// tempPos.x = width+100;
+		render.showDebug = true;
 		render.render(clientGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize, tempPos);
 		renderConnections();
 		renderTextOverlay();
@@ -206,27 +223,33 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 			tempPos.y = y;
 			cameraHelper.screenToWorld(getScreenCamera(), tempPos);
 
-			if (this.selectedEntity != null) {
-				this.selectedEntity.removeComponent(ComponentType.CONTROL);
-				this.selectedEntity.removeListener(this);
-				LinearMovementComponent comp = (LinearMovementComponent) this.selectedEntity.getComponent(ComponentType.LINEAR_MOVEMENT);
-				// float progress = (0.1f + 0.8f * (i / (ents - 1f)));
-				// entity.linearTransform.data.pos.x = width * progress;
-				// entity.linearTransform.data.pos.y = height * progress;
-				// comp.data.vel.x = 10;?
-				comp.data.vel.x = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
-				comp.data.vel.y = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
-			}
-			this.selectedEntity = serverGameEngine.getEntityAtPos(tempPos);
-
-			if (this.selectedEntity != null) {
-				ControlComponent control = PoolsManager.obtain(ControlComponent.class);
-				control.setupData();
-				this.selectedEntity.addComponent(control);
-				this.selectedEntity.addListener(this);
-			}
+			GameEntity selectedEnt = serverGameEngine.getEntityAtPos(tempPos);
+			setEntity(selectedEnt);
 		}
 		return false;
+	}
+
+	public void setEntity(GameEntity ent) {
+		if (this.selectedEntity != null) {
+			this.selectedEntity.removeComponent(ComponentType.CONTROL);
+			this.selectedEntity.removeListener(this);
+			LinearMovementComponent comp = (LinearMovementComponent) this.selectedEntity.getComponent(ComponentType.LINEAR_MOVEMENT);
+			// float progress = (0.1f + 0.8f * (i / (ents - 1f)));
+			// entity.linearTransform.data.pos.x = width * progress;
+			// entity.linearTransform.data.pos.y = height * progress;
+			// comp.data.vel.x = 10;?
+			comp.data.vel.x = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
+			comp.data.vel.y = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
+		}
+
+		this.selectedEntity = ent;
+		if (ent != null) {
+			ControlComponent control = PoolsManager.obtain(ControlComponent.class);
+			control.setupData();
+			this.selectedEntity.addComponent(control);
+			this.selectedEntity.addListener(this);
+		}
+
 	}
 
 	@Override

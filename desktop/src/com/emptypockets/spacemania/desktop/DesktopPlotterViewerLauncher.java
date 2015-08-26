@@ -11,14 +11,14 @@ import javax.swing.JTextArea;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.emptypockets.spacemania.MainGame;
+import com.emptypockets.spacemania.metrics.plotter.PlotterViewer;
 import com.emptypockets.spacemania.network.common.utils.IpManager;
 import com.emptypockets.spacemania.utils.ErrorUtils;
 import com.esotericsoftware.minlog.Log;
 
-public class DesktopLauncher {
+public class DesktopPlotterViewerLauncher {
 
-	public static void main(String[] arg) throws InterruptedException, FileNotFoundException, IOException {
+	public static void main(String[] arg) throws Exception {
 		try {
 			IpManager.setIpFinder(new DesktopIpFinder());
 			System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true");
@@ -34,7 +34,7 @@ public class DesktopLauncher {
 			config.allowSoftwareMode = true;
 
 			ApplicationListener app;
-			app = new MainGame();
+			app = new PlotterViewer();
 			new LwjglApplication(app, config);
 		} catch (Throwable t) {
 			JTextArea textArea = new JTextArea();
@@ -49,5 +49,18 @@ public class DesktopLauncher {
 			frame.setVisible(true);
 			t.printStackTrace();
 		}
+	}
+	
+	public static void startSecondJVM() throws Exception {
+		String separator = System.getProperty("file.separator");
+		String classpath = System.getProperty("java.class.path");
+		String path = System.getProperty("java.home")
+	                + separator + "bin" + separator + "java";
+		ProcessBuilder processBuilder = 
+	                new ProcessBuilder(path, "-cp", 
+	                classpath, 
+	                DesktopLauncher.class.getName());
+		Process process = processBuilder.start();
+		process.waitFor();
 	}
 }

@@ -6,6 +6,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.collission.CollissionComponent;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.destruction.DestructionComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
 
 public class WeaponComponent extends EntityComponent<WeaponData> {
@@ -21,7 +22,11 @@ public class WeaponComponent extends EntityComponent<WeaponData> {
 			lastShoot = System.currentTimeMillis();
 
 			GameEntity bullet = entity.engine.createEntity(GameEntityType.BULLET);
-
+			WeaponComponent weaponComp = entity.getComponent(ComponentType.WEAPON, WeaponComponent.class);
+			DestructionComponent desComp = bullet.getComponent(ComponentType.DESTRUCTION, DestructionComponent.class);
+			if (desComp != null) {
+				desComp.data.destroyTime = entity.engine.getTime() + (weaponComp.data.bulletLife);
+			}
 			Vector2 pos = bullet.linearTransform.data.pos;
 			Vector2 vel = bullet.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).data.vel;
 

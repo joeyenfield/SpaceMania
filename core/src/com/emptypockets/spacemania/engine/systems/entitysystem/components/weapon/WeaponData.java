@@ -4,7 +4,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Compon
 
 public class WeaponData extends ComponentData<WeaponData> {
 	public long shootTime = 2000;
-	public long bulletLife = 10000;
+	public float bulletLife = 2;
 	public float bulletVel = 400;
 	public boolean shooting = false;
 

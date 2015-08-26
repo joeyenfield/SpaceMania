@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
-public abstract class EntityComponent<DATA_TYPE extends ComponentData<?>> implements Poolable {
+public abstract class EntityComponent<DATA_TYPE extends ComponentData> implements Poolable {
 	protected GameEntity entity;
 	public ComponentType componentType;
 	public DATA_TYPE data = null;
@@ -35,7 +35,7 @@ public abstract class EntityComponent<DATA_TYPE extends ComponentData<?>> implem
 	public void setEntity(GameEntity entity) {
 		this.entity = entity;
 	}
-
+	
 	public void reset() {
 		entity = null;
 		networkSync = false;
@@ -45,5 +45,16 @@ public abstract class EntityComponent<DATA_TYPE extends ComponentData<?>> implem
 
 	public void setData(DATA_TYPE data) {
 		this.data = data;
+	}
+	
+	public boolean dataChanged(DATA_TYPE data){
+		return this.data.changed(data);
+	}
+	public void writeData(DATA_TYPE data){
+		this.data.setComponentData(data);
+	}
+	
+	public void readData(DATA_TYPE data){
+		this.data.getComponentData(data);
 	}
 }

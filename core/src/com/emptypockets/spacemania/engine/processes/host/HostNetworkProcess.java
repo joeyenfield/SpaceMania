@@ -12,14 +12,13 @@ public class HostNetworkProcess implements EngineProcess<GameEngineHost> {
 	public ArrayList<HostPlayerAdapter> connections;
 
 	long lastProcessTime = 0;
-	long desiredProcessTime = 5000;
+	long desiredProcessTime = 100;
 
 	public void processOutgoingData(GameEngineHost gameEngine) {
 		if (connections != null) {
 			if (System.currentTimeMillis() - lastProcessTime > desiredProcessTime) {
 				lastProcessTime = System.currentTimeMillis();
 				synchronized (connections) {
-					System.out.println("Broadcast");
 					int size = connections.size();
 					for (int i = 0; i < size; i++) {
 						HostPlayerAdapter connection = connections.get(i);

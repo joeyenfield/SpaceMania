@@ -4,6 +4,8 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Compon
 
 public class NetworkData extends ComponentData<NetworkData> {
 
+	boolean first = false;
+	
 	@Override
 	public void getComponentData(NetworkData result) {
 	}
@@ -19,6 +21,7 @@ public class NetworkData extends ComponentData<NetworkData> {
 
 	@Override
 	public void reset() {
+		first = false;
 	}
 
 }

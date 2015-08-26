@@ -70,7 +70,9 @@ public class HostDataSyncManager implements EntityDestructionListener {
 			GameEntityNetworkSync syncMessage = PoolsManager.obtain(GameEntityNetworkSync.class);
 			if (ent.getComponent(ComponentType.NETWORK_DATA, NetworkDataComponent.class).readData(lastData.get(ent), syncMessage)) {
 				getCurrentState().entitySystemState.entityStates.add(syncMessage);
+//				engine.println("("+ent.entityId+") : Change \n");
 			} else {
+//				engine.println("("+ent.entityId+") : No Change \n");
 				// Free Message if its not used
 				PoolsManager.free(syncMessage);
 			}
@@ -79,6 +81,7 @@ public class HostDataSyncManager implements EntityDestructionListener {
 
 	private synchronized GameEngineState getCurrentState() {
 		if (currentState == null) {
+			//Logic is in here to do this as its used in multiple places
 			currentState = PoolsManager.obtain(GameEngineState.class);
 			currentState.entitySystemState = PoolsManager.obtain(EntitySystemState.class);
 		}
@@ -90,6 +93,9 @@ public class HostDataSyncManager implements EntityDestructionListener {
 
 		// Flip Out State with a new state
 		GameEngineState state = currentState;
+		if(state == null){
+			state = getCurrentState();
+		}
 		currentState = null;
 		getCurrentState(); // Should create a new state object
 		// Return Old State

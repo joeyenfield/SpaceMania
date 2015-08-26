@@ -103,8 +103,12 @@ public class TimeSeriesDataset {
 	public long getPointCount() {
 		return datapoints.size();
 	}
+	
+	public void printRange(){
+		System.out.println(getPointCount()+" : "+getRange());
+	}
 
-	public String printRange() {
+	public String getRange() {
 		return "Value : [" + minValue + "," + maxValue + "] Range [" + minTime + "," + maxTime + "]";
 	}
 

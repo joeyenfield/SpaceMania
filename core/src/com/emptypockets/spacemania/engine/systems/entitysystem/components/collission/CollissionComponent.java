@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
+import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.destruction.DestructionComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementData;
+import com.emptypockets.spacemania.network.old.engine.entities.EntityType;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class CollissionComponent extends EntityComponent<CollissionData> {
@@ -50,8 +52,12 @@ public class CollissionComponent extends EntityComponent<CollissionData> {
 		if (!ent.hasAnyOfAbility(ComponentType.DESTRUCTION.getMask())) {
 			DestructionComponent dest = PoolsManager.obtain(DestructionComponent.class);
 			dest.setupData();
-			dest.data.destroyTime = System.currentTimeMillis() + 5000;
+			dest.data.destroyTime = ent.engine.getTime() + 1;
 			ent.addComponent(dest);
+		}
+		
+		if (ent.type != GameEntityType.BULLET && ent.hasAnyOfAbility(ComponentType.LINEAR_MOVEMENT.getMask())) {
+			ent.removeComponent(ComponentType.LINEAR_MOVEMENT);
 		}
 	}
 

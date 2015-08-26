@@ -2,6 +2,7 @@ package com.emptypockets.spacemania.engine;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.Constants;
@@ -13,8 +14,12 @@ import com.emptypockets.spacemania.engine.processes.common.WeaponProcess;
 import com.emptypockets.spacemania.engine.systems.entitysystem.EntitySystem;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
 import com.emptypockets.spacemania.engine.systems.factory.GameEntityFactory;
 import com.emptypockets.spacemania.engine.systems.spatialpartition.CellsGameEntitySpatitionPartition;
+import com.emptypockets.spacemania.holders.SingleProcessor;
+import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEngine {
@@ -53,6 +58,23 @@ public class GameEngine {
 	}
 
 	public void update(float deltaTime) {
+		if (DataLogger.isEnabled()) {
+			DataLogger.log(name + "-UPDATE", 1);
+			DataLogger.log(name+"-VALUE", MathUtils.random());
+			entitySystem.process(new SingleProcessor<GameEntity>() {
+				@Override
+				public void process(GameEntity entity) {
+					DataLogger.log(name+"-ent-"+entity.entityId+"-pos-x", entity.linearTransform.data.pos.x);
+					DataLogger.log(name+"-ent-"+entity.entityId+"-pos-y", entity.linearTransform.data.pos.y);
+					
+					if(entity.hasComponent(ComponentType.LINEAR_MOVEMENT)){
+						DataLogger.log(name+"-ent-"+entity.entityId+"-vel-x", entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).data.vel.x);
+						DataLogger.log(name+"-ent-"+entity.entityId+"-vel-y", entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).data.vel.y);
+					}
+					
+				}
+			});
+		}
 		lastDelta = deltaTime;
 		engineTime += deltaTime;
 
@@ -75,30 +97,30 @@ public class GameEngine {
 	}
 
 	public float getTime() {
-		return System.currentTimeMillis();
+		return engineTime;
 	}
 
 	public GameEntity createEntity(GameEntityType type, int id) {
-		println("Create : [" + type.name() + "] - " + id);
+		// println("Create : [" + type.name() + "] - " + id);
 		GameEntity entity = entityFactory.createEntity(type, id);
 		addEntity(entity);
 		return entity;
 	}
 
 	public GameEntity createEntity(GameEntityType type) {
-		println("Create : [" + type.name() + "]");
+		// println("Create : [" + type.name() + "]");
 		entityCreationCount++;
 		return createEntity(type, entityCreationCount);
 	}
 
 	public void addEntity(GameEntity entity) {
-		println("Add : [" + entity.type.name() + "] - " + entity.entityId);
+		// println("Add : [" + entity.type.name() + "] - " + entity.entityId);
 		entitySystem.add(entity);
 		entity.addListener(spatialPartition);
 	}
 
 	public void removeEntity(GameEntity ent) {
-		println("Remove ENT : " + ent.entityId);
+		// println("Remove ENT : " + ent.entityId);
 		ent.notifyDestroyed();
 		PoolsManager.free(ent);
 	}
@@ -109,7 +131,7 @@ public class GameEngine {
 	}
 
 	public void removeEntity(int id) {
-		println("Remove : " + id);
+		// println("Remove : " + id);
 		GameEntity entity = getEntityById(id);
 		if (entity == null) {
 			// throw new RuntimeException("Null Entity");

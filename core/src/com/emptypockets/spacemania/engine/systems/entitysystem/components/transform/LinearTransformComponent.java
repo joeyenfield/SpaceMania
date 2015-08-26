@@ -7,6 +7,11 @@ public class LinearTransformComponent extends EntityComponent<LinearTransformDat
 
 	public LinearTransformComponent() {
 		super(ComponentType.LINEAR_TRANSFORM);
+	}
+
+	@Override
+	public void setupData() {
+		super.setupData();
 		networkSync = true;
 	}
 

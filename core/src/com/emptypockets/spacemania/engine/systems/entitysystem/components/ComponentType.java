@@ -1,5 +1,7 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components;
 
+import javax.management.RuntimeErrorException;
+
 import com.emptypockets.spacemania.utils.BitUtilities;
 
 public enum ComponentType {
@@ -16,7 +18,7 @@ public enum ComponentType {
 	CONTROL(10),
 	WEAPON(11);
 	int mask = 0;
-	int id = 0;
+	public int id = 0;
 	public static final int COMPONENT_TYPES = 12;
 
 	public static EntityComponent[] getComponentHolder() {
@@ -26,6 +28,26 @@ public enum ComponentType {
 	public static ComponentData[] getComponentDataHolder() {
 		return new ComponentData[COMPONENT_TYPES];
 	}
+	
+	public static ComponentType getById(int i) {
+		switch (i) {
+		case 0:return LINEAR_TRANSFORM;
+		case 1:return ANGULAR_TRANSFORM;
+		case 2:return LINEAR_MOVEMENT;
+		case 3:return ANGULAR_MOVEMENT;
+		case 4:return PARTITION;
+		case 5:return CONSTRAINED_MOVEMENT;
+		case 6:return RENDER;
+		case 7:return NETWORK_DATA;
+		case 8:return DESTRUCTION;
+		case 9:return COLLISSION;
+		case 10:return CONTROL;
+		case 11:return WEAPON;
+		}
+		
+		throw new RuntimeException("Missing Id");
+	}
+
 
 	private ComponentType(int id) {
 		this.mask = 1 << id;
@@ -56,12 +78,14 @@ public enum ComponentType {
 	public String getMaskString() {
 		return BitUtilities.toString(mask);
 	}
+	
 
 	public static void printMasks() {
 		for (ComponentType type : ComponentType.values()) {
 			System.out.printf("%s - %s\n", type.getMaskString(), type.name());
 		}
 	}
+
 
 
 }

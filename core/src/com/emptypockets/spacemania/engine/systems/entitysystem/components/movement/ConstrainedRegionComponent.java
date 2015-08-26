@@ -17,6 +17,10 @@ public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegio
 			return;
 		}
 		Vector2 pos = entity.linearTransform.data.pos;
+		
+		if(!entity.hasComponent(ComponentType.LINEAR_MOVEMENT)){
+			return;
+		}
 		Vector2 vel = ((LinearMovementData) entity.getComponent(ComponentType.LINEAR_MOVEMENT).data).vel;
 		float rad = data.constrainRadius;
 		float inset = rad;

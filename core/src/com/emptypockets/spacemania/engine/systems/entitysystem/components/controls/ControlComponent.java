@@ -36,13 +36,14 @@ public class ControlComponent extends EntityComponent<ControlData> {
 			data.shooting = false;
 		}
 
-		Vector2 vel = entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).data.vel;
-		if (data.move.len2() > 0.01) {
-			vel.set(data.move).scl(GameEngineScreen.maxVel);
-		} else {
-			vel.setZero();
+		if (entity != null && entity.hasComponent(ComponentType.LINEAR_MOVEMENT)) {
+			Vector2 vel = entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).data.vel;
+			if (data.move.len2() > 0.01) {
+				vel.set(data.move).scl(400);// GameEngineScreen.maxVel);
+			} else {
+				vel.setZero();
+			}
 		}
-
 		WeaponComponent weapon = entity.getComponent(ComponentType.WEAPON, WeaponComponent.class);
 		if (weapon != null) {
 			weapon.data.shooting = data.shooting;

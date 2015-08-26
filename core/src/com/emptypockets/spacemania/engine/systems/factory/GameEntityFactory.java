@@ -4,7 +4,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.collission.CollissionComponent;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.controls.ControlComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.destruction.DestructionComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.AngularMovementComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.ConstrainedRegionComponent;
@@ -37,7 +40,7 @@ public class GameEntityFactory {
 			ent = createShipEntity(id);
 			break;
 		default:
-			throw new RuntimeException("NOt yet implemented");
+			throw new RuntimeException("Not yet implemented");
 		}
 		return ent;
 	}
@@ -48,47 +51,24 @@ public class GameEntityFactory {
 		GameEntity entity = PoolsManager.obtain(GameEntity.class);
 		entity.type = GameEntityType.BULLET;
 		entity.setData(engine, entityId);
-		entity.linearTransform = PoolsManager.obtain(LinearTransformComponent.class);
-		entity.linearTransform.setupData();
-		entity.addComponent(entity.linearTransform);
 
-		entity.angularTransform = PoolsManager.obtain(AngularTransformComponent.class);
-		entity.angularTransform.setupData();
-		entity.addComponent(entity.angularTransform);
+		// Add Components
+		entity.addComponent(ComponentType.LINEAR_TRANSFORM);
+		entity.addComponent(ComponentType.ANGULAR_TRANSFORM);
+		entity.addComponent(ComponentType.LINEAR_MOVEMENT);
+		entity.addComponent(ComponentType.ANGULAR_MOVEMENT);
+		entity.addComponent(ComponentType.PARTITION);
+		entity.addComponent(ComponentType.RENDER);
+		entity.addComponent(ComponentType.NETWORK_DATA);
+		entity.addComponent(ComponentType.COLLISSION);
+		entity.addComponent(ComponentType.DESTRUCTION);
 
-		LinearMovementComponent linearMovement = PoolsManager.obtain(LinearMovementComponent.class);
-		linearMovement.setupData();
-		entity.addComponent(linearMovement);
-
-		AngularMovementComponent angularMovement = PoolsManager.obtain(AngularMovementComponent.class);
-		angularMovement.setupData();
-		entity.addComponent(angularMovement);
-
-		PartitionComponent partition = PoolsManager.obtain(PartitionComponent.class);
-		partition.setupData();
-		partition.data.radius = radius;
-		entity.addComponent(partition);
-
-		NetworkDataComponent network = PoolsManager.obtain(NetworkDataComponent.class);
-		network.setupData();
-		entity.addComponent(network);
-
-		RenderComponent render = PoolsManager.obtain(RenderComponent.class);
-		render.setupData();
-		render.data.setData(assetStore.getRegion("bullet"), 2 * radius, 2 * radius, true);
-		entity.addComponent(render);
-
-		CollissionComponent collission = PoolsManager.obtain(CollissionComponent.class);
-		collission.setupData();
-		collission.data.collissionRadius = radius;
-		entity.addComponent(collission);
-
-		DestructionComponent desctruction = PoolsManager.obtain(DestructionComponent.class);
-		desctruction.setupData();
-		desctruction.data.destroyTime = System.currentTimeMillis()+10000;
-		desctruction.data.remove = false;
-		entity.addComponent(desctruction);
-
+		// Setup some data
+		entity.getComponent(ComponentType.PARTITION, PartitionComponent.class).data.radius = radius;
+		entity.getComponent(ComponentType.RENDER, RenderComponent.class).data.setData(assetStore.getRegion("bullet"), 2 * radius, 2 * radius, true);
+		entity.getComponent(ComponentType.COLLISSION, CollissionComponent.class).data.collissionRadius = radius;
+		entity.getComponent(ComponentType.DESTRUCTION, DestructionComponent.class).data.destroyTime = engine.getTime() + 10;
+		entity.getComponent(ComponentType.DESTRUCTION, DestructionComponent.class).data.remove = false;
 		return entity;
 	}
 
@@ -98,54 +78,80 @@ public class GameEntityFactory {
 		GameEntity entity = PoolsManager.obtain(GameEntity.class);
 		entity.type = GameEntityType.SHIP;
 		entity.setData(engine, entityId);
-		entity.linearTransform = PoolsManager.obtain(LinearTransformComponent.class);
-		entity.linearTransform.setupData();
-		entity.addComponent(entity.linearTransform);
 
-		entity.angularTransform = PoolsManager.obtain(AngularTransformComponent.class);
-		entity.angularTransform.setupData();
-		entity.addComponent(entity.angularTransform);
+		LinearTransformComponent linearTransform = (LinearTransformComponent) entity.addComponent(ComponentType.LINEAR_TRANSFORM);
+		LinearMovementComponent linearMovement = (LinearMovementComponent) entity.addComponent(ComponentType.LINEAR_MOVEMENT);
+		
+		AngularTransformComponent angularTransform = (AngularTransformComponent) entity.addComponent(ComponentType.ANGULAR_TRANSFORM);
+		AngularMovementComponent angularMovement = (AngularMovementComponent) entity.addComponent(ComponentType.ANGULAR_MOVEMENT);
+		
+		PartitionComponent partition = (PartitionComponent) entity.addComponent(ComponentType.PARTITION);
+		CollissionComponent collission = (CollissionComponent) entity.addComponent(ComponentType.COLLISSION);
+		
+		RenderComponent render = (RenderComponent) entity.addComponent(ComponentType.RENDER);
+		
+		NetworkDataComponent network = (NetworkDataComponent) entity.addComponent(ComponentType.NETWORK_DATA);
+		
+		entity.addComponent(ComponentType.CONSTRAINED_MOVEMENT);
+		entity.addComponent(ComponentType.WEAPON);
 
-		LinearMovementComponent linearMovement = PoolsManager.obtain(LinearMovementComponent.class);
-		linearMovement.setupData();
-		entity.addComponent(linearMovement);
+		entity.getComponent(ComponentType.PARTITION, PartitionComponent.class).data.radius = radius;
+		entity.getComponent(ComponentType.RENDER, RenderComponent.class).data.setData(assetStore.getRegion("playership"), 2 * radius, 2 * radius, true);
+		entity.getComponent(ComponentType.COLLISSION, CollissionComponent.class).data.collissionRadius = radius;
+		entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT, ConstrainedRegionComponent.class).data.constrainedRegion = engine.universeRegion;
+		entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT, ConstrainedRegionComponent.class).data.constrainRadius = radius;
 
-		AngularMovementComponent angularMovement = PoolsManager.obtain(AngularMovementComponent.class);
-		angularMovement.setupData();
-		entity.addComponent(angularMovement);
-
-		PartitionComponent partition = PoolsManager.obtain(PartitionComponent.class);
-		partition.setupData();
-		partition.data.radius = radius;
-		entity.addComponent(partition);
-
-		NetworkDataComponent network = PoolsManager.obtain(NetworkDataComponent.class);
-		network.setupData();
-		entity.addComponent(network);
-
-		ConstrainedRegionComponent constraint = PoolsManager.obtain(ConstrainedRegionComponent.class);
-		constraint.setupData();
-		constraint.data.constrainedRegion = engine.universeRegion;
-		constraint.data.constrainRadius = radius;
-		entity.addComponent(constraint);
-
-		RenderComponent render = PoolsManager.obtain(RenderComponent.class);
-		render.setupData();
-		render.data.setData(assetStore.getRegion("playership"), 2 * radius, 2 * radius, true);
-		entity.addComponent(render);
-
-		CollissionComponent collission = PoolsManager.obtain(CollissionComponent.class);
-		collission.setupData();
-		collission.data.collissionRadius = radius;
-		entity.addComponent(collission);
-
-		WeaponComponent weapon = PoolsManager.obtain(WeaponComponent.class);
-		weapon.setupData();
+		WeaponComponent weapon = entity.getComponent(ComponentType.WEAPON, WeaponComponent.class);
 		weapon.data.shootTime = MathUtils.random(100, 1000);
 		weapon.data.shooting = false;
-		weapon.data.bulletVel = 800;
-		weapon.data.bulletLife = 5000;
-		entity.addComponent(weapon);
+		weapon.data.bulletVel = 550;
+		weapon.data.bulletLife = 5;
 		return entity;
+	}
+
+	public EntityComponent createComponent(ComponentType type) {
+		EntityComponent component = null;
+		switch (type) {
+		case ANGULAR_MOVEMENT:
+			component = PoolsManager.obtain(AngularMovementComponent.class);
+			break;
+		case ANGULAR_TRANSFORM:
+			component = PoolsManager.obtain(AngularTransformComponent.class);
+			break;
+		case COLLISSION:
+			component = PoolsManager.obtain(CollissionComponent.class);
+			break;
+		case CONSTRAINED_MOVEMENT:
+			component = PoolsManager.obtain(ConstrainedRegionComponent.class);
+			break;
+		case CONTROL:
+			component = PoolsManager.obtain(ControlComponent.class);
+			break;
+		case DESTRUCTION:
+			component = PoolsManager.obtain(DestructionComponent.class);
+			break;
+		case LINEAR_MOVEMENT:
+			component = PoolsManager.obtain(LinearMovementComponent.class);
+			break;
+		case LINEAR_TRANSFORM:
+			component = PoolsManager.obtain(LinearTransformComponent.class);
+			break;
+		case NETWORK_DATA:
+			component = PoolsManager.obtain(NetworkDataComponent.class);
+			break;
+		case PARTITION:
+			component = PoolsManager.obtain(PartitionComponent.class);
+			break;
+		case RENDER:
+			component = PoolsManager.obtain(RenderComponent.class);
+			break;
+		case WEAPON:
+			component = PoolsManager.obtain(WeaponComponent.class);
+			break;
+		default:
+			throw new RuntimeException("Unknown Component");
+		}
+		component.setupData();
+		return component;
 	}
 }

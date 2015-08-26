@@ -5,6 +5,8 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.GameEngineHost;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
+import com.emptypockets.spacemania.holders.SingleProcessor;
 import com.emptypockets.spacemania.network.client.ClientPlayerAdapter;
 import com.emptypockets.spacemania.network.common.data.engine.GameEngineState;
 import com.emptypockets.spacemania.utils.KryoUtils;
@@ -49,9 +51,15 @@ public class HostPlayerAdapter implements Poolable {
 		GameEngineState currentState = syncManager.getState(engine, region);
 		sendState(currentState);
 		PoolsManager.free(currentState);
+
 	}
 
 	public void sendState(GameEngineState state) {
+
+		if (adapter != null) {
+			adapter.recieve(KryoUtils.clone(state));
+		}
+
 		if (metrics) {
 			dataSize += KryoUtils.getSize(state);
 			packetCount++;
@@ -61,15 +69,10 @@ public class HostPlayerAdapter implements Poolable {
 				lastUpdate = System.currentTimeMillis();
 				float deltaSec = delta / 1000f;
 				dataRate = (dataSize / (float) deltaSec);
-				System.out.println("DATA (NetworkManager.java:40):" + packetCount + " - " + dataRate);
+				System.out.println("DATA (HostPlayerAdapter.java:40):" + packetCount + " - " + dataRate);
 				dataSize = 0;
 				packetCount = 0;
 			}
-		}
-		if (adapter != null) {
-			System.out.println("SEND");
-			System.out.println(state.entitySystemState.addedEntities.size());
-			adapter.recieve(KryoUtils.clone(state));
 		}
 	}
 

@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -26,9 +25,11 @@ public class DataLoggerGraphManager extends Window {
 	LinePlotDataGraph graph;
 
 	Button hideButton;
+	Button reloadButton;
 
 	Button applyButton;
 	HashMap<String, LinePlotDescriptionPanel> buttons;
+	Table contentTable;
 
 	Stage stage;
 
@@ -38,21 +39,24 @@ public class DataLoggerGraphManager extends Window {
 		this.graph = graph;
 		this.stage = stage;
 		createPanel();
-		
+
 	}
 
 	public void updateUI() {
-		for(String key : buttons.keySet()){
+		relayout();
+		for (String key : buttons.keySet()) {
 			buttons.get(key).resetValues();
 		}
-		for(TimeSeriesDataset data : graph.getDataset().keySet()){
+		if (graph == null) {
+			return;
+		}
+		for (TimeSeriesDataset data : graph.getDataset().keySet()) {
 			LinePlotDescription desc = graph.getDataset().get(data);
 			buttons.get(desc.getName()).readValues(desc);
 		}
 	}
 
 	public void createPanel() {
-		Skin skin = Scene2DToolkit.skin();
 
 		/**
 		 * Setup close button
@@ -68,38 +72,54 @@ public class DataLoggerGraphManager extends Window {
 			public void clicked(InputEvent event, float x, float y) {
 				if (getHeight() == Gdx.graphics.getHeight()) {
 					setHeight(getTitleTable().getHeight());
-					setY(Gdx.graphics.getHeight()-getHeight());
+					setY(Gdx.graphics.getHeight() - getHeight());
 				} else {
 					setHeight(Gdx.graphics.getHeight());
 				}
 				stage.setScrollFocus(null);
 			}
 		});
+		reloadButton = new TextButton("R", style);
+		reloadButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				updateUI();
+			}
+		});
+		getTitleTable().add(reloadButton).align(Align.left);
 		getTitleTable().add(hideButton).align(Align.right);
 
-		Table table = new Table();
-		for (final String name : DataLogger.getSortedData()) {
-			final LinePlotDescriptionPanel checkbox = new LinePlotDescriptionPanel(skin, name);
-			buttons.put(name, checkbox);
-			table.row();
-			table.add(checkbox).left().fillX().expandX();
-		}
-		ScrollPane scroll = new ScrollPane(table);
-		
-		applyButton = new TextButton("Apply", skin);
+		applyButton = new TextButton("Apply", Scene2DToolkit.skin());
 		applyButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				apply();
 			}
 		});
+		
+		contentTable = new Table();
+		ScrollPane scrollControls = new ScrollPane(contentTable);
 		row();
 		add(applyButton).fillX();
 		row();
-		add(scroll).left().fill().expand();
+		add(scrollControls).left().fill().expand();
+		relayout();
+	}
+
+	public void relayout() {
+		contentTable.clear();
+		for (final String name : DataLogger.getSortedData()) {
+			final LinePlotDescriptionPanel checkbox = new LinePlotDescriptionPanel(Scene2DToolkit.skin(), name);
+			buttons.put(name, checkbox);
+			contentTable.row();
+			contentTable.add(checkbox).left().fillX().expandX();
+		}
 	}
 
 	public void apply() {
+		if(graph == null){
+			return;
+		}
 		float xMin = 0;
 		float xMax = 0;
 		xMin = graph.getxMin();

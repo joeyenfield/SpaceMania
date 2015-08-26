@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.destruction.DestructionData;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementData;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.LinearTransformData;
 import com.emptypockets.spacemania.network.common.data.engine.GameEngineState;
@@ -119,6 +120,7 @@ public class NetworkProtocall {
 		register(kryo, LinearMovementData.class);
 		register(kryo, LinearTransformData.class);
 		register(kryo, GameEntityType.class);
+		register(kryo, DestructionData.class);
 	}
 
 	public static <T> void register(Kryo kryo, final Class<T> classType) {

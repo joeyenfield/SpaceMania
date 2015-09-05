@@ -26,12 +26,12 @@ import com.emptypockets.spacemania.gui.old.renderer.EngineRender;
 import com.emptypockets.spacemania.gui.old.renderer.OverlayRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.gui.tools.TextRender;
-import com.emptypockets.spacemania.input.ClientInputProducer;
-import com.emptypockets.spacemania.input.OnScreenInput;
 import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.network.old.client.ClientManager;
 import com.emptypockets.spacemania.network.old.client.commands.rooms.ClientSpawnCommand;
 import com.emptypockets.spacemania.network.old.engine.entities.Entity;
+import com.emptypockets.spacemania.network.old.input.ClientInputProducer;
+import com.emptypockets.spacemania.network.old.input.OnScreenInput;
 import com.emptypockets.spacemania.network.old.server.player.ServerPlayer;
 
 public class ClientScreen extends StageScreen {
@@ -280,7 +280,9 @@ public class ClientScreen extends StageScreen {
 
 	@Override
 	public void updateLogic(float delta) {
-		DataLogger.log("client-logic", 1);
+		if (DataLogger.isEnabled()) {
+			DataLogger.log("client-logic", 1);
+		}
 		super.updateLogic(delta);
 
 		boolean playerAlive = true;

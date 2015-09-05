@@ -19,6 +19,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.transf
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.LinearTransformComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.weapon.WeaponComponent;
 import com.emptypockets.spacemania.gui.AssetStore;
+import com.emptypockets.spacemania.screens.GameEngineScreen;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEntityFactory {
@@ -102,7 +103,7 @@ public class GameEntityFactory {
 		entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT, ConstrainedRegionComponent.class).data.constrainRadius = radius;
 
 		WeaponComponent weapon = entity.getComponent(ComponentType.WEAPON, WeaponComponent.class);
-		weapon.data.shootTime = MathUtils.random(100, 1000);
+		weapon.data.shootTime = MathUtils.random(GameEngineScreen.bulletShootTimeMin, GameEngineScreen.bulletShootTimeMax);
 		weapon.data.shooting = false;
 		weapon.data.bulletVel = 550;
 		weapon.data.bulletLife = 5;

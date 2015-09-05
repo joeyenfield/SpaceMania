@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.network.client;
+package com.emptypockets.spacemania.engine.network.client;
 
 import java.util.ArrayList;
 

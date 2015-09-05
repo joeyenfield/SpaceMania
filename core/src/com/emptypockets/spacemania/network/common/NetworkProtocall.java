@@ -8,10 +8,14 @@ import org.objenesis.instantiator.ObjectInstantiator;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.emptypockets.spacemania.engine.input.PlayerInputData;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.controls.ControlData;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.destruction.DestructionData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.AngularMovementData;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.AngularTransformData;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.LinearTransformData;
 import com.emptypockets.spacemania.network.common.data.engine.GameEngineState;
 import com.emptypockets.spacemania.network.common.data.engine.entity.EntitySystemState;
@@ -119,6 +123,11 @@ public class NetworkProtocall {
 		register(kryo, ComponentType.class);
 		register(kryo, LinearMovementData.class);
 		register(kryo, LinearTransformData.class);
+		register(kryo, AngularMovementData.class);
+		register(kryo, AngularTransformData.class);
+		register(kryo, ControlData.class);
+
+		register(kryo, PlayerInputData.class);
 		register(kryo, GameEntityType.class);
 		register(kryo, DestructionData.class);
 	}

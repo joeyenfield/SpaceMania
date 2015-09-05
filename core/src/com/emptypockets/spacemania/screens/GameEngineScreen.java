@@ -16,36 +16,39 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.engine.GameEngineClient;
 import com.emptypockets.spacemania.engine.GameEngineHost;
+import com.emptypockets.spacemania.engine.input.KeyboardPlayerInputProducer;
+import com.emptypockets.spacemania.engine.network.client.ClientPlayerAdapter;
+import com.emptypockets.spacemania.engine.network.host.HostPlayerAdapter;
 import com.emptypockets.spacemania.engine.systems.entitysystem.EntityDestructionListener;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.controls.ControlComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
 import com.emptypockets.spacemania.gui.GameEngineEntitiesRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.gui.tools.TextRender;
-import com.emptypockets.spacemania.network.client.ClientPlayerAdapter;
-import com.emptypockets.spacemania.network.host.HostPlayerAdapter;
 import com.emptypockets.spacemania.utils.CameraHelper;
 import com.emptypockets.spacemania.utils.OrthoCamController;
-import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEngineScreen extends StageScreen implements EntityDestructionListener {
 
-	int width = 800;
-	int height = 800;
+	int width = 40000;
+	int height = 40000;
 
 	int regionSizeX = 3000;
 	int regionSizeY = 3000;
 
-	int viewOffsetX = width + 30;
-	int desiredEntityCount = 1;
-	public static float minVel = 10;
-	public static float maxVel = 20;
+	int viewOffsetX = width + 100;
+	int viewOffsetY = height + 100;
+	int desiredEntityCount = 3000;
+	public static float minVel = 200;
+	public static float maxVel = 400;
+	public static float bulletVel = 1000;
+	public static long bulletShootTimeMin = 100;
+	public static long bulletShootTimeMax = 100;
 
 	GameEngineHost serverGameEngine;
-	GameEngineClient clientGameEngine;
+	GameEngineClient clientGameEngines[] = new GameEngineClient[20];
 
 	GameEngineEntitiesRender render;
 
@@ -59,8 +62,6 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 	OrthoCamController controller;
 
 	Vector2 tempPos = new Vector2();
-
-	GameEntity selectedEntity = null;
 
 	public GameEngineScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
@@ -112,31 +113,37 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		serverGameEngine = new GameEngineHost();
 		serverGameEngine.setUniverseSize(-width / 2, -height / 2, width, height);
 
-		clientGameEngine = new GameEngineClient();
-		clientGameEngine.setUniverseSize(-width / 2, -height / 2, width, height);
-
 		// createShip();
 
 		// Client Connection
-		clientGameEngine.clientNetworkProcess.adapters = new ArrayList<ClientPlayerAdapter>();
 		serverGameEngine.hostNetworkProcess.connections = new ArrayList<HostPlayerAdapter>();
 
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < clientGameEngines.length; i++) {
+			GameEngineClient clientGameEngine = new GameEngineClient();
+			String base = "";
+			for (int j = 0; j < i; j++) {
+				base += "\t";
+			}
+			clientGameEngine.setName(base + "CLIENT[" + i + "]");
+			clientGameEngines[i] = clientGameEngine;
+			clientGameEngine.setUniverseSize(-width / 2, -height / 2, width, height);
+			clientGameEngine.clientNetworkProcess.adapters = new ArrayList<ClientPlayerAdapter>();
+
 			// Setup Client Side
 			ClientPlayerAdapter clientAdapter = new ClientPlayerAdapter();
-
-			GameEntity ent = createShip();
+			clientAdapter.setInputProducer(new KeyboardPlayerInputProducer());
+			// ent.linearTransform.data.pos.set(0, 0);
 			// Setup Host Side
-			HostPlayerAdapter hostConnection = new HostPlayerAdapter();
-			hostConnection.clientId = i;
-			hostConnection.entityId = ent.entityId;
-			hostConnection.region = new Rectangle(0, 0, regionSizeX, regionSizeY);
-			hostConnection.adapter = clientAdapter;
+			HostPlayerAdapter hostAdapter = new HostPlayerAdapter();
+			hostAdapter.clientId = i;
+			hostAdapter.region = new Rectangle(0, 0, regionSizeX, regionSizeY);
 
-			serverGameEngine.hostNetworkProcess.connections.add(hostConnection);
-			if (i == 0) {
-				clientGameEngine.clientNetworkProcess.adapters.add(clientAdapter);
-			}
+			// Link Adapters
+			hostAdapter.adapter = clientAdapter;
+			clientAdapter.adapter = hostAdapter;
+
+			serverGameEngine.hostNetworkProcess.connections.add(hostAdapter);
+			clientGameEngine.clientNetworkProcess.adapters.add(clientAdapter);
 		}
 
 	}
@@ -155,8 +162,9 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 	public void updateLogic(float delta) {
 		super.updateLogic(delta);
 		serverGameEngine.update(delta);
-		clientGameEngine.update(delta);
-
+		for (int i = 0; i < clientGameEngines.length; i++) {
+			clientGameEngines[i].update(delta);
+		}
 		for (int i = 0; i < 10; i++) {
 			if (serverGameEngine.entitySystem.getEntityCount() < desiredEntityCount) {
 				createShip();
@@ -176,10 +184,16 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		render.showDebug = false;
 		render.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize, tempPos);
 
-		tempPos.x = viewOffsetX;
-		// tempPos.x = width+100;
-		render.showDebug = true;
-		render.render(clientGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize, tempPos);
+		for (int i = 0; i < clientGameEngines.length; i++) {
+			tempPos.x += viewOffsetX;
+			if(i %5 == 0){
+				tempPos.x = 0;
+				tempPos.y += viewOffsetY;
+			}
+			// tempPos.x = width+100;
+			render.showDebug = true;
+			render.render(clientGameEngines[i], screenViewport, shapeRender, spriteBatch, textHelper, pixSize, tempPos);
+		}
 		renderConnections();
 		renderTextOverlay();
 
@@ -217,42 +231,6 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 	}
 
 	@Override
-	public boolean tap(float x, float y, int count, int button) {
-		if (count >= 1) {
-			tempPos.x = x;
-			tempPos.y = y;
-			cameraHelper.screenToWorld(getScreenCamera(), tempPos);
-
-			GameEntity selectedEnt = serverGameEngine.getEntityAtPos(tempPos);
-			setEntity(selectedEnt);
-		}
-		return false;
-	}
-
-	public void setEntity(GameEntity ent) {
-		if (this.selectedEntity != null) {
-			this.selectedEntity.removeComponent(ComponentType.CONTROL);
-			this.selectedEntity.removeListener(this);
-			LinearMovementComponent comp = (LinearMovementComponent) this.selectedEntity.getComponent(ComponentType.LINEAR_MOVEMENT);
-			// float progress = (0.1f + 0.8f * (i / (ents - 1f)));
-			// entity.linearTransform.data.pos.x = width * progress;
-			// entity.linearTransform.data.pos.y = height * progress;
-			// comp.data.vel.x = 10;?
-			comp.data.vel.x = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
-			comp.data.vel.y = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
-		}
-
-		this.selectedEntity = ent;
-		if (ent != null) {
-			ControlComponent control = PoolsManager.obtain(ControlComponent.class);
-			control.setupData();
-			this.selectedEntity.addComponent(control);
-			this.selectedEntity.addListener(this);
-		}
-
-	}
-
-	@Override
 	public void drawOverlay(float delta) {
 
 	}
@@ -269,7 +247,6 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 	@Override
 	public void entityDestruction(GameEntity entity) {
-		this.selectedEntity = null;
 
 	}
 

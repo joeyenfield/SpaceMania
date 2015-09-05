@@ -1,18 +1,17 @@
-package com.emptypockets.spacemania.input;
+package com.emptypockets.spacemania.network.old.input;
 
 import com.emptypockets.spacemania.network.old.client.input.ClientInput;
 
-public class ClientInputProducer {
+public abstract class ClientInputProducer {
 	ClientInput input;
 
 	public ClientInputProducer() {
 		input = new ClientInput();
 	}
-	
-	public ClientInput getInput(){
+
+	public ClientInput getInput() {
 		return input;
 	}
-	
-	public void update(){
-	}
+
+	public abstract void update();
 }

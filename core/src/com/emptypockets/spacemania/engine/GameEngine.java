@@ -60,7 +60,6 @@ public class GameEngine {
 	public void update(float deltaTime) {
 		if (DataLogger.isEnabled()) {
 			DataLogger.log(name + "-UPDATE", 1);
-			DataLogger.log(name+"-VALUE", MathUtils.random());
 			entitySystem.process(new SingleProcessor<GameEntity>() {
 				@Override
 				public void process(GameEntity entity) {
@@ -159,6 +158,10 @@ public class GameEngine {
 
 	public void print(String message) {
 		System.out.printf("%s : %s", name, message);
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }

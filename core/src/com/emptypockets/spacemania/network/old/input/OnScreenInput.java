@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.input;
+package com.emptypockets.spacemania.network.old.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;

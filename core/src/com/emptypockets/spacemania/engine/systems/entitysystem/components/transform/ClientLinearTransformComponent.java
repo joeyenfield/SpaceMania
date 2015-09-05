@@ -3,14 +3,15 @@ package com.emptypockets.spacemania.engine.systems.entitysystem.components.trans
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
+import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 
 public class ClientLinearTransformComponent extends LinearTransformComponent {
 	float errorTolerance2 = 1000*1000;
-	float fixFactor = 0.05f;
+	float fixFactor = 0.1f;
 	Vector2 offset = new Vector2();
 	boolean first = true;
 	@Override
-	public void update(float deltaTime) {
+	public synchronized void update(float deltaTime) {
 		super.update(deltaTime);
 		float dX = 0;
 		float dY = 0;
@@ -21,16 +22,24 @@ public class ClientLinearTransformComponent extends LinearTransformComponent {
 			offset.y -= dY;
 			data.pos.add(dX, dY);
 		}
+		if(DataLogger.isEnabled()){
+			DataLogger.log(entity.engine.getName()+"-ent-"+entity.entityId+"-off-x", offset.x);
+			DataLogger.log(entity.engine.getName()+"-ent-"+entity.entityId+"-off-y", offset.y);
+		}
 	}
 
 	@Override
-	public void writeData(LinearTransformData data) {
+	public synchronized void writeData(LinearTransformData data) {
+		if(DataLogger.isEnabled()){
+			DataLogger.log(entity.engine.getName()+"-ent-"+entity.entityId+"-net-pos-x", data.pos.x);
+			DataLogger.log(entity.engine.getName()+"-ent-"+entity.entityId+"-net-pos-y", data.pos.y);
+		}
 		if (this.data.pos.dst2(data.pos) > errorTolerance2|| first) {
 			super.writeData(data);
 			offset.setZero();
 			first=false;
 		} else {
-			offset.set(this.data.pos).sub(data.pos);
+			offset.set(data.pos).sub(this.data.pos);
 		}
 	}
 

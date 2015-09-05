@@ -32,7 +32,7 @@ public class WeaponComponent extends EntityComponent<WeaponData> {
 
 			pos.setZero();
 			pos.x = entity.getComponent(ComponentType.COLLISSION, CollissionComponent.class).data.collissionRadius;
-			pos.x += 2 * bullet.getComponent(ComponentType.COLLISSION, CollissionComponent.class).data.collissionRadius;
+			pos.x += 5 * bullet.getComponent(ComponentType.COLLISSION, CollissionComponent.class).data.collissionRadius;
 			pos.rotate(entity.angularTransform.data.ang);
 			vel.set(pos).nor().scl(data.bulletVel);
 			pos.add(entity.linearTransform.data.pos);

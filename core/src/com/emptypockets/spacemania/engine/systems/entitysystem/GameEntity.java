@@ -7,20 +7,9 @@ import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponentStore;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.collission.CollissionComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.controls.ControlComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.destruction.DestructionComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.AngularMovementComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.ConstrainedRegionComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.network.NetworkDataComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.partition.PartitionComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.render.RenderComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.AngularTransformComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.LinearTransformComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.weapon.WeaponComponent;
 import com.emptypockets.spacemania.utils.BitUtilities;
-import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEntity implements Poolable {
 
@@ -127,10 +116,17 @@ public class GameEntity implements Poolable {
 	}
 
 	public void removeComponent(ComponentType type) {
-		removeComponent(componentStore.get(type));
+		// engine.println("(" + entityId + ") : Remove Comp - " + type.name());
+		EntityComponent comp = componentStore.get(type);
+		if (comp != null) {
+			removeComponent(comp);
+		} else {
+			engine.println("Error : Entity (" + entityId + ") : Missing Type :" + type);
+		}
 	}
 
 	public EntityComponent addComponent(ComponentType type) {
+		// engine.println("(" + entityId + ") : Add Comp  - " + type.name());
 		EntityComponent component = engine.entityFactory.createComponent(type);
 		switch (type) {
 		case ANGULAR_TRANSFORM:

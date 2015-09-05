@@ -16,7 +16,9 @@ public class ClientEntityFactory extends GameEntityFactory{
 	@Override
 	public EntityComponent createComponent(ComponentType type) {
 		if(type == ComponentType.LINEAR_TRANSFORM){
-			return PoolsManager.obtain(ClientLinearTransformComponent.class);
+			ClientLinearTransformComponent result =  PoolsManager.obtain(ClientLinearTransformComponent.class);
+			result.setupData();
+			return result;
 		}
 		return super.createComponent(type);
 	}

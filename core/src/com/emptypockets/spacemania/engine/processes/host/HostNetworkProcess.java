@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import com.emptypockets.spacemania.engine.EngineProcess;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.GameEngineHost;
-import com.emptypockets.spacemania.network.host.HostPlayerAdapter;
+import com.emptypockets.spacemania.engine.network.host.HostPlayerAdapter;
+import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 
 public class HostNetworkProcess implements EngineProcess<GameEngineHost> {
 
@@ -17,12 +18,15 @@ public class HostNetworkProcess implements EngineProcess<GameEngineHost> {
 	public void processOutgoingData(GameEngineHost gameEngine) {
 		if (connections != null) {
 			if (System.currentTimeMillis() - lastProcessTime > desiredProcessTime) {
+				if (DataLogger.isEnabled()) {
+					DataLogger.log(gameEngine.getName() + "-net", 1);
+				}
 				lastProcessTime = System.currentTimeMillis();
 				synchronized (connections) {
 					int size = connections.size();
 					for (int i = 0; i < size; i++) {
 						HostPlayerAdapter connection = connections.get(i);
-						connection.update(gameEngine);
+						connection.processOutgoingPackets(gameEngine);
 					}
 				}
 			}
@@ -32,9 +36,16 @@ public class HostNetworkProcess implements EngineProcess<GameEngineHost> {
 	public void processIncommingData(GameEngine gameEngine) {
 
 	}
-	
+
 	@Override
 	public void process(GameEngineHost engine) {
+		synchronized (connections) {
+			int size = connections.size();
+			for (int i = 0; i < size; i++) {
+				HostPlayerAdapter connection = connections.get(i);
+				connection.update(engine);
+			}
+		}
 	}
 
 	@Override

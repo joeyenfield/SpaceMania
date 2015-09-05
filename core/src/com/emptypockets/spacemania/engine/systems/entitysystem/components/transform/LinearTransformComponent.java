@@ -4,7 +4,6 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Compon
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 
 public class LinearTransformComponent extends EntityComponent<LinearTransformData> {
-
 	public LinearTransformComponent() {
 		super(ComponentType.LINEAR_TRANSFORM);
 	}

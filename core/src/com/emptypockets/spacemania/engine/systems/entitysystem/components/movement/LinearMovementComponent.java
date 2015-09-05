@@ -35,6 +35,7 @@ public class LinearMovementComponent extends EntityComponent<LinearMovementData>
 			data.vel.x = 0;
 			data.vel.y = 0;
 		}
+		
 	}
 
 	@Override

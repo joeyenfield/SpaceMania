@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.badlogic.gdx.utils.Disposable;
 import com.emptypockets.spacemania.commandLine.CommandLine;
 import com.emptypockets.spacemania.console.Console;
-import com.emptypockets.spacemania.input.ClientInputProducer;
 import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.network.common.ComsType;
 import com.emptypockets.spacemania.network.old.CommandService;
@@ -15,6 +14,7 @@ import com.emptypockets.spacemania.network.old.client.player.MyPlayer;
 import com.emptypockets.spacemania.network.old.client.rooms.ClientRoom;
 import com.emptypockets.spacemania.network.old.engine.entities.Entity;
 import com.emptypockets.spacemania.network.old.engine.entities.players.PlayerEntity;
+import com.emptypockets.spacemania.network.old.input.ClientInputProducer;
 import com.emptypockets.spacemania.network.old.server.payloads.ServerClientInputUpdatePayload;
 import com.emptypockets.spacemania.network.old.server.payloads.authentication.LoginRequestPayload;
 import com.emptypockets.spacemania.network.old.server.payloads.authentication.LogoutRequestPayload;
@@ -63,7 +63,6 @@ public class ClientManager implements Disposable {
 			if(ent instanceof PlayerEntity){
 				PlayerEntity player = (PlayerEntity)ent;
 				player.applyClientInput(inputProducer.getInput());
-				DataLogger.log("tmp-x",player.getVel().x);
 			}
 		}
 		

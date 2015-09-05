@@ -25,7 +25,7 @@ public class DataLogger {
 	String dataDirectory = "c:\\test\\data";
 	String ext = "dat";
 
-	static boolean enabled = true;
+	static boolean enabled = false;
 	static boolean nanoTime = false;
 
 	static DataLogger logger;

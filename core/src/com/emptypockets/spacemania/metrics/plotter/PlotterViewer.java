@@ -51,9 +51,9 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 	CameraHelper helper;
 
-	int graphWidthPixels = 1000;
-	float mainGraphHeight = 100;
-	float generalDataHeight = 100;
+	int graphWidthPixels = 5000;
+	float mainGraphHeight = 200;
+	float generalDataHeight = 200;
 	float tickDataGraphHeight = 10;
 	
 	boolean rebuildOnChange = true;
@@ -94,10 +94,10 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 		int graphCount = 0;
 
-		LinePlotDataGraph customGraph = createLineGraph(0, (graphCount++) * (mainGraphHeight + graphGap), graphWidthPixels, mainGraphHeight, "Graph", (Color) null, "HOST-UPDATE", "CLIENT-UPDATE");
+		LinePlotDataGraph customGraph = createLineGraph(0, (graphCount++) * (mainGraphHeight + graphGap), graphWidthPixels, mainGraphHeight, "Graph", (Color) null, "HOST-ent-2-pos-x", "CLIENT-ent-2-pos-x","CLIENT-ent-2-net-pos-x");
 		graphs.add(customGraph);
-		graphs.add(createLineGraph(0, (graphCount++) * (mainGraphHeight + graphGap), graphWidthPixels, mainGraphHeight, "Graph 1", (Color) null, "HOST-UPDATE"));
-		graphs.add(createLineGraph(0, (graphCount++) * (mainGraphHeight + graphGap), graphWidthPixels, mainGraphHeight, "Graph 2", (Color) null, "CLIENT-UPDATE"));
+		graphs.add(createLineGraph(0, (graphCount++) * (mainGraphHeight + graphGap), graphWidthPixels, mainGraphHeight, "Graph 1", (Color) null, "HOST-ent-2-vel-x", "CLIENT-ent-2-vel-x"));
+		graphs.add(createLineGraph(0, (graphCount++) * (mainGraphHeight + graphGap), graphWidthPixels, mainGraphHeight, "Graph 2", (Color) null, "CLIENT-ent-2-off-x"));
 
 		graphCount++;
 		
@@ -115,6 +115,8 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(tickDataGraphHeight + graphGap)), graphWidthPixels, tickDataGraphHeight, "HOST-UPDATE", getRandomColor()));
 		graphs.add(createSpikeGraph(0, (ticks++) * (-(tickDataGraphHeight + graphGap)), graphWidthPixels, tickDataGraphHeight, "CLIENT-UPDATE", getRandomColor()));
+		graphs.add(createSpikeGraph(0, (ticks++) * (-(tickDataGraphHeight + graphGap)), graphWidthPixels, tickDataGraphHeight, "HOST-net", getRandomColor()));
+		graphs.add(createSpikeGraph(0, (ticks++) * (-(tickDataGraphHeight + graphGap)), graphWidthPixels, tickDataGraphHeight, "CLIENT-net", getRandomColor()));
 
 	}
 

@@ -6,6 +6,7 @@ import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEngineState implements Poolable, Comparable<GameEngineState> {
 	public float serverTime;
+	public int myPlayerId;
 	public EntitySystemState entitySystemState;
 
 	@Override

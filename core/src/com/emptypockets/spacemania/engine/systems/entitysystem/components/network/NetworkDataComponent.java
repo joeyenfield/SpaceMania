@@ -3,6 +3,7 @@ package com.emptypockets.spacemania.engine.systems.entitysystem.components.netwo
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
 import com.emptypockets.spacemania.network.common.data.engine.entity.ComponentDataStore;
 import com.emptypockets.spacemania.network.common.data.engine.entity.GameEntityNetworkSync;
 
@@ -12,6 +13,11 @@ public class NetworkDataComponent extends EntityComponent<NetworkData> {
 	}
 
 	public boolean readData(ComponentDataStore lastData, GameEntityNetworkSync sync) {
+
+		// entity.engine.println("(" + entity.entityId + ") : Read Sync");
+		// for (int i = 0; i < lastData.data.length; i++) {
+		// entity.engine.println("(" + entity.entityId + ") : Type Before - (" + ComponentType.getById(i).name() + ") - " + lastData.data[i]);
+		// }
 		boolean shouldSend = false;
 		sync.entityId = entity.entityId;
 		for (int i = 0; i < ComponentType.COMPONENT_TYPES; i++) {
@@ -28,15 +34,33 @@ public class NetworkDataComponent extends EntityComponent<NetworkData> {
 			} else {
 				// Chech should be network synced
 				if (comp.networkSync) {
+					boolean first = false;
 					// Was value there
 					if (lastData.data[i] == null) {
 						lastData.data[i] = comp.createData();
+						first = true;
 					}
 
 					// Check if value changed
-					if (comp.dataChanged(lastData.data[i])) {
+					if (first || comp.dataChanged(lastData.data[i])) {
 						comp.readData(lastData.data[i]);
 						sync.data.put(comp.componentType, lastData.data[i]);
+
+						// If Vel Change also send Position -
+						// This fixes an offset issue on client side when the position stops moving between syncs
+						if (comp.componentType == ComponentType.LINEAR_MOVEMENT) {
+							LinearMovementComponent currentLinearMovementComp = (LinearMovementComponent) comp;
+							if (currentLinearMovementComp.data.vel.len2() < 1) {
+								if (!sync.data.containsKey(ComponentType.LINEAR_TRANSFORM)) {
+									// Linear Transform is 0
+									int linearTransformId = ComponentType.LINEAR_TRANSFORM.id;
+									EntityComponent linearComp = entity.componentStore.component[linearTransformId];
+									linearComp.readData(lastData.data[linearTransformId]);
+									sync.data.put(ComponentType.LINEAR_TRANSFORM, lastData.data[linearTransformId]);
+								}
+							}
+						}
+
 						// entity.engine.println("("+entity.entityId+") : CHANGE : "+comp.componentType.name());
 						shouldSend = true;
 					} else {
@@ -48,21 +72,25 @@ public class NetworkDataComponent extends EntityComponent<NetworkData> {
 				}
 			}
 		}
+		// for (int i = 0; i < lastData.data.length; i++) {
+		// entity.engine.println("(" + entity.entityId + ") : Type After - (" + ComponentType.getById(i).name() + ") - " + lastData.data[i]);
+		// }
+		// entity.engine.println("("+entity.entityId+") : Write Sync - send"+shouldSend+" : "+sync.data.size());
 		return shouldSend;
 	}
 
 	public void writeData(GameEntityNetworkSync sync) {
+		// entity.engine.println("("+entity.entityId+") : Write Sync"+sync.data.size());
 		for (ComponentType type : sync.data.keySet()) {
 			ComponentData data = sync.data.get(type);
+			// entity.engine.println("("+entity.entityId+") : Write type - "+type.name()+" : "+data);
 			if (data == null) {
 				// Component Removed
 				entity.removeComponent(type);
-				// entity.engine.println("(" + entity.entityId + ") : Remove" + type.name());
 			} else {
 				// Ensure has
 				EntityComponent comp = entity.componentStore.get(type);
 				if (comp == null) {
-					// entity.engine.println("(" + entity.entityId + ") : NEW" + type.name());
 					comp = entity.addComponent(type);
 				}
 				// entity.engine.println("(" + entity.entityId + ") : Update" + type.name());

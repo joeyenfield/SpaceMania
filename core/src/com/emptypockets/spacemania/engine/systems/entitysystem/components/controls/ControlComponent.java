@@ -1,7 +1,5 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components.controls;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
@@ -15,31 +13,17 @@ public class ControlComponent extends EntityComponent<ControlData> {
 		super(ComponentType.CONTROL);
 	}
 
+	@Override
+	public void setupData() {
+		super.setupData();
+		networkSync = true;
+	}
+
 	public void update(float deltaTime) {
-		data.move.setZero();
-		if (Gdx.input.isKeyPressed(Keys.W)) {
-			data.move.y = 1;
-		}
-		if (Gdx.input.isKeyPressed(Keys.S)) {
-			data.move.y = -1;
-		}
-		if (Gdx.input.isKeyPressed(Keys.A)) {
-			data.move.x = -1;
-		}
-		if (Gdx.input.isKeyPressed(Keys.D)) {
-			data.move.x = 1;
-		}
-
-		if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-			data.shooting = true;
-		} else {
-			data.shooting = false;
-		}
-
 		if (entity != null && entity.hasComponent(ComponentType.LINEAR_MOVEMENT)) {
 			Vector2 vel = entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).data.vel;
 			if (data.move.len2() > 0.01) {
-				vel.set(data.move).scl(400);// GameEngineScreen.maxVel);
+				vel.set(data.move).scl(GameEngineScreen.maxVel);
 			} else {
 				vel.setZero();
 			}

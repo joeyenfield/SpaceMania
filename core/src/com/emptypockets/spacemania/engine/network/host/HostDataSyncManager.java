@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.network.host;
+package com.emptypockets.spacemania.engine.network.host;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -10,6 +10,11 @@ public class KeyboardPlayerInputProducer extends PlayerInputProducer {
 	int keyMoveLeft = Keys.A;
 	int keyMoveRight = Keys.D;
 
+	int keyShootUp = Keys.UP;
+	int keyShootDown = Keys.DOWN;
+	int keyShootLeft = Keys.LEFT;
+	int keyShootRight = Keys.RIGHT;
+
 	int keyShoot = Keys.SPACE;
 
 	@Override
@@ -29,7 +34,25 @@ public class KeyboardPlayerInputProducer extends PlayerInputProducer {
 			getPlayerInput().move.y += -1;
 		}
 
-		if (Gdx.input.isKeyPressed(keyShoot)) {
+		getPlayerInput().shootDir.setZero();
+		if (Gdx.input.isKeyPressed(keyShootRight)) {
+			getPlayerInput().shootDir.x += +1;
+		}
+		if (Gdx.input.isKeyPressed(keyShootLeft)) {
+			getPlayerInput().shootDir.x += -1;
+		}
+
+		if (Gdx.input.isKeyPressed(keyShootUp)) {
+			getPlayerInput().shootDir.y += +1;
+		}
+		if (Gdx.input.isKeyPressed(keyShootDown)) {
+			getPlayerInput().shootDir.y += -1;
+		}
+
+		getPlayerInput().move.limit2(1);
+		getPlayerInput().shootDir.limit2(1);
+
+		if (Gdx.input.isKeyPressed(keyShoot) || getPlayerInput().shootDir.len2() > 0.1f) {
 			getPlayerInput().shoot = true;
 		} else {
 			getPlayerInput().shoot = false;

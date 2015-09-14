@@ -19,6 +19,9 @@ import com.esotericsoftware.minlog.Log;
 public class DesktopLauncher {
 
 	public static void main(String[] arg) throws InterruptedException, FileNotFoundException, IOException {
+		
+	}
+	public static void maina(String[] arg) throws InterruptedException, FileNotFoundException, IOException {
 		try {
 			IpManager.setIpFinder(new DesktopIpFinder());
 			System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true");

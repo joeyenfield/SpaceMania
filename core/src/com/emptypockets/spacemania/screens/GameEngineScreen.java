@@ -32,23 +32,26 @@ import com.emptypockets.spacemania.utils.OrthoCamController;
 
 public class GameEngineScreen extends StageScreen implements EntityDestructionListener {
 
-	int width = 40000;
-	int height = 40000;
+	int width = 45000;
+	int height = 45000;
 
-	int regionSizeX = 3000;
-	int regionSizeY = 3000;
+	int regionSizeX = 4000;
+	int regionSizeY = 4000;
 
-	int viewOffsetX = width + 100;
-	int viewOffsetY = height + 100;
-	int desiredEntityCount = 3000;
-	public static float minVel = 200;
-	public static float maxVel = 400;
-	public static float bulletVel = 1000;
-	public static long bulletShootTimeMin = 100;
-	public static long bulletShootTimeMax = 100;
+	int viewOffsetX = width + 10;
+	int viewOffsetY = height + 10;
+	int desiredEntityCount = 2000;
+	public static float minVel = 100;
+	public static float maxVel = 500;
+	public static float bulletVel = 1200;
+	public static long bulletShootTimeMin = 400;
+	public static long bulletShootTimeMax = 400;
+
+	int clientCount = 36;
+	int rowCount = 6;
 
 	GameEngineHost serverGameEngine;
-	GameEngineClient clientGameEngines[] = new GameEngineClient[20];
+	GameEngineClient clientGameEngines[] = new GameEngineClient[clientCount];
 
 	GameEngineEntitiesRender render;
 
@@ -186,12 +189,12 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 		for (int i = 0; i < clientGameEngines.length; i++) {
 			tempPos.x += viewOffsetX;
-			if(i %5 == 0){
+			if (i % rowCount == 0) {
 				tempPos.x = 0;
 				tempPos.y += viewOffsetY;
 			}
 			// tempPos.x = width+100;
-			render.showDebug = true;
+			render.showDebug = false;
 			render.render(clientGameEngines[i], screenViewport, shapeRender, spriteBatch, textHelper, pixSize, tempPos);
 		}
 		renderConnections();

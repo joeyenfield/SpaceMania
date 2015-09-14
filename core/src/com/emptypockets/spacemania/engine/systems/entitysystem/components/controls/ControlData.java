@@ -5,6 +5,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Compon
 
 public class ControlData extends ComponentData<ControlData> {
 	public Vector2 move = new Vector2();
+	public Vector2 shootDir = new Vector2();
 	public boolean shooting;
 
 	@Override
@@ -28,13 +29,17 @@ public class ControlData extends ComponentData<ControlData> {
 		if (this.move.dst2(data.move) > 0.01) {
 			return true;
 		}
+		if(this.shootDir.dst2(data.shootDir) > 0.01){
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public void reset() {
 		move.setZero();
+		shootDir.setZero();
 		shooting = false;
 	}
-
+	
 }

@@ -30,11 +30,18 @@ public class WeaponComponent extends EntityComponent<WeaponData> {
 			Vector2 pos = bullet.linearTransform.data.pos;
 			Vector2 vel = bullet.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).data.vel;
 
+			float offset = entity.getComponent(ComponentType.COLLISSION, CollissionComponent.class).data.collissionRadius;
+
 			pos.setZero();
-			pos.x = entity.getComponent(ComponentType.COLLISSION, CollissionComponent.class).data.collissionRadius;
-			pos.x += 5 * bullet.getComponent(ComponentType.COLLISSION, CollissionComponent.class).data.collissionRadius;
-			pos.rotate(entity.angularTransform.data.ang);
+			pos.x = 3*offset;
+			
+			if (data.shootDir.len2() < 0.01) {
+				pos.rotate(entity.angularTransform.data.ang);
+			}else{
+				pos.rotate(data.shootDir.angle());
+			}
 			vel.set(pos).nor().scl(data.bulletVel);
+
 			pos.add(entity.linearTransform.data.pos);
 
 			bullet.angularTransform.data.ang = vel.angle();

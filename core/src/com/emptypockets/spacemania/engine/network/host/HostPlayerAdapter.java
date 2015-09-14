@@ -57,7 +57,7 @@ public class HostPlayerAdapter implements Poolable {
 			entityId = ent.entityId;
 			ent.addComponent(ComponentType.CONTROL);
 			ent.getComponent(ComponentType.WEAPON, WeaponComponent.class).data.bulletVel = GameEngineScreen.bulletVel;
-			
+
 			RectangeUtils.randomPoint(engine.universeRegion, ent.linearTransform.data.pos);
 		}
 
@@ -66,6 +66,7 @@ public class HostPlayerAdapter implements Poolable {
 			if (ent.hasComponent(ComponentType.CONTROL)) {
 				ControlComponent comp = ent.getComponent(ComponentType.CONTROL, ControlComponent.class);
 				comp.data.move.set(lastInput.move);
+				comp.data.shootDir.set(lastInput.shootDir);
 				comp.data.shooting = lastInput.shoot;
 			} else {
 				engine.println("Entity is missing control compoenent (HostPlayerAdapter.java:70) ");
@@ -87,7 +88,7 @@ public class HostPlayerAdapter implements Poolable {
 				lastUpdate = System.currentTimeMillis();
 				float deltaSec = delta / 1000f;
 				dataRate = (dataSize / (float) deltaSec);
-				System.out.println("DATA (HostPlayerAdapter.java:40):" + packetCount + " - " + dataRate);
+				// System.out.println("DATA (HostPlayerAdapter.java:40):" + packetCount + " - " + dataRate);
 				dataSize = 0;
 				packetCount = 0;
 			}
@@ -98,6 +99,7 @@ public class HostPlayerAdapter implements Poolable {
 		if (data instanceof PlayerInputData) {
 			PlayerInputData input = (PlayerInputData) data;
 			lastInput.move.set(input.move);
+			lastInput.shootDir.set(input.shootDir);
 			lastInput.shoot = input.shoot;
 			PoolsManager.free(input);
 		}

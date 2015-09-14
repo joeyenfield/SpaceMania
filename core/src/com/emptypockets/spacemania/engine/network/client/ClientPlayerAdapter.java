@@ -48,6 +48,7 @@ public class ClientPlayerAdapter {
 					ControlComponent cont = ent.getComponent(ComponentType.CONTROL, ControlComponent.class);
 					cont.data.shooting = input.shoot;
 					cont.data.move.set(input.move);
+					cont.data.shootDir.set(input.shootDir);
 				}
 			}
 		}

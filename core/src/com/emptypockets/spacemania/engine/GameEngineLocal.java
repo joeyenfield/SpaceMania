@@ -2,7 +2,7 @@ package com.emptypockets.spacemania.engine;
 
 import java.util.ArrayList;
 
-import com.emptypockets.spacemania.engine.systems.factory.GameEntityFactory;
+import com.emptypockets.spacemania.engine.systems.factory.HostGameEntityFactory;
 import com.emptypockets.spacemania.gui.AssetStore;
 
 public class GameEngineLocal extends GameEngine {
@@ -13,7 +13,7 @@ public class GameEngineLocal extends GameEngine {
 		super();
 
 		assetStore = new AssetStore();
-		entityFactory = new GameEntityFactory(this, assetStore);
+		entityFactory = new HostGameEntityFactory(this, assetStore);
 
 		ArrayList<EngineProcess> processes = new ArrayList<EngineProcess>();
 		processes.add(movementProcess);

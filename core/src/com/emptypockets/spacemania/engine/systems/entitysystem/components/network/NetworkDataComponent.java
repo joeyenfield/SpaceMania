@@ -1,13 +1,13 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components.network;
 
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentState;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
 import com.emptypockets.spacemania.network.common.data.engine.entity.ComponentDataStore;
 import com.emptypockets.spacemania.network.common.data.engine.entity.GameEntityNetworkSync;
 
-public class NetworkDataComponent extends EntityComponent<NetworkData> {
+public class NetworkDataComponent extends EntityComponent<NetworkState> {
 	public NetworkDataComponent() {
 		super(ComponentType.NETWORK_DATA);
 	}
@@ -37,7 +37,7 @@ public class NetworkDataComponent extends EntityComponent<NetworkData> {
 					boolean first = false;
 					// Was value there
 					if (lastData.data[i] == null) {
-						lastData.data[i] = comp.createData();
+						lastData.data[i] = comp.createState();
 						first = true;
 					}
 
@@ -50,7 +50,7 @@ public class NetworkDataComponent extends EntityComponent<NetworkData> {
 						// This fixes an offset issue on client side when the position stops moving between syncs
 						if (comp.componentType == ComponentType.LINEAR_MOVEMENT) {
 							LinearMovementComponent currentLinearMovementComp = (LinearMovementComponent) comp;
-							if (currentLinearMovementComp.data.vel.len2() < 1) {
+							if (currentLinearMovementComp.state.vel.len2() < 1) {
 								if (!sync.data.containsKey(ComponentType.LINEAR_TRANSFORM)) {
 									// Linear Transform is 0
 									int linearTransformId = ComponentType.LINEAR_TRANSFORM.id;
@@ -82,7 +82,7 @@ public class NetworkDataComponent extends EntityComponent<NetworkData> {
 	public void writeData(GameEntityNetworkSync sync) {
 		// entity.engine.println("("+entity.entityId+") : Write Sync"+sync.data.size());
 		for (ComponentType type : sync.data.keySet()) {
-			ComponentData data = sync.data.get(type);
+			ComponentState data = sync.data.get(type);
 			// entity.engine.println("("+entity.entityId+") : Write type - "+type.name()+" : "+data);
 			if (data == null) {
 				// Component Removed
@@ -101,8 +101,8 @@ public class NetworkDataComponent extends EntityComponent<NetworkData> {
 	}
 
 	@Override
-	public Class<NetworkData> getDataClass() {
-		return NetworkData.class;
+	public Class<NetworkState> getStateClass() {
+		return NetworkState.class;
 	}
 
 }

@@ -4,14 +4,14 @@ import org.objenesis.strategy.BaseInstantiatorStrategy;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentState;
 
-public class RenderData extends ComponentData<RenderData> {
+public class RenderState extends ComponentState<RenderState> {
 	Affine2 baseTransform;
 	Affine2 transform;
 	TextureRegion region;
 
-	public RenderData() {
+	public RenderState() {
 		this.transform = new Affine2();
 		this.baseTransform = new Affine2();
 	}
@@ -27,15 +27,15 @@ public class RenderData extends ComponentData<RenderData> {
 
 
 	@Override
-	public void getComponentData(RenderData result) {
+	public void readComponentState(RenderState result) {
 	}
 
 	@Override
-	public void setComponentData(RenderData data) {
+	public void writeComponentState(RenderState data) {
 	}
 
 	@Override
-	public boolean changed(RenderData data) {
+	public boolean hasStateChanged(RenderState data) {
 		return false;
 	}
 

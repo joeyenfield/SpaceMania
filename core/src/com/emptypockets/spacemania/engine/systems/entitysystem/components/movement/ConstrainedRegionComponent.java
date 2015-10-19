@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 
-public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegionData> {
+public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegionState> {
 	static float MIN_DELTA = 0.01f;
 
 	public ConstrainedRegionComponent() {
@@ -13,22 +13,22 @@ public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegio
 	}
 
 	public void update(float deltaTime) {
-		if (data == null) {
+		if (state == null) {
 			return;
 		}
-		Vector2 pos = entity.linearTransform.data.pos;
+		Vector2 pos = entity.linearTransform.state.pos;
 		
 		if(!entity.hasComponent(ComponentType.LINEAR_MOVEMENT)){
 			return;
 		}
-		Vector2 vel = ((LinearMovementData) entity.getComponent(ComponentType.LINEAR_MOVEMENT).data).vel;
-		float rad = data.constrainRadius;
+		Vector2 vel = ((LinearMovementState) entity.getComponent(ComponentType.LINEAR_MOVEMENT).state).vel;
+		float rad = state.constrainRadius;
 		float inset = rad;
-		Rectangle region = data.constrainedRegion;
+		Rectangle region = state.constrainedRegion;
 		boolean hitWall = false;
 		if (pos.x - rad < region.x) {
 			pos.set(region.x + inset, pos.y);
-			if (data.reflect) {
+			if (state.reflect) {
 				vel.x *= -1;
 			} else {
 				vel.x = 0;
@@ -37,7 +37,7 @@ public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegio
 		}
 		if (pos.x + rad > region.x + region.width) {
 			pos.set(region.x + region.width - inset, pos.y);
-			if (data.reflect) {
+			if (state.reflect) {
 				vel.x *= -1;
 			} else {
 				vel.x = 0;
@@ -46,7 +46,7 @@ public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegio
 		}
 		if (pos.y - rad < region.y) {
 			pos.set(pos.x, region.y + inset);
-			if (data.reflect) {
+			if (state.reflect) {
 				vel.y *= -1;
 			} else {
 				vel.y = 0;
@@ -55,7 +55,7 @@ public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegio
 		}
 		if (pos.y + rad > region.y + region.height) {
 			pos.set(pos.x, region.y + region.height - inset);
-			if (data.reflect) {
+			if (state.reflect) {
 				vel.y *= -1;
 			} else {
 				vel.y = 0;
@@ -65,7 +65,7 @@ public class ConstrainedRegionComponent extends EntityComponent<ConstrainedRegio
 	}
 
 	@Override
-	public Class<ConstrainedRegionData> getDataClass() {
-		return ConstrainedRegionData.class;
+	public Class<ConstrainedRegionState> getStateClass() {
+		return ConstrainedRegionState.class;
 	}
 }

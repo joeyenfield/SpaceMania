@@ -53,21 +53,21 @@ public class HostPlayerAdapter implements Poolable {
 	public synchronized void update(GameEngineHost engine) {
 		GameEntity ent = engine.entitySystem.getEntityById(entityId);
 		if (ent == null) {
+			//Add new ship entity
 			ent = engine.createEntity(GameEntityType.SHIP);
 			entityId = ent.entityId;
 			ent.addComponent(ComponentType.CONTROL);
-			ent.getComponent(ComponentType.WEAPON, WeaponComponent.class).data.bulletVel = GameEngineScreen.bulletVel;
-
-			RectangeUtils.randomPoint(engine.universeRegion, ent.linearTransform.data.pos);
+			RectangeUtils.randomPoint(engine.universeRegion, ent.linearTransform.state.pos);
 		}
 
 		if (ent != null) {
-			region.setCenter(ent.linearTransform.data.pos);
+			region.setCenter(ent.linearTransform.state.pos);
 			if (ent.hasComponent(ComponentType.CONTROL)) {
+				//Apply last movement state
 				ControlComponent comp = ent.getComponent(ComponentType.CONTROL, ControlComponent.class);
-				comp.data.move.set(lastInput.move);
-				comp.data.shootDir.set(lastInput.shootDir);
-				comp.data.shooting = lastInput.shoot;
+				comp.state.move.set(lastInput.move);
+				comp.state.shootDir.set(lastInput.shootDir);
+				comp.state.shooting = lastInput.shoot;
 			} else {
 				engine.println("Entity is missing control compoenent (HostPlayerAdapter.java:70) ");
 			}

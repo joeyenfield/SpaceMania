@@ -5,36 +5,28 @@ import java.util.ArrayList;
 import com.emptypockets.spacemania.engine.EngineProcess;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.systems.entitysystem.EntitySystem;
-import com.emptypockets.spacemania.engine.systems.entitysystem.EntitySystemManager;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.collission.CollissionComponent;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 
-public class CollissionProcess extends EntitySystemManager implements SingleProcessor<GameEntity>, EngineProcess<GameEngine> {
+public class CollissionProcess implements EngineProcess<GameEngine> {
 	float deltaTime = 0;
 	ArrayList<GameEntity> entities = new ArrayList<GameEntity>();
 
-	@Override
 	public void manage(EntitySystem entitySystem, float deltaTime) {
-		entitySystem.process(this, ComponentType.COLLISSION);
+	}
 
+	@Override
+	public void process(GameEngine engine) {
+		engine.entitySystem.filter(entities, ComponentType.COLLISSION);
 		int size = entities.size();
 		for (int i = 0; i < size; i++) {
 			GameEntity ent = entities.get(i);
 			ent.getComponent(ComponentType.COLLISSION, CollissionComponent.class).update(deltaTime);
 		}
 		entities.clear();
-	}
 
-	@Override
-	public void process(GameEntity entity) {
-		entities.add(entity);
-	}
-
-	@Override
-	public void process(GameEngine engine) {
-		manage(engine.entitySystem, engine.getDeltaTime());
 	}
 
 	@Override

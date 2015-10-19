@@ -2,26 +2,19 @@ package com.emptypockets.spacemania.engine.processes.common;
 
 import com.emptypockets.spacemania.engine.EngineProcess;
 import com.emptypockets.spacemania.engine.GameEngine;
-import com.emptypockets.spacemania.engine.systems.entitysystem.EntitySystem;
-import com.emptypockets.spacemania.engine.systems.entitysystem.EntitySystemManager;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ai.AiComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.controls.ControlComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.AngularMovementComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.ConstrainedRegionComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 
-public class MovementProcess extends EntitySystemManager implements SingleProcessor<GameEntity>, EngineProcess<GameEngine> {
+public class MovementProcess implements SingleProcessor<GameEntity>, EngineProcess<GameEngine> {
 	float deltaTime = 0;
 	int mask = ComponentType.LINEAR_MOVEMENT.getMask() | ComponentType.ANGULAR_MOVEMENT.getMask() | ComponentType.CONSTRAINED_MOVEMENT.getMask();
 
-	@Override
-	public void manage(EntitySystem entitySystem, float deltaTime) {
-		this.deltaTime = deltaTime;
-
-		entitySystem.process(this, mask);
-	}
 
 	@Override
 	public void process(GameEntity entity) {
@@ -30,6 +23,11 @@ public class MovementProcess extends EntitySystemManager implements SingleProces
 			controls.update(deltaTime);
 		}
 
+		AiComponent aiComponent = entity.getComponent(ComponentType.AI, AiComponent.class);
+		if(aiComponent != null){
+			aiComponent.updateDirection();
+		}
+		
 		LinearMovementComponent linearMovementComponent = entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class);
 		if (linearMovementComponent != null) {
 			linearMovementComponent.update(deltaTime);
@@ -44,12 +42,15 @@ public class MovementProcess extends EntitySystemManager implements SingleProces
 		if (constrainedRegionComponent != null) {
 			constrainedRegionComponent.update(deltaTime);
 		}
+		
+		
 
 	}
 
 	@Override
 	public void process(GameEngine engine) {
-		manage(engine.entitySystem, engine.getDeltaTime());
+		this.deltaTime = engine.getDeltaTime();
+		engine.entitySystem.process(this, mask);
 	}
 
 	@Override

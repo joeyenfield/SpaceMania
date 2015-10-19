@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
-import com.emptypockets.spacemania.holders.ArrayListProcessor;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 
-public class EntityMaskCollectProcessor implements SingleProcessor<GameEntity>, Poolable {
+public class EntityMaskArrayListProcessor implements SingleProcessor<GameEntity>, Poolable {
 
-	public ArrayListProcessor<GameEntity> entities;
+	public ArrayList<GameEntity> entities;
 	public int abilityMask;
 
 	@Override

@@ -1,28 +1,28 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components.movement;
 
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentState;
 
-public class AngularMovementData extends ComponentData<AngularMovementData> {
+public class AngularMovementState extends ComponentState<AngularMovementState> {
 	public float angVel = 0;
 	public float angAcl = 0;
 	boolean lockAngleToLinearVelocity = true;
 
 	@Override
-	public void getComponentData(AngularMovementData result) {
+	public void readComponentState(AngularMovementState result) {
 		result.angVel = angVel;
 		result.angAcl = angAcl;
 		result.lockAngleToLinearVelocity = lockAngleToLinearVelocity;
 	}
 
 	@Override
-	public void setComponentData(AngularMovementData data) {
+	public void writeComponentState(AngularMovementState data) {
 		angVel = data.angVel;
 		angAcl = data.angAcl;
 		lockAngleToLinearVelocity = data.lockAngleToLinearVelocity;
 	}
 
 	@Override
-	public boolean changed(AngularMovementData data) {
+	public boolean hasStateChanged(AngularMovementState data) {
 		if (Math.abs(angVel - data.angVel) > 0.01) {
 			return true;
 		}

@@ -1,13 +1,16 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
+import com.emptypockets.spacemania.engine.systems.entitysystem.processors.EntityMaskArrayListProcessor;
 import com.emptypockets.spacemania.engine.systems.entitysystem.processors.EntityMaskCollectProcessor;
 import com.emptypockets.spacemania.engine.systems.entitysystem.processors.EntityMaskFilterProcessor;
 import com.emptypockets.spacemania.engine.systems.entitysystem.processors.EntityRegionCollectProcessor;
 import com.emptypockets.spacemania.engine.systems.entitysystem.processors.EntityRegionFilterProcessor;
+import com.emptypockets.spacemania.engine.systems.entitysystem.processors.EntityTypeCountProcessor;
 import com.emptypockets.spacemania.engine.systems.entitysystem.processors.filter.GameEntityFilterProcessor;
 import com.emptypockets.spacemania.engine.systems.entitysystem.processors.filter.GameEntityTypeFilter;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
@@ -41,8 +44,31 @@ public class EntitySystem implements EntityDestructionListener {
 		return entities.getSize();
 	}
 
+	public synchronized int getEntityCount(GameEntityType enemy) {
+		// Filters
+		EntityTypeCountProcessor counter = PoolsManager.obtain(EntityTypeCountProcessor.class);
+		counter.type = enemy;
+		entities.process(counter);
+		int rst = counter.count;
+		PoolsManager.free(counter);
+		return rst;
+	}
+
 	public void filter(ArrayListProcessor<GameEntity> result, Rectangle region) {
 		filter(result, region, 0);
+	}
+
+	public void filter(ArrayList<GameEntity> result, ComponentType type) {
+		filter(result, type.getMask());
+	}
+
+	public void filter(ArrayList<GameEntity> result, int abilityMask) {
+		// Filters
+		EntityMaskArrayListProcessor maskFilterProcessor = PoolsManager.obtain(EntityMaskArrayListProcessor.class);
+		maskFilterProcessor.entities = result;
+		maskFilterProcessor.abilityMask = abilityMask;
+		entities.process(maskFilterProcessor);
+		PoolsManager.free(maskFilterProcessor);
 	}
 
 	public void filter(ArrayListProcessor<GameEntity> result, int abilityMask) {
@@ -91,8 +117,8 @@ public class EntitySystem implements EntityDestructionListener {
 	public GameEntity pickRandom(GameEntityType type) {
 		GameEntityTypeFilter typeFilter = PoolsManager.obtain(GameEntityTypeFilter.class);
 		typeFilter.type = type;
-		
-		GameEntityFilterProcessor processor= PoolsManager.obtain(GameEntityFilterProcessor.class);
+
+		GameEntityFilterProcessor processor = PoolsManager.obtain(GameEntityFilterProcessor.class);
 		processor.filter = typeFilter;
 		processor.filter(this);
 		GameEntity entity = processor.pickRandom();

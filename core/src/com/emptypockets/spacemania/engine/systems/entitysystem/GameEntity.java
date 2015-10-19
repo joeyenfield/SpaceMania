@@ -140,4 +140,19 @@ public class GameEntity implements Poolable {
 		return component;
 	}
 
+	public String getDesc() {
+		// if (false) {
+		// return "(" + entityId + " : " + type.name() + " : " + BitUtilities.toString(componentsMask) + ")";
+		// } else {
+		return "(" + entityId + ")";
+		// }
+	}
+
+	public void print(String string) {
+		engine.print(getDesc() + ":" + string);
+	}
+
+	public void println(String string) {
+		engine.println(getDesc() + ":" + string);
+	}
 }

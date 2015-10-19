@@ -1,25 +1,25 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components.partition;
 
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentState;
 import com.emptypockets.spacemania.engine.systems.spatialpartition.PartitionKey;
 
-public class PartitionData extends ComponentData<PartitionData> {
+public class PartitionState extends ComponentState<PartitionState> {
 	public float radius = 1;
 	PartitionKey lastKey = new PartitionKey();
 	PartitionKey key = new PartitionKey();
 
 	@Override
-	public void getComponentData(PartitionData result) {
+	public void readComponentState(PartitionState result) {
 		result.radius = radius;
 	}
 
 	@Override
-	public void setComponentData(PartitionData data) {
+	public void writeComponentState(PartitionState data) {
 		radius = data.radius;
 	}
 
 	@Override
-	public boolean changed(PartitionData data) {
+	public boolean hasStateChanged(PartitionState data) {
 		return radius - data.radius > 0.1f;
 	}
 

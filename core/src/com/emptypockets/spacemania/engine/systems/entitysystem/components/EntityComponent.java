@@ -1,60 +1,78 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
+import com.emptypockets.spacemania.gui.tools.TextRender;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
-public abstract class EntityComponent<DATA_TYPE extends ComponentData> implements Poolable {
+public abstract class EntityComponent<STATE_TYPE extends ComponentState> implements Poolable {
 	protected GameEntity entity;
 	public ComponentType componentType;
-	public DATA_TYPE data = null;
+	public STATE_TYPE state = null;
 	public boolean networkSync = false;
+	public boolean showDebug = false;
 
 	public EntityComponent(ComponentType componentType) {
 		this.componentType = componentType;
 	}
 
-	public abstract Class<DATA_TYPE> getDataClass();
+	public abstract Class<STATE_TYPE> getStateClass();
 
 	public ComponentType getComponentType() {
 		return componentType;
 	}
 
-	public DATA_TYPE createData() {
-		return PoolsManager.obtain(getDataClass());
+	public STATE_TYPE createState() {
+		return PoolsManager.obtain(getStateClass());
 	}
 
-	public void setupData() {
-		this.data = createData();
+	public void setupState() {
+		this.state = createState();
 	}
 
-	public DATA_TYPE getData() {
-		return data;
+	public STATE_TYPE getState() {
+		return state;
 	}
 
 	public void setEntity(GameEntity entity) {
 		this.entity = entity;
 	}
-	
+
 	public void reset() {
 		entity = null;
 		networkSync = false;
-		PoolsManager.free(data);
-		data = null;
+		PoolsManager.free(state);
+		state = null;
 	}
 
-	public void setData(DATA_TYPE data) {
-		this.data = data;
+	public void setData(STATE_TYPE data) {
+		this.state = data;
 	}
-	
-	public boolean dataChanged(DATA_TYPE data){
-		return this.data.changed(data);
+
+	public boolean dataChanged(STATE_TYPE data) {
+		return this.state.hasStateChanged(data);
 	}
-	public void writeData(DATA_TYPE data){
-		this.data.setComponentData(data);
+
+	public void writeData(STATE_TYPE data) {
+		this.state.writeComponentState(data);
 	}
-	
-	public void readData(DATA_TYPE data){
-		this.data.getComponentData(data);
+
+	public void readData(STATE_TYPE data) {
+		this.state.readComponentState(data);
+	}
+
+	public boolean showDebug() {
+		return showDebug;
+	}
+
+	public boolean shouldRenderDebug( Rectangle screenView, Vector2 offset) {
+		return screenView.contains(entity.linearTransform.state.pos.x+offset.x,entity.linearTransform.state.pos.y+offset.y); 
+	}
+
+	public void debug(ShapeRenderer render, TextRender textRender, Rectangle screenView, Vector2 offset) {
+
 	}
 }

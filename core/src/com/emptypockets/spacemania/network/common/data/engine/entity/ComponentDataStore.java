@@ -1,13 +1,13 @@
 package com.emptypockets.spacemania.network.common.data.engine.entity;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentState;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class ComponentDataStore implements Poolable {
 
-	public ComponentData data[] = ComponentType.getComponentDataHolder();
+	public ComponentState data[] = ComponentType.getComponentDataHolder();
 
 	@Override
 	public void reset() {

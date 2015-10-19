@@ -4,43 +4,30 @@ import java.util.ArrayList;
 
 import com.emptypockets.spacemania.engine.EngineProcess;
 import com.emptypockets.spacemania.engine.GameEngine;
-import com.emptypockets.spacemania.engine.systems.entitysystem.EntitySystem;
-import com.emptypockets.spacemania.engine.systems.entitysystem.EntitySystemManager;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.destruction.DestructionComponent;
 import com.emptypockets.spacemania.holders.SingleProcessor;
-import com.emptypockets.spacemania.utils.PoolsManager;
 
-public class DestructionProcess extends EntitySystemManager implements SingleProcessor<GameEntity>, EngineProcess<GameEngine> {
+public class DestructionProcess implements EngineProcess<GameEngine> {
 	float deltaTime = 0;
 	ArrayList<GameEntity> entities = new ArrayList<GameEntity>();
 
 	@Override
-	public void manage(EntitySystem entitySystem, float deltaTime) {
-		entitySystem.process(this, ComponentType.DESTRUCTION);
+	public void process(GameEngine engine) {
+		engine.entitySystem.filter(entities, ComponentType.DESTRUCTION);
 
 		int size = entities.size();
 		for (int i = 0; i < size; i++) {
 			GameEntity ent = entities.get(i);
 			DestructionComponent comp = ent.getComponent(ComponentType.DESTRUCTION, DestructionComponent.class);
 			comp.update(deltaTime);
-			if (comp.data.remove) {
+			if (comp.state.remove) {
 				ent.engine.removeEntity(ent);
 			}
 
 		}
 		entities.clear();
-	}
-
-	@Override
-	public void process(GameEntity entity) {
-		entities.add(entity);
-	}
-
-	@Override
-	public void process(GameEngine engine) {
-		manage(engine.entitySystem, engine.getDeltaTime());
 	}
 
 	@Override

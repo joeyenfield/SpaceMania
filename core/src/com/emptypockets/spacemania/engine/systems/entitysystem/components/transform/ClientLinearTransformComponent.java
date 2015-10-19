@@ -20,7 +20,7 @@ public class ClientLinearTransformComponent extends LinearTransformComponent {
 			dY = offset.y * fixFactor;
 			offset.x -= dX;
 			offset.y -= dY;
-			data.pos.add(dX, dY);
+			state.pos.add(dX, dY);
 		}
 		if(DataLogger.isEnabled()){
 			DataLogger.log(entity.engine.getName()+"-ent-"+entity.entityId+"-off-x", offset.x);
@@ -29,17 +29,17 @@ public class ClientLinearTransformComponent extends LinearTransformComponent {
 	}
 
 	@Override
-	public synchronized void writeData(LinearTransformData data) {
+	public synchronized void writeData(LinearTransformState data) {
 		if(DataLogger.isEnabled()){
 			DataLogger.log(entity.engine.getName()+"-ent-"+entity.entityId+"-net-pos-x", data.pos.x);
 			DataLogger.log(entity.engine.getName()+"-ent-"+entity.entityId+"-net-pos-y", data.pos.y);
 		}
-		if (this.data.pos.dst2(data.pos) > errorTolerance2|| first) {
+		if (this.state.pos.dst2(data.pos) > errorTolerance2|| first) {
 			super.writeData(data);
 			offset.setZero();
 			first=false;
 		} else {
-			offset.set(data.pos).sub(this.data.pos);
+			offset.set(data.pos).sub(this.state.pos);
 		}
 	}
 

@@ -11,9 +11,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.systems.entitysystem.EntityDestructionListener;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
+import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.partition.PartitionComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.partition.PartitionData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.partition.PartitionState;
 import com.emptypockets.spacemania.gui.tools.TextRender;
 import com.emptypockets.spacemania.utils.RectangeUtils;
 
@@ -51,8 +52,8 @@ public class CellsGameEntitySpatitionPartition implements EntityDestructionListe
 
 	public void encodeRange(GameEntity entity, PartitionKey range) {
 		Rectangle region = engine.universeRegion;
-		tempVector2.set(entity.linearTransform.data.pos);
-		float radius = ((PartitionData) entity.getComponent(ComponentType.PARTITION).data).radius;
+		tempVector2.set(entity.linearTransform.state.pos);
+		float radius = ((PartitionState) entity.getComponent(ComponentType.PARTITION).state).radius;
 		tempVector2.x -= region.x;
 		tempVector2.y -= region.y;
 		range.xS = MathUtils.clamp(MathUtils.floor(((tempVector2.x - radius) / region.width) * sizeX), 0, sizeX - 1);
@@ -81,6 +82,29 @@ public class CellsGameEntitySpatitionPartition implements EntityDestructionListe
 		range.yE = MathUtils.clamp(MathUtils.floor(((pos.y - region.y) / region.height) * sizeY), 0, sizeY - 1);
 	}
 
+	public synchronized void searchByType(Rectangle region, GameEntityType type, ArrayList<GameEntity> results) {
+		encodeRange(region, tempPartitionKey);
+		int size = 0;
+		currentSearchId++;
+		for (int x = tempPartitionKey.xS; x <= tempPartitionKey.xE; x++) {
+			for (int y = tempPartitionKey.yS; y <= tempPartitionKey.yE; y++) {
+				ArrayList<GameEntity> data = cells[x][y];
+				size = data.size();
+				for (int i = 0; i < size; i++) {
+					GameEntity ent = data.get(i);
+					PartitionComponent comp = (PartitionComponent) ent.getComponent(ComponentType.PARTITION);
+					if (comp != null && comp.currentSearchId != currentSearchId) {
+						comp.currentSearchId = currentSearchId;
+						if (ent.type == type && RectangeUtils.inside(region, ent.linearTransform.state.pos, comp.state.radius)) {
+							results.add(ent);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	
 	public synchronized void searchAnyMask(Rectangle region, int any, ArrayList<GameEntity> results) {
 		encodeRange(region, tempPartitionKey);
 		int size = 0;
@@ -94,7 +118,7 @@ public class CellsGameEntitySpatitionPartition implements EntityDestructionListe
 					PartitionComponent comp = (PartitionComponent) ent.getComponent(ComponentType.PARTITION);
 					if (comp != null && comp.currentSearchId != currentSearchId) {
 						comp.currentSearchId = currentSearchId;
-						if (ent.hasAnyOfAbility(any) && RectangeUtils.inside(region, ent.linearTransform.data.pos, comp.data.radius)) {
+						if (ent.hasAnyOfAbility(any) && RectangeUtils.inside(region, ent.linearTransform.state.pos, comp.state.radius)) {
 							results.add(ent);
 						}
 					}
@@ -116,7 +140,7 @@ public class CellsGameEntitySpatitionPartition implements EntityDestructionListe
 					PartitionComponent comp = (PartitionComponent) ent.getComponent(ComponentType.PARTITION);
 					if (comp.currentSearchId != currentSearchId) {
 						comp.currentSearchId = currentSearchId;
-						if (ent.hasAllOfAbility(any) && RectangeUtils.inside(region, ent.linearTransform.data.pos, comp.data.radius)) {
+						if (ent.hasAllOfAbility(any) && RectangeUtils.inside(region, ent.linearTransform.state.pos, comp.state.radius)) {
 							results.add(ent);
 						}
 					}
@@ -187,7 +211,7 @@ public class CellsGameEntitySpatitionPartition implements EntityDestructionListe
 				for (int i = 0; i < size; i++) {
 					GameEntity ent = data.get(i);
 					PartitionComponent comp = (PartitionComponent) ent.getComponent(ComponentType.PARTITION);
-					if (pos.dst2(ent.linearTransform.data.pos) < comp.data.radius * comp.data.radius) {
+					if (pos.dst2(ent.linearTransform.state.pos) < comp.state.radius * comp.state.radius) {
 						return ent;
 					}
 				}

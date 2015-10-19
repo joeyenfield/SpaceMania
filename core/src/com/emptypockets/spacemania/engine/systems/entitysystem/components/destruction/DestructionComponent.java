@@ -3,27 +3,27 @@ package com.emptypockets.spacemania.engine.systems.entitysystem.components.destr
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 
-public class DestructionComponent extends EntityComponent<DestructionData> {
+public class DestructionComponent extends EntityComponent<DestructionState> {
 
 	public DestructionComponent() {
 		super(ComponentType.DESTRUCTION);
 	}
 
 	@Override
-	public void setupData() {
-		super.setupData();
+	public void setupState() {
+		super.setupState();
 		networkSync = true;
 	}
 
 	public void update(float deltaTime) {
-		if (entity.engine.getTime() > data.destroyTime) {
-			data.remove = true;
+		if (entity.engine.getTime() > state.destroyTime) {
+			state.remove = true;
 		}
 	}
 
 	@Override
-	public Class<DestructionData> getDataClass() {
-		return DestructionData.class;
+	public Class<DestructionState> getStateClass() {
+		return DestructionState.class;
 	}
 
 }

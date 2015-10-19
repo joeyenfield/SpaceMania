@@ -3,7 +3,7 @@ package com.emptypockets.spacemania.engine.systems.entitysystem.components.movem
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 
-public class AngularMovementComponent extends EntityComponent<AngularMovementData> {
+public class AngularMovementComponent extends EntityComponent<AngularMovementState> {
 	static float MIN_DELTA = 0.01f;
 
 	public AngularMovementComponent() {
@@ -11,31 +11,31 @@ public class AngularMovementComponent extends EntityComponent<AngularMovementDat
 	}
 
 	@Override
-	public void setupData() {
-		super.setupData();
+	public void setupState() {
+		super.setupState();
 		networkSync = true;
 	}
 
 	public void update(float deltaTime) {
-		if (data == null) {
+		if (state == null) {
 			return;
 		}
-		if (data.lockAngleToLinearVelocity) {
+		if (state.lockAngleToLinearVelocity) {
 			LinearMovementComponent linear = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
 			if (linear != null) {
-				if (linear.data.vel.len2() > 0.01) {
-					entity.angularTransform.data.ang = linear.data.vel.angle();
+				if (linear.state.vel.len2() > 0.01) {
+					entity.angularTransform.state.ang = linear.state.vel.angle();
 					return;
 				}
 			}
 		}
 
-		data.angVel += data.angAcl * deltaTime;
-		entity.angularTransform.data.ang += data.angVel * deltaTime;
+		state.angVel += state.angAcl * deltaTime;
+		entity.angularTransform.state.ang += state.angVel * deltaTime;
 	}
 
 	@Override
-	public Class<AngularMovementData> getDataClass() {
-		return AngularMovementData.class;
+	public Class<AngularMovementState> getStateClass() {
+		return AngularMovementState.class;
 	}
 }

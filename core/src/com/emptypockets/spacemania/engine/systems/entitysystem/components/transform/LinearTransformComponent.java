@@ -3,14 +3,14 @@ package com.emptypockets.spacemania.engine.systems.entitysystem.components.trans
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 
-public class LinearTransformComponent extends EntityComponent<LinearTransformData> {
+public class LinearTransformComponent extends EntityComponent<LinearTransformState> {
 	public LinearTransformComponent() {
 		super(ComponentType.LINEAR_TRANSFORM);
 	}
 
 	@Override
-	public void setupData() {
-		super.setupData();
+	public void setupState() {
+		super.setupState();
 		networkSync = true;
 	}
 
@@ -18,7 +18,7 @@ public class LinearTransformComponent extends EntityComponent<LinearTransformDat
 	}
 
 	@Override
-	public Class<LinearTransformData> getDataClass() {
-		return LinearTransformData.class;
+	public Class<LinearTransformState> getStateClass() {
+		return LinearTransformState.class;
 	}
 }

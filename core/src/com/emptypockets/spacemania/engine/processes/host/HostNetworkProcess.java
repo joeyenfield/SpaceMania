@@ -7,13 +7,14 @@ import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.GameEngineHost;
 import com.emptypockets.spacemania.engine.network.host.HostPlayerAdapter;
 import com.emptypockets.spacemania.metrics.plotter.DataLogger;
+import com.emptypockets.spacemania.screens.GameEngineScreen;
 
 public class HostNetworkProcess implements EngineProcess<GameEngineHost> {
 
 	public ArrayList<HostPlayerAdapter> connections;
 
 	long lastProcessTime = 0;
-	long desiredProcessTime = 100;
+	long desiredProcessTime = GameEngineScreen.hostNetowrkPeroid;
 
 	public void processOutgoingData(GameEngineHost gameEngine) {
 		if (connections != null) {

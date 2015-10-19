@@ -1,8 +1,8 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components.transform;
 
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentState;
 
-public class AngularTransformData extends ComponentData<AngularTransformData> {
+public class AngularTransformState extends ComponentState<AngularTransformState> {
 	public float ang = 0;
 
 	public float getAng() {
@@ -14,17 +14,17 @@ public class AngularTransformData extends ComponentData<AngularTransformData> {
 	}
 
 	@Override
-	public void getComponentData(AngularTransformData result) {
+	public void readComponentState(AngularTransformState result) {
 		result.ang = ang;
 	}
 
 	@Override
-	public void setComponentData(AngularTransformData data) {
+	public void writeComponentState(AngularTransformState data) {
 		ang = data.ang;
 	}
 
 	@Override
-	public boolean changed(AngularTransformData data) {
+	public boolean hasStateChanged(AngularTransformState data) {
 		if (ang != data.ang) {
 			return true;
 		}

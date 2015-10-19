@@ -1,27 +1,27 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components.controls;
 
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentState;
 
-public class ControlData extends ComponentData<ControlData> {
+public class ControlState extends ComponentState<ControlState> {
 	public Vector2 move = new Vector2();
 	public Vector2 shootDir = new Vector2();
 	public boolean shooting;
 
 	@Override
-	public void getComponentData(ControlData result) {
+	public void readComponentState(ControlState result) {
 		result.move.set(move);
 		result.shooting = shooting;
 	}
 
 	@Override
-	public void setComponentData(ControlData data) {
+	public void writeComponentState(ControlState data) {
 		this.move.set(data.move);
 		this.shooting = data.shooting;
 	}
 
 	@Override
-	public boolean changed(ControlData data) {
+	public boolean hasStateChanged(ControlState data) {
 		// Never set shoot so clients dont shoot
 		if (shooting != data.shooting) {
 			return true;

@@ -2,7 +2,6 @@ package com.emptypockets.spacemania.engine;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.Constants;
@@ -11,6 +10,7 @@ import com.emptypockets.spacemania.engine.processes.common.DestructionProcess;
 import com.emptypockets.spacemania.engine.processes.common.MovementProcess;
 import com.emptypockets.spacemania.engine.processes.common.PartitionProcess;
 import com.emptypockets.spacemania.engine.processes.common.WeaponProcess;
+import com.emptypockets.spacemania.engine.processes.host.AiProcess;
 import com.emptypockets.spacemania.engine.systems.entitysystem.EntitySystem;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
@@ -41,7 +41,8 @@ public class GameEngine {
 	public CollissionProcess collissionProcess = new CollissionProcess();
 	public DestructionProcess destructionProcess = new DestructionProcess();
 	public WeaponProcess weaponProcess = new WeaponProcess();
-
+	public AiProcess aiProcess = new AiProcess();
+	
 	int entityCreationCount = 1;
 
 	public GameEngine() {
@@ -63,12 +64,12 @@ public class GameEngine {
 			entitySystem.process(new SingleProcessor<GameEntity>() {
 				@Override
 				public void process(GameEntity entity) {
-					DataLogger.log(name+"-ent-"+entity.entityId+"-pos-x", entity.linearTransform.data.pos.x);
-					DataLogger.log(name+"-ent-"+entity.entityId+"-pos-y", entity.linearTransform.data.pos.y);
+					DataLogger.log(name+"-ent-"+entity.entityId+"-pos-x", entity.linearTransform.state.pos.x);
+					DataLogger.log(name+"-ent-"+entity.entityId+"-pos-y", entity.linearTransform.state.pos.y);
 					
 					if(entity.hasComponent(ComponentType.LINEAR_MOVEMENT)){
-						DataLogger.log(name+"-ent-"+entity.entityId+"-vel-x", entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).data.vel.x);
-						DataLogger.log(name+"-ent-"+entity.entityId+"-vel-y", entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).data.vel.y);
+						DataLogger.log(name+"-ent-"+entity.entityId+"-vel-x", entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).state.vel.x);
+						DataLogger.log(name+"-ent-"+entity.entityId+"-vel-y", entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).state.vel.y);
 					}
 					
 				}

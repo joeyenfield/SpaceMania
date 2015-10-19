@@ -3,12 +3,12 @@ package com.emptypockets.spacemania.network.common.data.engine.entity;
 import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentState;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 
 public class GameEntityNetworkSync implements Poolable {
 	public int entityId;
-	public HashMap<ComponentType, ComponentData> data = new HashMap<ComponentType, ComponentData>();
+	public HashMap<ComponentType, ComponentState> data = new HashMap<ComponentType, ComponentState>();
 
 	public void clear() {
 		data.clear();

@@ -20,16 +20,16 @@ public class DesktopLauncher {
 
 	public static void main(String[] arg) throws InterruptedException, FileNotFoundException, IOException {
 		
-	}
-	public static void maina(String[] arg) throws InterruptedException, FileNotFoundException, IOException {
+//	}
+//	public static void maina(String[] arg) throws InterruptedException, FileNotFoundException, IOException {
 		try {
 			IpManager.setIpFinder(new DesktopIpFinder());
 			System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true");
 
 			Log.ERROR();
 			LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-			config.width = 1000;
-			config.height = 900;
+			config.width = 1280;
+			config.height = 1024;
 			config.x = 0;
 			config.y = 0;
 			config.foregroundFPS = 60;

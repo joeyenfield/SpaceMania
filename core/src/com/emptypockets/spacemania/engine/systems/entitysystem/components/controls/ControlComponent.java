@@ -7,38 +7,37 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.moveme
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.weapon.WeaponComponent;
 import com.emptypockets.spacemania.screens.GameEngineScreen;
 
-public class ControlComponent extends EntityComponent<ControlData> {
+public class ControlComponent extends EntityComponent<ControlState> {
 
 	public ControlComponent() {
 		super(ComponentType.CONTROL);
 	}
 
 	@Override
-	public void setupData() {
-		super.setupData();
+	public void setupState() {
+		super.setupState();
 		networkSync = true;
 	}
 
 	public void update(float deltaTime) {
 		if (entity != null && entity.hasComponent(ComponentType.LINEAR_MOVEMENT)) {
-			Vector2 vel = entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).data.vel;
-			if (data.move.len2() > 0.01) {
-				
-				vel.set(data.move).scl(GameEngineScreen.maxVel);
+			Vector2 vel = entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class).state.vel;
+			if (state.move.len2() > 0.01) {
+				vel.set(state.move).scl(GameEngineScreen.velShip);
 			} else {
 				vel.setZero();
 			}
 		}
 		WeaponComponent weapon = entity.getComponent(ComponentType.WEAPON, WeaponComponent.class);
 		if (weapon != null) {
-			weapon.data.shooting = data.shooting;
-			weapon.data.shootDir.set(data.shootDir);
+			weapon.state.shooting = state.shooting;
+			weapon.state.shootDir.set(state.shootDir);
 		}
 	}
 
 	@Override
-	public Class<ControlData> getDataClass() {
-		return ControlData.class;
+	public Class<ControlState> getStateClass() {
+		return ControlState.class;
 	}
 
 }

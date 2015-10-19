@@ -1,9 +1,9 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components.transform;
 
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentData;
+import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentState;
 
-public class LinearTransformData extends ComponentData<LinearTransformData> {
+public class LinearTransformState extends ComponentState<LinearTransformState> {
 	public Vector2 pos = new Vector2();
 
 	public Vector2 getPos() {
@@ -15,17 +15,17 @@ public class LinearTransformData extends ComponentData<LinearTransformData> {
 	}
 
 	@Override
-	public void getComponentData(LinearTransformData result) {
+	public void readComponentState(LinearTransformState result) {
 		result.pos.set(pos);
 	}
 
 	@Override
-	public void setComponentData(LinearTransformData data) {
+	public void writeComponentState(LinearTransformState data) {
 		pos.set(data.pos);
 	}
 
 	@Override
-	public boolean changed(LinearTransformData data) {
+	public boolean hasStateChanged(LinearTransformState data) {
 		if (pos.dst2(data.pos) > 0.1) {
 			return true;
 		}

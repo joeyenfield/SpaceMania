@@ -26,6 +26,7 @@ public class GameEngineClient extends GameEngine {
 		processes.add(movementProcess);
 		processes.add(partitionProcess);
 		processes.add(destructionProcess);
+//		processes.add(aiProcess);
 		setProcesses(processes);
 
 		setName("CLIENT");

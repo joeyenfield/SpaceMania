@@ -32,23 +32,30 @@ import com.emptypockets.spacemania.utils.OrthoCamController;
 
 public class GameEngineScreen extends StageScreen implements EntityDestructionListener {
 
-	int width = 45000;
-	int height = 45000;
+	int width = 1500;
+	int height = 1500;
 
-	int regionSizeX = 4000;
-	int regionSizeY = 4000;
+	int regionSizeX = 2000;
+	int regionSizeY = 2000;
 
 	int viewOffsetX = width + 10;
 	int viewOffsetY = height + 10;
-	int desiredEntityCount = 2000;
-	public static float minVel = 100;
-	public static float maxVel = 500;
-	public static float bulletVel = 1200;
-	public static long bulletShootTimeMin = 400;
-	public static long bulletShootTimeMax = 400;
+	
+	public static float minVelEnemy = 100;
+	public static float maxVelEnemy = 210;
+	public static float enemySearchWindow = 800;
+	
+	public static float velShip = 200;
+	public static float bulletVel = 1.5f*velShip;
 
-	int clientCount = 36;
-	int rowCount = 6;
+	public static long bulletShootTimeMin = 200;
+	public static long bulletShootTimeMax = 200;
+
+	public static long hostNetowrkPeroid = 100;
+	
+	int desiredEntityCount = 1;
+	int clientCount = 1;
+	int rowCount = 2;
 
 	GameEngineHost serverGameEngine;
 	GameEngineClient clientGameEngines[] = new GameEngineClient[clientCount];
@@ -68,22 +75,6 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 	public GameEngineScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
-	}
-
-	public GameEntity createShip() {
-		GameEntity entity = serverGameEngine.createEntity(GameEntityType.SHIP);
-
-		LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
-		// float progress = (0.1f + 0.8f * (i / (ents - 1f)));
-		// entity.linearTransform.data.pos.x = width * progress;
-		// entity.linearTransform.data.pos.y = height * progress;
-		// comp.data.vel.x = 10;?
-		comp.data.vel.x = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
-		comp.data.vel.y = MathUtils.random(minVel, maxVel) * MathUtils.randomSign();
-		entity.linearTransform.data.pos.x = MathUtils.random(serverGameEngine.universeRegion.x, serverGameEngine.universeRegion.x + serverGameEngine.universeRegion.width);
-		entity.linearTransform.data.pos.y = MathUtils.random(serverGameEngine.universeRegion.y, serverGameEngine.universeRegion.y + serverGameEngine.universeRegion.height);
-
-		return entity;
 	}
 
 	@Override
@@ -169,8 +160,8 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 			clientGameEngines[i].update(delta);
 		}
 		for (int i = 0; i < 10; i++) {
-			if (serverGameEngine.entitySystem.getEntityCount() < desiredEntityCount) {
-				createShip();
+			if (serverGameEngine.entitySystem.getEntityCount(GameEntityType.ENEMY) < desiredEntityCount) {
+				serverGameEngine.createEntity(GameEntityType.ENEMY);
 			}
 		}
 	}
@@ -184,7 +175,7 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		float pixSize = cameraHelper.getScreenToCameraPixelX(getScreenCamera(), 1);
 		tempPos.x = 0;
 		tempPos.y = 0;
-		render.showDebug = false;
+		render.showDebug = true;
 		render.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize, tempPos);
 
 		for (int i = 0; i < clientGameEngines.length; i++) {
@@ -194,7 +185,7 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 				tempPos.y += viewOffsetY;
 			}
 			// tempPos.x = width+100;
-			render.showDebug = false;
+			render.showDebug = true;
 			render.render(clientGameEngines[i], screenViewport, shapeRender, spriteBatch, textHelper, pixSize, tempPos);
 		}
 		renderConnections();

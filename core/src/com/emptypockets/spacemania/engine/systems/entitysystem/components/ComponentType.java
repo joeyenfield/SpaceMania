@@ -16,17 +16,19 @@ public enum ComponentType {
 	DESTRUCTION(8),
 	COLLISSION(9),
 	CONTROL(10),
-	WEAPON(11);
+	WEAPON(11),
+	AI(12);
+	
 	int mask = 0;
 	public int id = 0;
-	public static final int COMPONENT_TYPES = 12;
+	public static final int COMPONENT_TYPES = 13;
 
 	public static EntityComponent[] getComponentHolder() {
 		return new EntityComponent[COMPONENT_TYPES];
 	}
 
-	public static ComponentData[] getComponentDataHolder() {
-		return new ComponentData[COMPONENT_TYPES];
+	public static ComponentState[] getComponentDataHolder() {
+		return new ComponentState[COMPONENT_TYPES];
 	}
 	
 	public static ComponentType getById(int i) {
@@ -43,6 +45,7 @@ public enum ComponentType {
 		case 9:return COLLISSION;
 		case 10:return CONTROL;
 		case 11:return WEAPON;
+		case 12:return AI;
 		}
 		
 		throw new RuntimeException("Missing Id");

@@ -24,11 +24,13 @@ import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEngine {
 	String name = "ENGINE";
-	public Vector2 posOffset = new Vector2();
 	float engineTime;
 	float lastDelta;
 	boolean running;
-
+	
+	
+	Vector2 tempPos = new Vector2();
+	public Vector2 worldRenderOffset = new Vector2();
 	public Rectangle universeRegion = new Rectangle();
 
 	public EntitySystem entitySystem;
@@ -51,6 +53,13 @@ public class GameEngine {
 		spatialPartition = new CellsGameEntitySpatitionPartition(this, Constants.ENTITY_SYSTEM_PARTITION_X, Constants.ENTITY_SYSTEM_PARTITION_Y);
 	}
 
+
+	public boolean containsWorld(Vector2 pos){
+		tempPos.set(pos);
+		tempPos.sub(worldRenderOffset);
+		return universeRegion.contains(tempPos);
+	}
+	
 	public void setUniverseSize(float x, float y, float width, float height) {
 		universeRegion.x = x;
 		universeRegion.y = y;

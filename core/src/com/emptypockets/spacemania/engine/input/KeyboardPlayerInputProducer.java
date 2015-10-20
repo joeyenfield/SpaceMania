@@ -3,7 +3,7 @@ package com.emptypockets.spacemania.engine.input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 
-public class KeyboardPlayerInputProducer extends PlayerInputProducer {
+public class KeyboardPlayerInputProducer implements PlayerInputProducer {
 
 	int keyMoveUp = Keys.W;
 	int keyMoveDown = Keys.S;
@@ -17,7 +17,12 @@ public class KeyboardPlayerInputProducer extends PlayerInputProducer {
 
 	int keyShoot = Keys.SPACE;
 
-	@Override
+	PlayerInputData playerInput = new PlayerInputData();
+	
+	public PlayerInputData getPlayerInput() {
+		return playerInput;
+	}
+	
 	public void update() {
 		getPlayerInput().move.setZero();
 		if (Gdx.input.isKeyPressed(keyMoveRight)) {

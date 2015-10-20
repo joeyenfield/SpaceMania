@@ -4,58 +4,66 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.engine.GameEngineClient;
 import com.emptypockets.spacemania.engine.GameEngineHost;
+import com.emptypockets.spacemania.engine.input.DebugOnScreenPlayerInputProducer;
 import com.emptypockets.spacemania.engine.input.KeyboardPlayerInputProducer;
+import com.emptypockets.spacemania.engine.input.PlayerInputProducer;
 import com.emptypockets.spacemania.engine.network.client.ClientPlayerAdapter;
 import com.emptypockets.spacemania.engine.network.host.HostPlayerAdapter;
 import com.emptypockets.spacemania.engine.systems.entitysystem.EntityDestructionListener;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
 import com.emptypockets.spacemania.gui.GameEngineEntitiesRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.gui.tools.TextRender;
 import com.emptypockets.spacemania.utils.CameraHelper;
+import com.emptypockets.spacemania.utils.GraphicsToolkit;
 import com.emptypockets.spacemania.utils.OrthoCamController;
 
 public class GameEngineScreen extends StageScreen implements EntityDestructionListener {
 
-	int width = 1500;
-	int height = 1500;
-
-	int regionSizeX = 2000;
-	int regionSizeY = 2000;
-
-	int viewOffsetX = width + 10;
-	int viewOffsetY = height + 10;
-	
 	public static float minVelEnemy = 100;
 	public static float maxVelEnemy = 210;
-	public static float enemySearchWindow = 800;
-	
+	public static float enemySearchWindow = 1000;
+
 	public static float velShip = 200;
-	public static float bulletVel = 1.5f*velShip;
+	public static float bulletVel = 1.5f * velShip;
 
 	public static long bulletShootTimeMin = 200;
 	public static long bulletShootTimeMax = 200;
 
 	public static long hostNetowrkPeroid = 100;
-	
-	int desiredEntityCount = 1;
+
+	int width = 2000;
+	int height = 2000;
+
+	int regionSizeX = 4000;
+	int regionSizeY = 4000;
+
+	int viewOffsetX = width + 10;
+	int viewOffsetY = height + 10;
+
+	int desiredEntityCount = 0;
 	int clientCount = 1;
 	int rowCount = 2;
+
+	public boolean displayTouch = false;
+	public boolean debugDisplay = false;
+	public boolean centerOnEntity = false;
+	public boolean centerOnServer = false;
 
 	GameEngineHost serverGameEngine;
 	GameEngineClient clientGameEngines[] = new GameEngineClient[clientCount];
@@ -73,8 +81,18 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 	Vector2 tempPos = new Vector2();
 
+	DebugOnScreenPlayerInputProducer inputProducer = null;
+	GameEngineClient selectedClient = null;
+
+	Color debugGridColor = new Color(Color.WHITE.r,Color.WHITE.g,Color.WHITE.b,0.2f);
+	
+	Preferences gameEnginePrefs;
 	public GameEngineScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
+		gameEnginePrefs = Gdx.app.getPreferences("gameEnginePrefs");
+		
+		gameEnginePrefs.putInteger("runCount",gameEnginePrefs.getInteger("runCount")+1);
+		gameEnginePrefs.flush();
 	}
 
 	@Override
@@ -107,6 +125,7 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		serverGameEngine = new GameEngineHost();
 		serverGameEngine.setUniverseSize(-width / 2, -height / 2, width, height);
 
+		
 		// createShip();
 
 		// Client Connection
@@ -125,7 +144,7 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 			// Setup Client Side
 			ClientPlayerAdapter clientAdapter = new ClientPlayerAdapter();
-			clientAdapter.setInputProducer(new KeyboardPlayerInputProducer());
+
 			// ent.linearTransform.data.pos.set(0, 0);
 			// Setup Host Side
 			HostPlayerAdapter hostAdapter = new HostPlayerAdapter();
@@ -145,11 +164,13 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
+		inputProducer.layoutGui();
 	}
 
 	@Override
 	public void createStage(Stage stage) {
-
+		inputProducer = new DebugOnScreenPlayerInputProducer(getSkin(), this);
+		stage.addActor(inputProducer);
 	}
 
 	@Override
@@ -164,6 +185,20 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 				serverGameEngine.createEntity(GameEntityType.ENEMY);
 			}
 		}
+
+		if (centerOnEntity) {
+			if (selectedClient != null && selectedClient.clientNetworkProcess != null && selectedClient.clientNetworkProcess.adapters != null && selectedClient.clientNetworkProcess.adapters.size() > 0) {
+				int entityId = selectedClient.clientNetworkProcess.adapters.get(0).adapter.entityId;
+				GameEntity ent = serverGameEngine.getEntityById(entityId);
+				if (ent != null) {
+					tempPos.set(ent.linearTransform.state.pos);
+					if (!centerOnServer) {
+						tempPos.add(selectedClient.worldRenderOffset);
+					}
+					getScreenCamera().position.set(tempPos, 0);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -172,11 +207,15 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		shapeRender.setProjectionMatrix(getScreenCamera().combined);
 		cameraHelper.getBounds(getScreenCamera(), screenViewport);
 
+//		if(debugDisplay){
+			GraphicsToolkit.draw2DAxis(shapeRender, getScreenCamera(), 500, debugGridColor);
+//		}
 		float pixSize = cameraHelper.getScreenToCameraPixelX(getScreenCamera(), 1);
 		tempPos.x = 0;
 		tempPos.y = 0;
-		render.showDebug = true;
-		render.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize, tempPos);
+		render.showDebug = debugDisplay;
+		serverGameEngine.worldRenderOffset.set(tempPos);
+		render.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
 
 		for (int i = 0; i < clientGameEngines.length; i++) {
 			tempPos.x += viewOffsetX;
@@ -185,15 +224,15 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 				tempPos.y += viewOffsetY;
 			}
 			// tempPos.x = width+100;
-			render.showDebug = true;
-			render.render(clientGameEngines[i], screenViewport, shapeRender, spriteBatch, textHelper, pixSize, tempPos);
+			render.showDebug = debugDisplay;
+			clientGameEngines[i].worldRenderOffset.set(tempPos);
+			render.render(clientGameEngines[i], screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
 		}
-		renderConnections();
+		renderPlayerConnections();
 		renderTextOverlay();
-
 	}
 
-	private void renderConnections() {
+	private void renderPlayerConnections() {
 		shapeRender.begin(ShapeType.Line);
 		shapeRender.setColor(Color.BLUE);
 		if (serverGameEngine.hostNetworkProcess.connections != null) {
@@ -221,6 +260,9 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		tempPos.y += textHeight * 1.2f;
 		textHelper.render(shapeRender, Integer.toString((int) HostPlayerAdapter.dataRate), tempPos, textHeight, screenViewport);
 
+		tempPos.y += textHeight * 1.2f;
+		textHelper.render(shapeRender, Integer.toString(gameEnginePrefs.getInteger("runCount")), tempPos, textHeight, screenViewport);
+		
 		shapeRender.end();
 	}
 
@@ -244,4 +286,46 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 	}
 
+	@Override
+	public boolean tap(float x, float y, int count, int button) {
+		tempPos.x = x;
+		tempPos.y = y;
+		cameraHelper.screenToWorld(getScreenCamera(), tempPos);
+
+		clearControls();
+		for (int i = 0; i < clientGameEngines.length; i++) {
+			if (clientGameEngines[i].containsWorld(tempPos)) {
+				takeControl(clientGameEngines[i]);
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keyCode) {
+		if (keyCode == Keys.F12) {
+			debugDisplay = !debugDisplay;
+			return true;
+		} else if (keyCode == Keys.F11) {
+			centerOnEntity = !centerOnEntity;
+			return true;
+		} else if (keyCode == Keys.F10) {
+			centerOnServer = !centerOnServer;
+			return true;
+		}
+		return super.keyUp(keyCode);
+	}
+
+	public void clearControls() {
+		for (int i = 0; i < clientGameEngines.length; i++) {
+			clientGameEngines[i].clientNetworkProcess.adapters.get(0).setInputProducer(null);
+		}
+		selectedClient = null;
+	}
+
+	public void takeControl(GameEngineClient client) {
+		client.clientNetworkProcess.adapters.get(0).setInputProducer(inputProducer);
+		selectedClient = client;
+	}
 }

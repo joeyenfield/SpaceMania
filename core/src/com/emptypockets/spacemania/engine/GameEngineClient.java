@@ -36,5 +36,4 @@ public class GameEngineClient extends GameEngine {
 		throw new RuntimeException("Should not create dump entities");
 	}
 	
-
 }

@@ -22,7 +22,7 @@ public class ClientPlayerAdapter {
 	ArrayList<GameEngineState> states = new ArrayList<GameEngineState>();
 
 	public HostPlayerAdapter adapter;
-	
+
 	public synchronized void processIncomming(GameEngineClient clientEngine) {
 		int size = states.size();
 		for (int i = 0; i < size; i++) {
@@ -59,13 +59,15 @@ public class ClientPlayerAdapter {
 	}
 
 	public synchronized void send(Object o) {
-		if(adapter != null){
+		if (adapter != null) {
 			adapter.recieve(KryoUtils.clone(o));
 		}
 	}
 
 	public void update(GameEngineClient clientEngine) {
-		inputProducer.update();
+		if (inputProducer != null) {
+			inputProducer.update();
+		}
 		updateClientSidePlayer(clientEngine);
 	}
 
@@ -74,7 +76,9 @@ public class ClientPlayerAdapter {
 	}
 
 	public void processOutgoing(GameEngineClient gameEngine) {
-		send(inputProducer.getPlayerInput());
+		if (inputProducer != null) {
+			send(inputProducer.getPlayerInput());
+		}
 	}
 
 }

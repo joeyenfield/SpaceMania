@@ -20,10 +20,10 @@ public class GameEngineEntitiesRender {
 	ArrayList<GameEntity> entities = new ArrayList<GameEntity>();
 	Rectangle screenView = new Rectangle();
 
-	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, TextRender textHelper, float pixelSize, Vector2 offset) {
+	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, TextRender textHelper, float pixelSize) {
 		screenView.set(screen);
 		
-
+		Vector2 offset = engine.worldRenderOffset;
 		screenView.x -= offset.x;
 		screenView.y -= offset.y;
 		engine.spatialPartition.searchAnyMask(screenView, ComponentType.RENDER.getMask(), entities);

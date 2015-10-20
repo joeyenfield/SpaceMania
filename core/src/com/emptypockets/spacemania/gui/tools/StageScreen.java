@@ -50,7 +50,6 @@ public abstract class StageScreen extends GameScreen {
     public void resize(int width, int height) {
         super.resize(width, height);
         stageViewport.update(width, height, true);
-
     }
 
     @Override

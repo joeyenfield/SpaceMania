@@ -3,12 +3,11 @@ package com.emptypockets.spacemania.screens;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -19,18 +18,16 @@ import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.engine.GameEngineClient;
 import com.emptypockets.spacemania.engine.GameEngineHost;
 import com.emptypockets.spacemania.engine.input.DebugOnScreenPlayerInputProducer;
-import com.emptypockets.spacemania.engine.input.KeyboardPlayerInputProducer;
-import com.emptypockets.spacemania.engine.input.PlayerInputProducer;
 import com.emptypockets.spacemania.engine.network.client.ClientPlayerAdapter;
 import com.emptypockets.spacemania.engine.network.host.HostPlayerAdapter;
 import com.emptypockets.spacemania.engine.systems.entitysystem.EntityDestructionListener;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
+import com.emptypockets.spacemania.gui.BackgroundRender;
 import com.emptypockets.spacemania.gui.GameEngineEntitiesRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
 import com.emptypockets.spacemania.gui.tools.TextRender;
 import com.emptypockets.spacemania.utils.CameraHelper;
-import com.emptypockets.spacemania.utils.GraphicsToolkit;
 import com.emptypockets.spacemania.utils.OrthoCamController;
 
 public class GameEngineScreen extends StageScreen implements EntityDestructionListener {
@@ -47,8 +44,8 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 	public static long hostNetowrkPeroid = 100;
 
-	int width = 2000;
-	int height = 2000;
+	int width = 20000;
+	int height = 20000;
 
 	int regionSizeX = 4000;
 	int regionSizeY = 4000;
@@ -56,8 +53,8 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 	int viewOffsetX = width + 10;
 	int viewOffsetY = height + 10;
 
-	int desiredEntityCount = 0;
-	int clientCount = 1;
+	int desiredEntityCount = 500;
+	int clientCount = 2;
 	int rowCount = 2;
 
 	public boolean displayTouch = false;
@@ -68,8 +65,9 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 	GameEngineHost serverGameEngine;
 	GameEngineClient clientGameEngines[] = new GameEngineClient[clientCount];
 
-	GameEngineEntitiesRender render;
-
+	GameEngineEntitiesRender entityRender;
+	BackgroundRender backroundRender;
+	
 	CameraHelper cameraHelper = new CameraHelper();
 	Rectangle screenViewport = new Rectangle();
 
@@ -90,7 +88,7 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 	public GameEngineScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
 		gameEnginePrefs = Gdx.app.getPreferences("gameEnginePrefs");
-		
+
 		gameEnginePrefs.putInteger("runCount",gameEnginePrefs.getInteger("runCount")+1);
 		gameEnginePrefs.flush();
 	}
@@ -117,7 +115,8 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 		setClearColor(Color.BLACK);
 
-		render = new GameEngineEntitiesRender();
+		entityRender = new GameEngineEntitiesRender();
+		backroundRender = new BackgroundRender();
 		spriteBatch = new SpriteBatch();
 		shapeRender = new ShapeRenderer();
 		textHelper = new TextRender();
@@ -208,14 +207,16 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		cameraHelper.getBounds(getScreenCamera(), screenViewport);
 
 //		if(debugDisplay){
-			GraphicsToolkit.draw2DAxis(shapeRender, getScreenCamera(), 500, debugGridColor);
+//			GraphicsToolkit.draw2DAxis(shapeRender, getScreenCamera(), 500, debugGridColor);
 //		}
 		float pixSize = cameraHelper.getScreenToCameraPixelX(getScreenCamera(), 1);
 		tempPos.x = 0;
 		tempPos.y = 0;
-		render.showDebug = debugDisplay;
+		entityRender.showDebug = debugDisplay;
 		serverGameEngine.worldRenderOffset.set(tempPos);
-		render.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
+		
+		backroundRender.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
+		entityRender.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
 
 		for (int i = 0; i < clientGameEngines.length; i++) {
 			tempPos.x += viewOffsetX;
@@ -224,9 +225,9 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 				tempPos.y += viewOffsetY;
 			}
 			// tempPos.x = width+100;
-			render.showDebug = debugDisplay;
+			entityRender.showDebug = debugDisplay;
 			clientGameEngines[i].worldRenderOffset.set(tempPos);
-			render.render(clientGameEngines[i], screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
+			entityRender.render(clientGameEngines[i], screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
 		}
 		renderPlayerConnections();
 		renderTextOverlay();

@@ -29,7 +29,7 @@ public class DesktopLauncher {
 			Log.ERROR();
 			LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 			config.width = 1280;
-			config.height = 1024;
+			config.height = 720;
 			config.x = 0;
 			config.y = 0;
 			config.foregroundFPS = 60;

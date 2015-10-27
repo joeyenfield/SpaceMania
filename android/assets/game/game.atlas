@@ -1,75 +1,82 @@
 
 game.png
-size: 512,256
+size: 512,512
 format: RGBA8888
 filter: MipMap,MipMap
 repeat: none
 back
   rotate: false
-  xy: 2, 54
+  xy: 2, 20
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 bullet
   rotate: false
-  xy: 2, 2
+  xy: 270, 68
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 debris
   rotate: false
-  xy: 106, 42
+  xy: 390, 366
   size: 50, 10
   orig: 50, 10
   offset: 0, 0
   index: -1
 spark
   rotate: false
-  xy: 106, 42
+  xy: 390, 366
   size: 50, 10
   orig: 50, 10
   offset: 0, 0
   index: -1
 default
   rotate: false
-  xy: 334, 154
+  xy: 260, 248
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 enemy-follow
   rotate: false
-  xy: 204, 24
+  xy: 390, 378
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 enemy-random
   rotate: false
-  xy: 334, 52
+  xy: 204, 120
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
+player-base
+  rotate: false
+  xy: 2, 222
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
 playership
   rotate: false
-  xy: 204, 126
+  xy: 260, 350
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 score
   rotate: false
-  xy: 54, 2
+  xy: 204, 2
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 smoke
   rotate: false
-  xy: 436, 190
+  xy: 204, 54
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

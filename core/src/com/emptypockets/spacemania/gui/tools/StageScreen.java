@@ -1,17 +1,17 @@
 package com.emptypockets.spacemania.gui.tools;
 
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.emptypockets.spacemania.MainGame;
+import com.emptypockets.spacemania.engine.input.NamedInputMultiplexer;
 
 public abstract class StageScreen extends GameScreen {
 
     Viewport stageViewport;
     private Stage stage;
 
-    public StageScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
+    public StageScreen(MainGame mainGame, NamedInputMultiplexer inputMultiplexer) {
         super(mainGame, inputMultiplexer);
         stageViewport = new ExtendViewport(800, 600);
     }
@@ -19,22 +19,22 @@ public abstract class StageScreen extends GameScreen {
     public abstract void createStage(Stage stage);
 
     @Override
-    public void addInputMultiplexer(InputMultiplexer input) {
+    public void addInputMultiplexer(NamedInputMultiplexer input) {
         super.addInputMultiplexer(input);
     }
 
     @Override
-    public void removeInputMultiplexer(InputMultiplexer input) {
+    public void removeInputMultiplexer(NamedInputMultiplexer input) {
         super.removeInputMultiplexer(input);
-        input.removeProcessor(getStage());
+        input.removeProcessor(stage);
     }
 
     @Override
     public void show() {
         super.show();
-        Stage stage = new Stage(stageViewport);
+        stage = new Stage(stageViewport);
         setStage(stage);
-        createStage(getStage());
+        createStage(stage);
     }
 
     @Override
@@ -91,7 +91,7 @@ public abstract class StageScreen extends GameScreen {
         }
         this.stage = stage;
         if (this.stage != null) {
-            parentInputMultiplexer.addProcessor(0, this.stage);
+            parentInputMultiplexer.addProcessor(0, this.stage, "STAGE");
         }
     }
 

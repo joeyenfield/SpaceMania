@@ -4,7 +4,6 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Compon
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 
 public class DestructionComponent extends EntityComponent<DestructionState> {
-
 	public DestructionComponent() {
 		super(ComponentType.DESTRUCTION);
 	}

@@ -1,11 +1,11 @@
 package com.emptypockets.spacemania.screens;
 
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.emptypockets.spacemania.MainGame;
+import com.emptypockets.spacemania.engine.input.NamedInputMultiplexer;
 import com.emptypockets.spacemania.gui.tools.GameScreen;
 
 public class SplashScreen extends GameScreen{
@@ -15,7 +15,7 @@ public class SplashScreen extends GameScreen{
 	Texture texture;
 	SpriteBatch batch;
 	
-	public SplashScreen(MainGame mainGame, InputMultiplexer inputProcessor) {
+	public SplashScreen(MainGame mainGame, NamedInputMultiplexer inputProcessor) {
 		super(mainGame, inputProcessor);
 	}
 

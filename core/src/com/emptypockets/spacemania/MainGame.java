@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
+import com.emptypockets.spacemania.engine.input.NamedInputMultiplexer;
 import com.emptypockets.spacemania.gui.old.ClientScreen;
 import com.emptypockets.spacemania.gui.tools.GameScreen;
 import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
@@ -25,14 +26,14 @@ public class MainGame extends Game implements InputProcessor {
 
 	GameScreen currentScreen;
 
-	InputMultiplexer input;
+	NamedInputMultiplexer input;
 
 	@Override
 	public void create() {
 		Scene2DToolkit.getToolkit().reloadSkin();
-		input = new InputMultiplexer();
+		input = new NamedInputMultiplexer();
 		Gdx.input.setInputProcessor(input);
-		input.addProcessor(this);
+		input.addProcessor(this, "this");
 		assetManager = new AssetManager();
 		loadingScreen = new LoadingScreen(this, input);
 		splashScreen = new SplashScreen(this, input);

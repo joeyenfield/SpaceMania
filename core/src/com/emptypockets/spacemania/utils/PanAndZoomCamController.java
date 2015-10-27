@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-public class OrthoCamController implements InputProcessor {
+public class PanAndZoomCamController implements InputProcessor {
     final OrthographicCamera camera;
     final Vector3 curr = new Vector3();
     final Vector3 last = new Vector3(-1, -1, -1);
@@ -25,7 +25,7 @@ public class OrthoCamController implements InputProcessor {
     float minZoom = 1 / 10f;
     private HashMap<Integer, Vector2> pointers;
 
-    public OrthoCamController(OrthographicCamera camera) {
+    public PanAndZoomCamController(OrthographicCamera camera) {
         this.camera = camera;
         this.pointers = new HashMap<Integer, Vector2>();
         distance = 0f;

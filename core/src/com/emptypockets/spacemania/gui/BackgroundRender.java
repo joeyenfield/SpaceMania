@@ -16,17 +16,17 @@ public class BackgroundRender {
 	Rectangle screenView = new Rectangle();
 	Vector2 uvMap1 = new Vector2();
 	Vector2 uvMap2 = new Vector2();
-	
+
 	float deepImgScale = 2;
 	float deepMovementScale = 0.05f;
-	
-	float[] imgScale = new float[]{1,1};
-	float[] movementScale = new float[]{0.5f,1};
-	float[] offsetX = new float[]{0,0.5f};
-	float[] offsetY = new float[]{0,0.5f};
-	
-	boolean basic = true;
-	
+
+	float[] imgScale = new float[] { .5f, .5f };
+	float[] movementScale = new float[] { 0.5f, 1 };
+	float[] offsetX = new float[] { 0, 0.5f };
+	float[] offsetY = new float[] { 0, 0.5f };
+
+	boolean basic = false;
+
 	public BackgroundRender() {
 		super();
 		createImages();
@@ -50,32 +50,43 @@ public class BackgroundRender {
 		screenView.x -= offset.x;
 		screenView.y -= offset.y;
 
-		spriteBatch.begin();
-		spriteBatch.disableBlending();
-		spriteBatch.setColor(1, 1, 1, 1);
+		if (basic) {
+			spriteBatch.begin();
+			spriteBatch.disableBlending();
+			spriteBatch.setColor(1, 1, 1, 1);
 
-		getUvMap(screen, starfieldDeepTexture, deepMovementScale, deepImgScale,0,0, uvMap1, uvMap2);
-		spriteBatch.draw(starfieldDeepTexture, screen.x, screen.y, screen.width, screen.height, uvMap1.x,uvMap1.y, uvMap2.x,uvMap2.y);
-		
-		spriteBatch.enableBlending();
-		for(int i = 0; i < imgScale.length; i++){
-			getUvMap(screen, starfieldParalaxTexture, movementScale[i],imgScale[i],offsetX[i],offsetY[i],uvMap1, uvMap2);
-			spriteBatch.draw(starfieldParalaxTexture, screen.x, screen.y, screen.width, screen.height, uvMap1.x,uvMap1.y, uvMap2.x,uvMap2.y);
+			getUvMap(screen, starfieldDeepTexture, 1, 1, 0, 0, uvMap1, uvMap2);
+			spriteBatch.draw(starfieldDeepTexture, screen.x, screen.y, screen.width, screen.height, uvMap1.x, uvMap1.y, uvMap2.x, uvMap2.y);
+			spriteBatch.end();
+			spriteBatch.enableBlending();
+		} else {
+			spriteBatch.begin();
+			spriteBatch.disableBlending();
+			spriteBatch.setColor(1, 1, 1, 1);
+
+			getUvMap(screen, starfieldDeepTexture, deepMovementScale, deepImgScale, 0, 0, uvMap1, uvMap2);
+			spriteBatch.draw(starfieldDeepTexture, screen.x, screen.y, screen.width, screen.height, uvMap1.x, uvMap1.y, uvMap2.x, uvMap2.y);
+
+			spriteBatch.enableBlending();
+			for (int i = 0; i < imgScale.length; i++) {
+				getUvMap(screen, starfieldParalaxTexture, movementScale[i], imgScale[i], offsetX[i], offsetY[i], uvMap1, uvMap2);
+				spriteBatch.draw(starfieldParalaxTexture, screen.x, screen.y, screen.width, screen.height, uvMap1.x, uvMap1.y, uvMap2.x, uvMap2.y);
+			}
+			spriteBatch.end();
 		}
-		spriteBatch.end();
 	}
 
-	private void getUvMap(Rectangle screen, Texture image, float movementScale, float imageScale,float offsetU, float offsetV,Vector2 uvMap1, Vector2 uvMap2 ) {
-		uvMap1.x = offsetU+(screen.x*movementScale)/(imageScale*image.getWidth());
-		uvMap1.y = offsetV+(screen.y*movementScale)/(imageScale*image.getHeight());
-		uvMap2.x = offsetU+(screen.x*movementScale+screen.width)/(imageScale*image.getWidth());
-		uvMap2.y = offsetV+(screen.y*movementScale+screen.height)/(imageScale*image.getHeight());
-		
-		float count = 4;
-		if(uvMap1.dst2(uvMap2) > count*count){
-			float dist = uvMap1.dst(uvMap2); 
+	private void getUvMap(Rectangle screen, Texture image, float movementScale, float imageScale, float offsetU, float offsetV, Vector2 uvMap1, Vector2 uvMap2) {
+		uvMap1.x = offsetU + (screen.x * movementScale) / (imageScale * image.getWidth());
+		uvMap1.y = offsetV + (screen.y * movementScale) / (imageScale * image.getHeight());
+		uvMap2.x = offsetU + (screen.x * movementScale + screen.width) / (imageScale * image.getWidth());
+		uvMap2.y = offsetV + (screen.y * movementScale + screen.height) / (imageScale * image.getHeight());
 
-			uvMap2.lerp(uvMap1, 1-count/dist);
+		float count = 4;
+		if (uvMap1.dst2(uvMap2) > count * count) {
+			float dist = uvMap1.dst(uvMap2);
+
+			uvMap2.lerp(uvMap1, 1 - count / dist);
 		}
 	}
 }

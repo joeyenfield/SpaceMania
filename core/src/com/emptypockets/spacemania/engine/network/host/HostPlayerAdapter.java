@@ -58,6 +58,11 @@ public class HostPlayerAdapter implements Poolable {
 			entityId = ent.entityId;
 			ent.addComponent(ComponentType.CONTROL);
 			RectangeUtils.randomPoint(engine.universeRegion, ent.linearTransform.state.pos);
+			
+			//Add Base - with offset
+			GameEntity base = engine.createEntity(GameEntityType.PLAYER_BASE);
+			base.linearTransform.state.pos.set(ent.linearTransform.state.pos);
+			base.linearTransform.state.pos.add(150, 0);
 		}
 
 		if (ent != null) {

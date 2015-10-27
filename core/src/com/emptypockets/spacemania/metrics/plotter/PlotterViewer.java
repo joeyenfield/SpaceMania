@@ -27,12 +27,12 @@ import com.emptypockets.spacemania.metrics.plotter.graphs.line.LinePlotDataGraph
 import com.emptypockets.spacemania.metrics.plotter.graphs.line.LinePlotDescription;
 import com.emptypockets.spacemania.utils.CameraHelper;
 import com.emptypockets.spacemania.utils.GraphicsToolkit;
-import com.emptypockets.spacemania.utils.OrthoCamController;
+import com.emptypockets.spacemania.utils.PanAndZoomCamController;
 
 public class PlotterViewer extends ApplicationAdapter implements GestureListener, InputProcessor {
 	ShapeRenderer shape;
 	OrthographicCamera camera;
-	OrthoCamController cameraControl;
+	PanAndZoomCamController cameraControl;
 
 	Color gridColor = new Color(Color.LIGHT_GRAY);
 	Color markColor = new Color(Color.WHITE);
@@ -71,7 +71,7 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 		shape = new ShapeRenderer();
 
 		camera = new OrthographicCamera();
-		cameraControl = new OrthoCamController(camera);
+		cameraControl = new PanAndZoomCamController(camera);
 
 		InputMultiplexer input = new InputMultiplexer();
 		input.addProcessor(stage);

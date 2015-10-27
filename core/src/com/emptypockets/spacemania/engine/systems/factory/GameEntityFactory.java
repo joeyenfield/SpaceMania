@@ -44,10 +44,35 @@ public abstract class GameEntityFactory {
 		case ENEMY:
 			ent = createEnemyEntity(id);
 			break;
+		case PLAYER_BASE:
+			ent = createPlayerBase(id);
+			break;
 		default:
 			throw new RuntimeException("Not yet implemented");
 		}
 		return ent;
+	}
+
+	protected GameEntity createPlayerBase(int entityId) {
+		float radius = 128;
+
+		GameEntity entity = PoolsManager.obtain(GameEntity.class);
+		entity.type = GameEntityType.PLAYER_BASE;
+		entity.setData(engine, entityId);
+
+		// Add Components
+		entity.addComponent(ComponentType.LINEAR_TRANSFORM);
+		entity.addComponent(ComponentType.ANGULAR_TRANSFORM);
+		entity.addComponent(ComponentType.ANGULAR_MOVEMENT);
+		entity.addComponent(ComponentType.PARTITION);
+		entity.addComponent(ComponentType.RENDER);
+		entity.addComponent(ComponentType.NETWORK_DATA);
+
+		// Setup some data
+		entity.getComponent(ComponentType.PARTITION, PartitionComponent.class).state.radius = radius;
+		entity.getComponent(ComponentType.RENDER, RenderComponent.class).state.setData(assetStore.getRegion("player-base"), 2 * radius, 2 * radius, true, 0);
+		entity.getComponent(ComponentType.ANGULAR_MOVEMENT, AngularMovementComponent.class).state.angVel = 3;
+		return entity;
 	}
 
 	protected GameEntity createBulletEntity(int entityId) {
@@ -70,14 +95,14 @@ public abstract class GameEntityFactory {
 
 		// Setup some data
 		entity.getComponent(ComponentType.PARTITION, PartitionComponent.class).state.radius = radius;
-		entity.getComponent(ComponentType.RENDER, RenderComponent.class).state.setData(assetStore.getRegion("bullet"), 2 * radius, 2 * radius, true);
+		entity.getComponent(ComponentType.RENDER, RenderComponent.class).state.setData(assetStore.getRegion("bullet"), 2 * radius, 2 * radius, true,2);
 		entity.getComponent(ComponentType.COLLISSION, CollissionComponent.class).state.collissionRadius = radius;
 		entity.getComponent(ComponentType.DESTRUCTION, DestructionComponent.class).state.destroyTime = engine.getTime() + 10;
 		entity.getComponent(ComponentType.DESTRUCTION, DestructionComponent.class).state.remove = false;
-		
+
 		LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
 		comp.state.maxVel = GameEngineScreen.bulletVel;
-		
+
 		return entity;
 	}
 
@@ -99,11 +124,9 @@ public abstract class GameEntityFactory {
 		entity.addComponent(ComponentType.CONSTRAINED_MOVEMENT);
 		entity.addComponent(ComponentType.WEAPON);
 		entity.addComponent(ComponentType.AI);
-		
 
-		
 		entity.getComponent(ComponentType.PARTITION, PartitionComponent.class).state.radius = radius;
-		entity.getComponent(ComponentType.RENDER, RenderComponent.class).state.setData(assetStore.getRegion("enemy-follow"), 2 * radius, 2 * radius, true);
+		entity.getComponent(ComponentType.RENDER, RenderComponent.class).state.setData(assetStore.getRegion("enemy-follow"), 2 * radius, 2 * radius, true,2);
 		entity.getComponent(ComponentType.COLLISSION, CollissionComponent.class).state.collissionRadius = radius;
 		entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT, ConstrainedRegionComponent.class).state.constrainedRegion = engine.universeRegion;
 		entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT, ConstrainedRegionComponent.class).state.constrainRadius = radius;
@@ -113,7 +136,6 @@ public abstract class GameEntityFactory {
 		weapon.state.shooting = false;
 		weapon.state.bulletVel = GameEngineScreen.bulletVel;
 		weapon.state.bulletLife = 5;
-		
 
 		LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
 		// float progress = (0.1f + 0.8f * (i / (ents - 1f)));
@@ -127,10 +149,10 @@ public abstract class GameEntityFactory {
 		entity.linearTransform.state.pos.y = MathUtils.random(engine.universeRegion.y, engine.universeRegion.y + engine.universeRegion.height);
 
 		entity.getComponent(ComponentType.AI, AiComponent.class).searchSize = GameEngineScreen.enemySearchWindow;
-		
+
 		return entity;
 	}
-	
+
 	protected GameEntity createShipEntity(int entityId) {
 		float radius = 20;
 
@@ -146,11 +168,11 @@ public abstract class GameEntityFactory {
 		CollissionComponent collission = (CollissionComponent) entity.addComponent(ComponentType.COLLISSION);
 		RenderComponent render = (RenderComponent) entity.addComponent(ComponentType.RENDER);
 		NetworkDataComponent network = (NetworkDataComponent) entity.addComponent(ComponentType.NETWORK_DATA);
-		
+
 		entity.addComponent(ComponentType.CONSTRAINED_MOVEMENT);
 		entity.addComponent(ComponentType.WEAPON);
 		entity.getComponent(ComponentType.PARTITION, PartitionComponent.class).state.radius = radius;
-		entity.getComponent(ComponentType.RENDER, RenderComponent.class).state.setData(assetStore.getRegion("playership"), 2 * radius, 2 * radius, true);
+		entity.getComponent(ComponentType.RENDER, RenderComponent.class).state.setData(assetStore.getRegion("playership"), 2 * radius, 2 * radius, true,1);
 		entity.getComponent(ComponentType.COLLISSION, CollissionComponent.class).state.collissionRadius = radius;
 		entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT, ConstrainedRegionComponent.class).state.constrainedRegion = engine.universeRegion;
 		entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT, ConstrainedRegionComponent.class).state.constrainRadius = radius;
@@ -160,7 +182,7 @@ public abstract class GameEntityFactory {
 		weapon.state.shooting = false;
 		weapon.state.bulletVel = GameEngineScreen.bulletVel;
 		weapon.state.bulletLife = 5;
-		
+
 		LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
 		// float progress = (0.1f + 0.8f * (i / (ents - 1f)));
 		// entity.linearTransform.data.pos.x = width * progress;

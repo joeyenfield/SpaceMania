@@ -2,6 +2,7 @@ package com.emptypockets.spacemania.engine.systems.entitysystem;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
@@ -154,5 +155,9 @@ public class GameEntity implements Poolable {
 
 	public void println(String string) {
 		engine.println(getDesc() + ":" + string);
+	}
+
+	public Vector2 getPos() {
+		return linearTransform.state.pos;
 	}
 }

@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.gui.old;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -22,10 +21,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.emptypockets.spacemania.Constants;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.commandLine.CommandLinePanel;
+import com.emptypockets.spacemania.engine.input.NamedInputMultiplexer;
 import com.emptypockets.spacemania.gui.old.renderer.EngineRender;
 import com.emptypockets.spacemania.gui.old.renderer.OverlayRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
-import com.emptypockets.spacemania.gui.tools.TextRender;
 import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.network.old.client.ClientManager;
 import com.emptypockets.spacemania.network.old.client.commands.rooms.ClientSpawnCommand;
@@ -62,7 +61,7 @@ public class ClientScreen extends StageScreen {
 	Vector3 playerPositionFixTemp = new Vector3();
 	Vector3 playerOffsetFixTemp = new Vector3();
 
-	public ClientScreen(MainGame mainGame, InputMultiplexer inputMultiplexer) {
+	public ClientScreen(MainGame mainGame, NamedInputMultiplexer inputMultiplexer) {
 		super(mainGame, inputMultiplexer);
 		setDrawEvents(false);
 		clientInputProducer = new OnScreenInput();
@@ -82,12 +81,12 @@ public class ClientScreen extends StageScreen {
 	}
 
 	@Override
-	public void addInputMultiplexer(InputMultiplexer input) {
+	public void addInputMultiplexer(NamedInputMultiplexer input) {
 		super.addInputMultiplexer(input);
 	}
 
 	@Override
-	public void removeInputMultiplexer(InputMultiplexer input) {
+	public void removeInputMultiplexer(NamedInputMultiplexer input) {
 		super.removeInputMultiplexer(input);
 	}
 

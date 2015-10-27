@@ -11,7 +11,7 @@ public class AssetStore {
 	public AssetStore(){
 		textureAtlas = new TextureAtlas("game/game.atlas");
 		for (Texture t : textureAtlas.getTextures()) {
-			t.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+			t.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		}
 	}
 	public TextureRegion getRegion(String name) {

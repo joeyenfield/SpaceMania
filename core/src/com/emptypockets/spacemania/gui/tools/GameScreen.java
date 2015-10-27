@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.gui.tools;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -16,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.emptypockets.spacemania.MainGame;
+import com.emptypockets.spacemania.engine.input.NamedInputMultiplexer;
 import com.emptypockets.spacemania.utils.event.EventRecorder;
 
 public abstract class GameScreen implements Screen, GestureListener, InputProcessor {
@@ -31,10 +31,10 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	protected EventRecorder eventLogger;
 	SpriteBatch eventBatch;
-	InputMultiplexer parentInputMultiplexer;
+	NamedInputMultiplexer parentInputMultiplexer;
 	boolean drawEvents = false;
 
-	public GameScreen(MainGame game, InputMultiplexer inputProcessor) {
+	public GameScreen(MainGame game, NamedInputMultiplexer inputProcessor) {
 		this.mainGame = game;
 		this.parentInputMultiplexer = inputProcessor;
 		this.gesture = new GestureDetector(this);
@@ -49,12 +49,12 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT); // #14
 	}
 
-	protected void addInputMultiplexer(InputMultiplexer input) {
-		input.addProcessor(this);
-		input.addProcessor(gesture);
+	protected void addInputMultiplexer(NamedInputMultiplexer input) {
+		input.addProcessor(this, "this");
+		input.addProcessor(gesture, "this-gesture");
 	}
 
-	public void removeInputMultiplexer(InputMultiplexer input) {
+	public void removeInputMultiplexer(NamedInputMultiplexer input) {
 		input.removeProcessor(this);
 		input.removeProcessor(gesture);
 	}

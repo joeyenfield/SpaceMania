@@ -14,12 +14,12 @@ import com.emptypockets.spacemania.gui.tools.TextRender;
 import com.emptypockets.spacemania.metrics.events.EventSystem;
 import com.emptypockets.spacemania.metrics.events.render.EventRender;
 import com.emptypockets.spacemania.utils.CameraHelper;
-import com.emptypockets.spacemania.utils.OrthoCamController;
+import com.emptypockets.spacemania.utils.PanAndZoomCamController;
 
 public class EventViewer extends ApplicationAdapter {
 	ShapeRenderer shape;
 	OrthographicCamera camera;
-	OrthoCamController cameraControl;
+	PanAndZoomCamController cameraControl;
 	TextRender textRender;
 	EventRender events;
 	CameraHelper helper;
@@ -32,7 +32,7 @@ public class EventViewer extends ApplicationAdapter {
 
 		shape = new ShapeRenderer();
 		camera = new OrthographicCamera();
-		cameraControl = new OrthoCamController(camera);
+		cameraControl = new PanAndZoomCamController(camera);
 		cameraControl.setLimitZoom(false);
 		InputMultiplexer input = new InputMultiplexer();
 		input.addProcessor(cameraControl);

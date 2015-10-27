@@ -22,14 +22,14 @@ public class GameEngineEntitiesRender {
 
 	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, TextRender textHelper, float pixelSize) {
 		screenView.set(screen);
-		
+
 		Vector2 offset = engine.worldRenderOffset;
 		screenView.x -= offset.x;
 		screenView.y -= offset.y;
 		engine.spatialPartition.searchAnyMask(screenView, ComponentType.RENDER.getMask(), entities);
 		screenView.x += offset.x;
 		screenView.y += offset.y;
-		
+
 		int size = entities.size();
 		for (int i = 0; i < size; i++) {
 			GameEntity entity = entities.get(i);
@@ -37,9 +37,14 @@ public class GameEngineEntitiesRender {
 		}
 
 		spriteBatch.begin();
-		for (int i = 0; i < size; i++) {
-			GameEntity entity = entities.get(i);
-			((RenderComponent) entity.getComponent(ComponentType.RENDER)).render(spriteBatch);
+		for (int pass = 0; pass < 3; pass++) {
+			for (int i = 0; i < size; i++) {
+				GameEntity entity = entities.get(i);
+				RenderComponent comp = ((RenderComponent) entity.getComponent(ComponentType.RENDER));
+				if (comp.needsRender(pass)){
+					comp.render(spriteBatch, pass);
+				}
+			}
 		}
 		spriteBatch.end();
 

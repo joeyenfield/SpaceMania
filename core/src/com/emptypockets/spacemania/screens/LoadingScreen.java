@@ -1,6 +1,5 @@
 package com.emptypockets.spacemania.screens;
 
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
@@ -8,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.emptypockets.spacemania.MainGame;
+import com.emptypockets.spacemania.engine.input.NamedInputMultiplexer;
 import com.emptypockets.spacemania.gui.tools.GameScreen;
 
 public class LoadingScreen extends GameScreen {
@@ -30,7 +30,7 @@ public class LoadingScreen extends GameScreen {
 	boolean proceededOnLood = false;
 	
 
-	public LoadingScreen(MainGame mainGame, InputMultiplexer inputProcessor) {
+	public LoadingScreen(MainGame mainGame, NamedInputMultiplexer inputProcessor) {
 		super(mainGame, inputProcessor);
 	}
 

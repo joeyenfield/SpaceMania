@@ -38,7 +38,7 @@ public class MainGame extends Game implements InputProcessor {
 		loadingScreen = new LoadingScreen(this, input);
 		splashScreen = new SplashScreen(this, input);
 
-		boolean legacyGame = false;
+		boolean legacyGame = true;
 
 		if (legacyGame) {
 			screen = new ClientScreen(this, input);

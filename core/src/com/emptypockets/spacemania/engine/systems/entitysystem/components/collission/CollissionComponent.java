@@ -12,10 +12,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Compon
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ai.AiComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.destruction.DestructionComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
-import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementState;
 import com.emptypockets.spacemania.gui.tools.TextRender;
-import com.emptypockets.spacemania.network.old.engine.entities.EntityType;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class CollissionComponent extends EntityComponent<CollissionState> {

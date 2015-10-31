@@ -3,11 +3,9 @@ package com.emptypockets.spacemania;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.emptypockets.spacemania.engine.input.NamedInputMultiplexer;
-import com.emptypockets.spacemania.gui.old.ClientScreen;
 import com.emptypockets.spacemania.gui.tools.GameScreen;
 import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
 import com.emptypockets.spacemania.metrics.plotter.DataLogger;
@@ -21,8 +19,6 @@ public class MainGame extends Game implements InputProcessor {
 
 	protected LoadingScreen loadingScreen;
 	protected SplashScreen splashScreen;
-
-	public ClientScreen screen;
 
 	GameScreen currentScreen;
 
@@ -38,14 +34,7 @@ public class MainGame extends Game implements InputProcessor {
 		loadingScreen = new LoadingScreen(this, input);
 		splashScreen = new SplashScreen(this, input);
 
-		boolean legacyGame = false;
-
-		if (legacyGame) {
-			screen = new ClientScreen(this, input);
-			loadScreen(screen, false);
-		} else {
 			loadScreen(new GameEngineScreen(this, input), false);
-		}
 
 	}
 
@@ -112,31 +101,26 @@ public class MainGame extends Game implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

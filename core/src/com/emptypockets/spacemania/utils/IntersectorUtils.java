@@ -1,4 +1,4 @@
-package com.emptypockets.spacemania.network.old.engine;
+package com.emptypockets.spacemania.utils;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;

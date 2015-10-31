@@ -20,6 +20,15 @@ public class GameEngineEntitiesRender {
 	ArrayList<GameEntity> entities = new ArrayList<GameEntity>();
 	Rectangle screenView = new Rectangle();
 
+	public void renderBounds(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, Color color){
+		Vector2 offset = engine.worldRenderOffset;
+		
+		shapeBatch.begin(ShapeType.Line);
+		shapeBatch.setColor(color);
+		shapeBatch.rect(engine.universeRegion.x + offset.x, engine.universeRegion.y + offset.y, engine.universeRegion.width, engine.universeRegion.height);
+		shapeBatch.end();
+
+	}
 	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, TextRender textHelper, float pixelSize) {
 		screenView.set(screen);
 
@@ -47,11 +56,6 @@ public class GameEngineEntitiesRender {
 			}
 		}
 		spriteBatch.end();
-
-		shapeBatch.begin(ShapeType.Line);
-		shapeBatch.setColor(Color.RED);
-		shapeBatch.rect(engine.universeRegion.x + offset.x, engine.universeRegion.y + offset.y, engine.universeRegion.width, engine.universeRegion.height);
-		shapeBatch.end();
 
 		if (showDebug) {
 			if (showCellsSpace) {

@@ -48,8 +48,8 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 	public static long hostNetowrkPeroid = 100;
 
-	int width = 18000;
-	int height = 18000;
+	int width = 500;
+	int height = 500;
 
 	int regionSizeX = 4000;
 	int regionSizeY = 4000;
@@ -57,8 +57,8 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 	int viewOffsetX = width + 10;
 	int viewOffsetY = height + 10;
 
-	int desiredEntityCount = 1000;
-	int clientCount = 3;
+	int desiredEntityCount = 2;
+	int clientCount = 1;
 	int rowCount = 2;
 
 	public boolean debugDisplay = false;
@@ -232,6 +232,7 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 		backroundRender.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
 		entityRender.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
+		entityRender.renderBounds(serverGameEngine, screenViewport, shapeRender, (selectedEngine == serverGameEngine) ? Color.RED : Color.GREEN);
 
 		for (int i = 0; i < clientGameEngines.length; i++) {
 			tempPos.x += viewOffsetX;
@@ -243,11 +244,14 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 			entityRender.showDebug = debugDisplay;
 			clientGameEngines[i].worldRenderOffset.set(tempPos);
 			entityRender.render(clientGameEngines[i], screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
+			entityRender.renderBounds(clientGameEngines[i], screenViewport, shapeRender, (selectedEngine == clientGameEngines[i]) ? Color.RED : Color.GREEN);
 		}
 		renderPlayerConnections();
 		renderTextOverlay();
 
-		gameEngineControler.render(serverGameEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
+		if (selectedEngine != null) {
+			gameEngineControler.render(selectedEngine, screenViewport, shapeRender, spriteBatch, textHelper, pixSize);
+		}
 	}
 
 	private void renderPlayerConnections() {
@@ -313,7 +317,9 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 		if (count > 1) {
 			clearControls();
+			// Check double tap inside server
 			if (serverGameEngine.containsWorld(tempPos)) {
+				setSelectedEngine(serverGameEngine);
 				int closestPlayer = 0;
 				float closestDistance = Float.MAX_VALUE;
 
@@ -384,13 +390,11 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 				serverEnt.getComponent(ComponentType.RENDER, RenderComponent.class).clearColor();
 			}
 		}
-		selectedEngine = null;
-		gameEngineControler.setGameEngine(null);
+		setSelectedEngine(null);
 	}
 
 	public void setControl(GameEngineClient client) {
 		client.clientNetworkProcess.adapters.get(0).setInputProducer(inputProducer);
-		selectedEngine = client;
 		int id = client.clientNetworkProcess.adapters.get(0).adapter.entityId;
 		GameEntity clientEnt = client.getEntityById(id);
 		if (clientEnt != null) {
@@ -400,6 +404,13 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		if (serverEnt != null) {
 			serverEnt.getComponent(ComponentType.RENDER, RenderComponent.class).getColor().set(Color.GREEN);
 		}
+
+		setSelectedEngine(client);
+	}
+
+	public void setSelectedEngine(GameEngine client) {
+		selectedEngine = client;
+		gameEngineControler.setGameEngine(client);
 	}
 
 	public GameEntity getEntity(Vector2 currentTouch) {

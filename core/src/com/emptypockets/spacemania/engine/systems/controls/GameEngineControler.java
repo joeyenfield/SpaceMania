@@ -43,6 +43,9 @@ public class GameEngineControler implements InputProcessor, EntityDestructionLis
 		currentTouchScreen.x = x;
 		currentTouchScreen.x = x;
 		cameraHelper.screenToWorld(camera, currentTouchWorld);
+		if (gameEngine != null) {
+			currentTouchWorld.sub(gameEngine.worldRenderOffset);
+		}
 	}
 
 	public void updateLastTouch() {

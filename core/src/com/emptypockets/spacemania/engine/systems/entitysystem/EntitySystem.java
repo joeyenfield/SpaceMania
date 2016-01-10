@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Bits;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.processors.EntityMaskArrayListProcessor;
 import com.emptypockets.spacemania.engine.systems.entitysystem.processors.EntityMaskCollectProcessor;
@@ -55,14 +56,14 @@ public class EntitySystem implements EntityDestructionListener {
 	}
 
 	public void filter(ArrayListProcessor<GameEntity> result, Rectangle region) {
-		filter(result, region, 0);
+		filter(result, region, null);
 	}
 
 	public void filter(ArrayList<GameEntity> result, ComponentType type) {
 		filter(result, type.getMask());
 	}
 
-	public void filter(ArrayList<GameEntity> result, int abilityMask) {
+	public void filter(ArrayList<GameEntity> result, Bits abilityMask) {
 		// Filters
 		EntityMaskArrayListProcessor maskFilterProcessor = PoolsManager.obtain(EntityMaskArrayListProcessor.class);
 		maskFilterProcessor.entities = result;
@@ -71,7 +72,7 @@ public class EntitySystem implements EntityDestructionListener {
 		PoolsManager.free(maskFilterProcessor);
 	}
 
-	public void filter(ArrayListProcessor<GameEntity> result, int abilityMask) {
+	public void filter(ArrayListProcessor<GameEntity> result, Bits abilityMask) {
 		// Filters
 		EntityMaskCollectProcessor maskFilterProcessor = PoolsManager.obtain(EntityMaskCollectProcessor.class);
 		maskFilterProcessor.entities = result;
@@ -80,7 +81,7 @@ public class EntitySystem implements EntityDestructionListener {
 		PoolsManager.free(maskFilterProcessor);
 	}
 
-	public void filter(ArrayListProcessor<GameEntity> result, Rectangle region, int abilityMask) {
+	public void filter(ArrayListProcessor<GameEntity> result, Rectangle region, Bits abilityMask) {
 		EntityRegionCollectProcessor regionProcessor = PoolsManager.obtain(EntityRegionCollectProcessor.class);
 		regionProcessor.entities = result;
 		regionProcessor.abilityMask = abilityMask;
@@ -89,7 +90,7 @@ public class EntitySystem implements EntityDestructionListener {
 		PoolsManager.free(regionProcessor);
 	}
 
-	public void process(SingleProcessor<GameEntity> processor, Rectangle region, int abilityMask) {
+	public void process(SingleProcessor<GameEntity> processor, Rectangle region, Bits abilityMask) {
 		EntityRegionFilterProcessor regionProcessor = PoolsManager.obtain(EntityRegionFilterProcessor.class);
 		regionProcessor.processor = processor;
 		regionProcessor.abilityMask = abilityMask;
@@ -98,7 +99,7 @@ public class EntitySystem implements EntityDestructionListener {
 		PoolsManager.free(regionProcessor);
 	}
 
-	public void process(SingleProcessor<GameEntity> processor, int abilityMask) {
+	public void process(SingleProcessor<GameEntity> processor, Bits abilityMask) {
 		EntityMaskFilterProcessor filterProcessor = PoolsManager.obtain(EntityMaskFilterProcessor.class);
 		filterProcessor.abilityMask = abilityMask;
 		filterProcessor.processor = processor;

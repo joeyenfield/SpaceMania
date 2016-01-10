@@ -2,6 +2,7 @@ package com.emptypockets.spacemania.engine.systems.entitysystem.processors;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.utils.Bits;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.holders.ArrayListProcessor;
@@ -10,7 +11,7 @@ import com.emptypockets.spacemania.holders.SingleProcessor;
 public class EntityMaskCollectProcessor implements SingleProcessor<GameEntity>, Poolable {
 
 	public ArrayListProcessor<GameEntity> entities;
-	public int abilityMask;
+	public Bits abilityMask;
 
 	@Override
 	public void process(GameEntity entity) {
@@ -21,7 +22,7 @@ public class EntityMaskCollectProcessor implements SingleProcessor<GameEntity>, 
 
 	@Override
 	public void reset() {
-		abilityMask = 0;
+		abilityMask = null;
 		entities = null;
 	}
 

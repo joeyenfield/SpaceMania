@@ -3,6 +3,7 @@ package com.emptypockets.spacemania.engine.systems.entitysystem;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Bits;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
@@ -15,7 +16,7 @@ import com.emptypockets.spacemania.utils.BitUtilities;
 public class GameEntity implements Poolable {
 
 	public int entityId;
-	public int componentsMask;
+	public Bits componentsMask = new Bits();
 	public EntityComponentStore componentStore;
 
 	public LinearTransformComponent linearTransform;
@@ -36,13 +37,13 @@ public class GameEntity implements Poolable {
 	}
 
 	public void addComponent(EntityComponent<?> component) {
-		componentsMask = component.getComponentType().addAbility(componentsMask);
+		component.getComponentType().addAbility(componentsMask);
 		componentStore.add(component);
 		component.setEntity(this);
 	}
 
 	public void removeComponent(EntityComponent<?> component) {
-		componentsMask = component.getComponentType().removeAbility(componentsMask);
+		component.getComponentType().removeAbility(componentsMask);
 		componentStore.remove(component.getComponentType());
 	}
 
@@ -50,16 +51,12 @@ public class GameEntity implements Poolable {
 		return componentStore.get(type);
 	}
 
-	public boolean hasAnyOfAbility(int abilities) {
-		return (componentsMask & abilities) != 0;
+	public boolean hasAnyOfAbility(Bits abilities) {
+		return componentsMask.intersects(abilities);
 	}
 
-	public boolean hasAllOfAbility(int abilities) {
-		return (componentsMask & abilities) == abilities;
-	}
-
-	public String getMaskString() {
-		return BitUtilities.toString(componentsMask);
+	public boolean hasAllOfAbility(Bits abilities) {
+		return componentsMask.containsAll(abilities);
 	}
 
 	@Override
@@ -80,7 +77,7 @@ public class GameEntity implements Poolable {
 		componentStore.clear();
 		linearTransform = null;
 		angularTransform = null;
-		componentsMask = 0;
+		componentsMask.clear();
 		synchronized (destructionListeners) {
 			destructionListeners.clear();
 		}
@@ -143,7 +140,8 @@ public class GameEntity implements Poolable {
 
 	public String getDesc() {
 		// if (false) {
-		// return "(" + entityId + " : " + type.name() + " : " + BitUtilities.toString(componentsMask) + ")";
+		// return "(" + entityId + " : " + type.name() + " : " +
+		// BitUtilities.toString(componentsMask) + ")";
 		// } else {
 		return "(" + entityId + ")";
 		// }
@@ -159,5 +157,9 @@ public class GameEntity implements Poolable {
 
 	public Vector2 getPos() {
 		return linearTransform.state.pos;
+	}
+
+	public String getMaskString() {
+		return BitUtilities.toString(componentsMask);
 	}
 }

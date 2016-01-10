@@ -1,12 +1,13 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.processors;
 
+import com.badlogic.gdx.utils.Bits;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.holders.SingleProcessor;
 
 public class EntityMaskFilterProcessor implements SingleProcessor<GameEntity>, Poolable {
 
-	public int abilityMask = 0;
+	public Bits abilityMask;
 	public SingleProcessor<GameEntity> processor;
 
 	public void process(GameEntity entity) {
@@ -17,7 +18,7 @@ public class EntityMaskFilterProcessor implements SingleProcessor<GameEntity>, P
 
 	@Override
 	public void reset() {
-		abilityMask = 0;
+		abilityMask = null;
 		processor = null;
 	}
 

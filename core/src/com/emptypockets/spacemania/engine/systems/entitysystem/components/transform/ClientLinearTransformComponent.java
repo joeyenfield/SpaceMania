@@ -1,9 +1,9 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components.transform;
 
 import com.badlogic.gdx.math.Vector2;
+import com.emptypockets.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
-import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 
 public class ClientLinearTransformComponent extends LinearTransformComponent {
 	float errorTolerance2 = 1000*1000;

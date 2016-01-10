@@ -2,6 +2,7 @@ package com.emptypockets.spacemania.engine.network.client;
 
 import java.util.ArrayList;
 
+import com.emptypockets.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.engine.GameEngineClient;
 import com.emptypockets.spacemania.engine.input.PlayerInputData;
 import com.emptypockets.spacemania.engine.input.PlayerInputProducer;
@@ -9,8 +10,7 @@ import com.emptypockets.spacemania.engine.network.host.HostPlayerAdapter;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.controls.ControlComponent;
-import com.emptypockets.spacemania.metrics.plotter.DataLogger;
-import com.emptypockets.spacemania.network.common.data.engine.GameEngineState;
+import com.emptypockets.spacemania.network.engine.GameEngineState;
 import com.emptypockets.spacemania.utils.KryoUtils;
 import com.emptypockets.spacemania.utils.PoolsManager;
 

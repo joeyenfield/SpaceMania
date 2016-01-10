@@ -1,6 +1,6 @@
 package com.emptypockets.spacemania.utils;
 
-import com.emptypockets.spacemania.network.common.NetworkProtocall;
+import com.emptypockets.spacemania.network.NetworkProtocall;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import com.emptypockets.spacemania.console.Console;
+import com.emptypockets.spacemania.commandLine.commands.Command;
+import com.emptypockets.spacemania.utils.console.Console;
 
 public class CommandLine {
     int commandHistoryCount = 10;

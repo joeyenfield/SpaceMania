@@ -12,8 +12,8 @@ public class GameEngineHost extends GameEngine {
 
 	public AssetStore assetStore;
 
-	public GameEngineHost() {
-		super();
+	public GameEngineHost(float sectorSize, int partitionSize) {
+		super(sectorSize, partitionSize);
 
 		assetStore = new AssetStore();
 		entityFactory = new HostGameEntityFactory(this, assetStore);

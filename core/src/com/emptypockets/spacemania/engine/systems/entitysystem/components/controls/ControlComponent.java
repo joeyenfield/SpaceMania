@@ -5,7 +5,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Compon
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.weapon.WeaponComponent;
-import com.emptypockets.spacemania.screens.GameEngineScreen;
+import com.emptypockets.spacemania.gui.screens.GameEngineScreen;
 
 public class ControlComponent extends EntityComponent<ControlState> {
 

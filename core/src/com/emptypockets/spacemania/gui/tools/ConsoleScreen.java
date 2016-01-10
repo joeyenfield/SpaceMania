@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.emptypockets.spacemania.console.Console;
-import com.emptypockets.spacemania.console.ConsoleListener;
+import com.emptypockets.spacemania.utils.console.Console;
+import com.emptypockets.spacemania.utils.console.ConsoleListener;
 
 public class ConsoleScreen extends Window implements ConsoleListener {
 	Label label;

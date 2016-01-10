@@ -11,12 +11,12 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.EntityDestruction
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.network.NetworkDataComponent;
-import com.emptypockets.spacemania.network.common.data.engine.GameEngineState;
-import com.emptypockets.spacemania.network.common.data.engine.entity.ComponentDataStore;
-import com.emptypockets.spacemania.network.common.data.engine.entity.EntitySystemState;
-import com.emptypockets.spacemania.network.common.data.engine.entity.GameEntityAdded;
-import com.emptypockets.spacemania.network.common.data.engine.entity.GameEntityNetworkSync;
-import com.emptypockets.spacemania.network.common.data.engine.entity.GameEntityRemoved;
+import com.emptypockets.spacemania.network.engine.GameEngineState;
+import com.emptypockets.spacemania.network.engine.entity.ComponentDataStore;
+import com.emptypockets.spacemania.network.engine.entity.EntitySystemState;
+import com.emptypockets.spacemania.network.engine.entity.GameEntityAdded;
+import com.emptypockets.spacemania.network.engine.entity.GameEntityNetworkSync;
+import com.emptypockets.spacemania.network.engine.entity.GameEntityRemoved;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class HostDataSyncManager implements EntityDestructionListener {

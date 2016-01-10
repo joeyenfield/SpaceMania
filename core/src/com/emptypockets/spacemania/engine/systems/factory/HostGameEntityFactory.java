@@ -7,7 +7,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Entity
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ai.AiComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.ClientLinearTransformComponent;
 import com.emptypockets.spacemania.gui.AssetStore;
-import com.emptypockets.spacemania.screens.GameEngineScreen;
+import com.emptypockets.spacemania.gui.screens.GameEngineScreen;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class HostGameEntityFactory extends GameEntityFactory{

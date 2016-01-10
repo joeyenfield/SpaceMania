@@ -5,13 +5,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
+import com.emptypockets.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.engine.input.NamedInputMultiplexer;
+import com.emptypockets.spacemania.gui.screens.GameEngineScreen;
+import com.emptypockets.spacemania.gui.screens.LoadingScreen;
+import com.emptypockets.spacemania.gui.screens.SplashScreen;
 import com.emptypockets.spacemania.gui.tools.GameScreen;
 import com.emptypockets.spacemania.gui.tools.Scene2DToolkit;
-import com.emptypockets.spacemania.metrics.plotter.DataLogger;
-import com.emptypockets.spacemania.screens.GameEngineScreen;
-import com.emptypockets.spacemania.screens.LoadingScreen;
-import com.emptypockets.spacemania.screens.SplashScreen;
 
 public class MainGame extends Game implements InputProcessor {
 

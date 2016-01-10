@@ -11,9 +11,9 @@ import javax.swing.JTextArea;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.emptypockets.spacemania.metrics.plotter.PlotterViewer;
-import com.emptypockets.spacemania.network.common.utils.IpManager;
+import com.emptypockets.metrics.plotter.PlotterViewer;
 import com.emptypockets.spacemania.utils.ErrorUtils;
+import com.emptypockets.spacemania.utils.ipConfig.IpManager;
 import com.esotericsoftware.minlog.Log;
 
 public class DesktopPlotterViewerLauncher {

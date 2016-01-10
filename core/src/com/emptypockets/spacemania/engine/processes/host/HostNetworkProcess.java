@@ -2,12 +2,12 @@ package com.emptypockets.spacemania.engine.processes.host;
 
 import java.util.ArrayList;
 
+import com.emptypockets.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.engine.EngineProcess;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.GameEngineHost;
 import com.emptypockets.spacemania.engine.network.host.HostPlayerAdapter;
-import com.emptypockets.spacemania.metrics.plotter.DataLogger;
-import com.emptypockets.spacemania.screens.GameEngineScreen;
+import com.emptypockets.spacemania.gui.screens.GameEngineScreen;
 
 public class HostNetworkProcess implements EngineProcess<GameEngineHost> {
 

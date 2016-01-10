@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.emptypockets.spacemania.MainGame;
 import com.emptypockets.spacemania.engine.input.NamedInputMultiplexer;
-import com.emptypockets.spacemania.utils.event.EventRecorder;
 
 public abstract class GameScreen implements Screen, GestureListener, InputProcessor {
 	protected Color clearColor = new Color(1, 1, 1, 1);
@@ -29,7 +28,6 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	Stage stage;
 	GestureDetector gesture;
 
-	protected EventRecorder eventLogger;
 	SpriteBatch eventBatch;
 	NamedInputMultiplexer parentInputMultiplexer;
 	boolean drawEvents = false;
@@ -38,7 +36,6 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		this.mainGame = game;
 		this.parentInputMultiplexer = inputProcessor;
 		this.gesture = new GestureDetector(this);
-		eventLogger = new EventRecorder(5);
 	}
 
 	public void initializeRender() {
@@ -69,36 +66,23 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	@Override
 	public final void render(float delta) {
-		eventLogger.begin("LOGIC");
 		try {
 			updateLogic(delta);
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
-		eventLogger.end("LOGIC");
 
-		eventLogger.begin("RENDER");
 		initializeRender();
 		renderScreen(delta);
-		eventLogger.end("RENDER");
 	}
 
 	public void renderScreen(float delta) {
-		eventLogger.begin("RENDER-Screen");
 		drawScreen(delta);
-		eventLogger.end("RENDER-Screen");
-
-		eventLogger.begin("RENDER-Overlay");
 		drawOverlay(delta);
-		eventLogger.end("RENDER-Overlay");
 
 		if (drawEvents) {
-			eventLogger.begin("RENDER-Event Overlay");
 			drawEventOverlay(delta);
-			eventLogger.end("RENDER-Event Overlay");
-
 		}
-
 	}
 
 	public void drawEventOverlay(float delta) {
@@ -109,7 +93,6 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		BitmapFont font = getSkin().getFont("default-font");
 
 		eventBatch.begin();
-		eventLogger.draw(eventBatch, font, -512, 300, 20);
 		font.draw(eventBatch, "FPS : " + Gdx.graphics.getFramesPerSecond(), 0, -Gdx.graphics.getHeight() / 2 + 50);
 		eventBatch.end();
 
@@ -281,7 +264,6 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	public void setDrawEvents(boolean drawEvents) {
 		this.drawEvents = drawEvents;
-		eventLogger.setEnabled(drawEvents);
 	}
 
 	public abstract void setupAssetManager(AssetManager assetManager);

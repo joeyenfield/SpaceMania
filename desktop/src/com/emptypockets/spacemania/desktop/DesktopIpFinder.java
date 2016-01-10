@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import com.emptypockets.spacemania.network.common.utils.IpManagerInterface;
+import com.emptypockets.spacemania.utils.ipConfig.IpManagerInterface;
 
 final class DesktopIpFinder implements IpManagerInterface {
 	@Override

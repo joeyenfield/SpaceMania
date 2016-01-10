@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.emptypockets.spacemania.Constants;
+import com.emptypockets.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.engine.processes.common.CollissionProcess;
 import com.emptypockets.spacemania.engine.processes.common.DestructionProcess;
 import com.emptypockets.spacemania.engine.processes.common.MovementProcess;
@@ -19,7 +19,6 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.moveme
 import com.emptypockets.spacemania.engine.systems.factory.GameEntityFactory;
 import com.emptypockets.spacemania.engine.systems.spatialpartition.CellsGameEntitySpatitionPartition;
 import com.emptypockets.spacemania.holders.SingleProcessor;
-import com.emptypockets.spacemania.metrics.plotter.DataLogger;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class GameEngine {
@@ -46,10 +45,10 @@ public class GameEngine {
 
 	int entityCreationCount = 1;
 
-	public GameEngine() {
-		this.universeRegion.set(-Constants.DEFAULT_ROOM_SIZE, -Constants.DEFAULT_ROOM_SIZE, 2 * Constants.DEFAULT_ROOM_SIZE, 2 * Constants.DEFAULT_ROOM_SIZE);
+	public GameEngine(float sectorSize, int partitionSize) {
+		this.universeRegion.set(-sectorSize / 2, -sectorSize / 2, sectorSize, sectorSize);
 		entitySystem = new EntitySystem();
-		spatialPartition = new CellsGameEntitySpatitionPartition(this, Constants.ENTITY_SYSTEM_PARTITION_X, Constants.ENTITY_SYSTEM_PARTITION_Y);
+		spatialPartition = new CellsGameEntitySpatitionPartition(this, partitionSize, partitionSize);
 	}
 
 	public boolean containsWorld(Vector2 pos) {

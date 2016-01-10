@@ -1,5 +1,6 @@
 package com.emptypockets.spacemania.engine.processes.common;
 
+import com.badlogic.gdx.utils.Bits;
 import com.emptypockets.spacemania.engine.EngineProcess;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
@@ -13,8 +14,13 @@ import com.emptypockets.spacemania.holders.SingleProcessor;
 
 public class MovementProcess implements SingleProcessor<GameEntity>, EngineProcess<GameEngine> {
 	float deltaTime = 0;
-	int mask = ComponentType.LINEAR_MOVEMENT.getMask() | ComponentType.ANGULAR_MOVEMENT.getMask() | ComponentType.CONSTRAINED_MOVEMENT.getMask();
+	Bits mask = new Bits();
 
+	public MovementProcess() {
+		mask.or(ComponentType.LINEAR_MOVEMENT.getMask());
+		mask.or(ComponentType.ANGULAR_MOVEMENT.getMask());
+		mask.or(ComponentType.CONSTRAINED_MOVEMENT.getMask());
+	}
 
 	@Override
 	public void process(GameEntity entity) {
@@ -24,10 +30,10 @@ public class MovementProcess implements SingleProcessor<GameEntity>, EngineProce
 		}
 
 		AiComponent aiComponent = entity.getComponent(ComponentType.AI, AiComponent.class);
-		if(aiComponent != null){
+		if (aiComponent != null) {
 			aiComponent.updateDirection();
 		}
-		
+
 		LinearMovementComponent linearMovementComponent = entity.getComponent(ComponentType.LINEAR_MOVEMENT, LinearMovementComponent.class);
 		if (linearMovementComponent != null) {
 			linearMovementComponent.update(deltaTime);
@@ -42,8 +48,6 @@ public class MovementProcess implements SingleProcessor<GameEntity>, EngineProce
 		if (constrainedRegionComponent != null) {
 			constrainedRegionComponent.update(deltaTime);
 		}
-		
-		
 
 	}
 

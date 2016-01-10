@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Bits;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.systems.entitysystem.EntityDestructionListener;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
@@ -105,7 +106,7 @@ public class CellsGameEntitySpatitionPartition implements EntityDestructionListe
 	}
 
 	
-	public synchronized void searchAnyMask(Rectangle region, int any, ArrayList<GameEntity> results) {
+	public synchronized void searchAnyMask(Rectangle region, Bits any, ArrayList<GameEntity> results) {
 		encodeRange(region, tempPartitionKey);
 		int size = 0;
 		currentSearchId++;
@@ -127,7 +128,7 @@ public class CellsGameEntitySpatitionPartition implements EntityDestructionListe
 		}
 	}
 
-	public synchronized void searchAllMask(Rectangle region, int any, ArrayList<GameEntity> results) {
+	public synchronized void searchAllMask(Rectangle region, Bits any, ArrayList<GameEntity> results) {
 		encodeRange(region, tempPartitionKey);
 		int size = 0;
 		currentSearchId++;

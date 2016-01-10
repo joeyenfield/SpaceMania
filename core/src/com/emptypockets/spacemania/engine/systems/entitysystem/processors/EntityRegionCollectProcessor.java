@@ -1,6 +1,7 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.processors;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Bits;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.systems.entitysystem.EntityUtils;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
@@ -11,12 +12,12 @@ public class EntityRegionCollectProcessor implements SingleProcessor<GameEntity>
 
 
 	public ArrayListProcessor<GameEntity> entities;
-	public int abilityMask = 0;
+	public Bits abilityMask;
 	public Rectangle region;
 
 	@Override
 	public void process(GameEntity entity) {
-		if ((abilityMask == 0 || entity.hasAnyOfAbility(abilityMask)) && EntityUtils.isEntityInRegion(entity, region)) {
+		if ((abilityMask == null || entity.hasAnyOfAbility(abilityMask)) && EntityUtils.isEntityInRegion(entity, region)) {
 			entities.add(entity);
 		}
 	}
@@ -24,7 +25,7 @@ public class EntityRegionCollectProcessor implements SingleProcessor<GameEntity>
 	@Override
 	public void reset() {
 		entities = null;
-		abilityMask = 0;
+		abilityMask = null;
 		region = null;		
 	}
 

@@ -15,8 +15,8 @@ public class GameEngineClient extends GameEngine {
 	public NetworkLinearTransformFixer clientLinearTransformFixer = new NetworkLinearTransformFixer();
 	public AssetStore assetStore;
 
-	public GameEngineClient() {
-		super();
+	public GameEngineClient(float sectorSize, int partitionSize) {
+		super(sectorSize,partitionSize);
 		assetStore = new AssetStore();
 		entityFactory = new ClientEntityFactory(this, assetStore);
 

@@ -20,7 +20,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.transf
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.transform.LinearTransformComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.weapon.WeaponComponent;
 import com.emptypockets.spacemania.gui.AssetStore;
-import com.emptypockets.spacemania.screens.GameEngineScreen;
+import com.emptypockets.spacemania.gui.screens.GameEngineScreen;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public abstract class GameEntityFactory {

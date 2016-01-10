@@ -55,17 +55,13 @@ public abstract class StageScreen extends GameScreen {
     @Override
     public void renderScreen(float delta) {
         super.renderScreen(delta);
-        eventLogger.begin("RENDER-stage");
         drawStage(delta);
-        eventLogger.end("RENDER-stage");
     }
 
     @Override
     public void updateLogic(float delta) {
         super.updateLogic(delta);
-        eventLogger.begin("LOGIC-Stage");
         getStage().act(delta);
-        eventLogger.end("LOGIC-Stage");
     }
 
     public void drawStage(float delta) {
@@ -77,7 +73,6 @@ public abstract class StageScreen extends GameScreen {
                 //Bug where draw fails which results in the batch.end never being called
                 getStage().getBatch().end();
             }
-            //Console.error(e);
         }
     }
 

@@ -16,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.emptypockets.spacemania.screens.GameEngineScreen;
+import com.emptypockets.spacemania.gui.screens.GameEngineScreen;
 
 public class DebugOnScreenPlayerInputProducer extends Table implements PlayerInputProducer {
 	int minTouchSize = 60;

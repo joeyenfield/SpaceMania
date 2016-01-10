@@ -5,8 +5,8 @@ import android.os.Bundle;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.emptypockets.spacemania.MainGame;
-import com.emptypockets.spacemania.network.common.utils.IpManager;
-import com.emptypockets.spacemania.network.common.utils.IpManagerInterface;
+import com.emptypockets.spacemania.utils.ipConfig.IpManager;
+import com.emptypockets.spacemania.utils.ipConfig.IpManagerInterface;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override

@@ -4,8 +4,8 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Compon
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
-import com.emptypockets.spacemania.network.common.data.engine.entity.ComponentDataStore;
-import com.emptypockets.spacemania.network.common.data.engine.entity.GameEntityNetworkSync;
+import com.emptypockets.spacemania.network.engine.entity.ComponentDataStore;
+import com.emptypockets.spacemania.network.engine.entity.GameEntityNetworkSync;
 
 public class NetworkDataComponent extends EntityComponent<NetworkState> {
 	public NetworkDataComponent() {

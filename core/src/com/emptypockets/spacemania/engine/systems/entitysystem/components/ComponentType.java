@@ -1,7 +1,6 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem.components;
 
-import javax.management.RuntimeErrorException;
-
+import com.badlogic.gdx.utils.Bits;
 import com.emptypockets.spacemania.utils.BitUtilities;
 
 public enum ComponentType {
@@ -19,10 +18,17 @@ public enum ComponentType {
 	WEAPON(11),
 	AI(12);
 	
-	int mask = 0;
 	public int id = 0;
+	public Bits bitMask;
 	public static final int COMPONENT_TYPES = 13;
 
+
+	private ComponentType(int id) {
+		this.id = id;
+		bitMask = new Bits();
+		bitMask.set(id);
+	}
+	
 	public static EntityComponent[] getComponentHolder() {
 		return new EntityComponent[COMPONENT_TYPES];
 	}
@@ -52,34 +58,28 @@ public enum ComponentType {
 	}
 
 
-	private ComponentType(int id) {
-		this.mask = 1 << id;
-		this.id = id;
+
+	public Bits getMask() {
+		return bitMask;
 	}
 
-	public int getMask() {
-		return mask;
-	}
-
-	public int addAbility(int currentAbility) {
-		if ((currentAbility & mask) != 0) {
-			System.out.println(BitUtilities.toString(currentAbility) + " - Current ");
-			System.out.println(BitUtilities.toString(mask) + " - Mask To Add ");
+	public void addAbility(Bits mask) {
+		if(mask.getAndSet(id)){
+			System.out.println(BitUtilities.toString(mask) + " - Current ");
+			System.out.println(BitUtilities.toString(bitMask) + " - Mask To Add ");
 			printMasks();
 			throw new RuntimeException("Component already in use ");
 		}
-		return currentAbility | mask;
 	}
 
-	public int removeAbility(int currentAbility) {
-		if ((currentAbility & mask) == 0) {
+	public void removeAbility(Bits mask) {
+		if(!mask.getAndClear(id)){
 			throw new RuntimeException("Component does not have ability");
 		}
-		return currentAbility ^ mask;
 	}
 
 	public String getMaskString() {
-		return BitUtilities.toString(mask);
+		return BitUtilities.toString(bitMask);
 	}
 	
 

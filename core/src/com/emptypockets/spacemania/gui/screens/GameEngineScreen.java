@@ -48,18 +48,18 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 	public static long hostNetowrkPeroid = 100;
 
-	int width = 25000;
-	int height = 25000;
+	int width = 1000;
+	int height = 1000;
 
-	int regionSizeX = 4000;
-	int regionSizeY = 4000;
+	int regionSizeX = 1000;
+	int regionSizeY = 1000;
 
-	int viewOffsetX = width + 10;
-	int viewOffsetY = height + 10;
+	int viewOffsetX = 0;
+	int viewOffsetY = 0;
 
-	int desiredEntityCount = 2000;
-	int clientCount = 3;
-	int rowCount = 2;
+	int desiredEntityCount = 10;
+	int clientCount = 1;
+	int rowCount = 1;
 
 	public boolean debugDisplay = false;
 	public boolean centerOnEntity = false;
@@ -190,8 +190,8 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 			clientGameEngines[i].update(delta);
 		}
 		for (int i = 0; i < 10; i++) {
-			if (serverGameEngine.entitySystem.getEntityCount(GameEntityType.ENEMY) < desiredEntityCount) {
-				serverGameEngine.createEntity(GameEntityType.ENEMY);
+			if (serverGameEngine.entitySystem.getEntityCount(GameEntityType.DEFENCE_SHIP) < desiredEntityCount) {
+				serverGameEngine.createEntity(GameEntityType.DEFENCE_SHIP);
 			}
 		}
 

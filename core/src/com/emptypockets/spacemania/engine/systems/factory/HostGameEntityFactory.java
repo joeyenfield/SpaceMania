@@ -17,8 +17,8 @@ public class HostGameEntityFactory extends GameEntityFactory{
 	}
 
 	@Override
-	protected GameEntity createEnemyEntity(int entityId) {
-		GameEntity ents = super.createEnemyEntity(entityId);
+	protected GameEntity createDefenceShipEntity(int entityId) {
+		GameEntity ents = super.createDefenceShipEntity(entityId);
 		return ents;
 	}
 }

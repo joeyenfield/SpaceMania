@@ -96,7 +96,7 @@ public class AiComponent extends EntityComponent<AiState> implements EntityDestr
 			target = entity.engine.getEntityById(targetId);
 			if (target == null && entity.engine.getTime() - lastEntitySearchTime > entitySearchDelta) {
 				lastEntitySearchTime = entity.engine.getTime();
-				entity.engine.spatialPartition.searchByType(searchRegion, GameEntityType.SHIP, results);
+				entity.engine.spatialPartition.searchByType(searchRegion, GameEntityType.PLAYER, results);
 				if (results.size() > 0) {
 					target = results.get(0);
 					setTarget(target);

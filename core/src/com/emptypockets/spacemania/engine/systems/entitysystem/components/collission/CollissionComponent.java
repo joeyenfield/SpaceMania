@@ -68,7 +68,7 @@ public class CollissionComponent extends EntityComponent<CollissionState> {
 	}
 
 	public void destroy(GameEntity ent) {
-		if(ent.type == GameEntityType.SHIP ){
+		if(ent.type == GameEntityType.PLAYER ){
 			return;
 		}
 		if (!ent.hasAnyOfAbility(ComponentType.DESTRUCTION.getMask())) {

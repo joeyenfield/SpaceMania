@@ -1,9 +1,9 @@
 package com.emptypockets.spacemania.engine.systems.entitysystem;
 
 public enum GameEntityType {
-	SHIP,
+	PLAYER,
 	BULLET,
-	ENEMY,
-	PLAYER_BASE,
-	SMOKE
+	STATION,
+	DEFENCE_SHIP,
+	ATTACK_SHIP
 }

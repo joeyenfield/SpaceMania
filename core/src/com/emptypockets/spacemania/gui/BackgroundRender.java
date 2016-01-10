@@ -17,10 +17,11 @@ public class BackgroundRender {
 	Vector2 uvMap1 = new Vector2();
 	Vector2 uvMap2 = new Vector2();
 
-	float deepImgScale = 2;
+	float deepImgScale = 1;
 	float deepMovementScale = 0.05f;
 
-	float[] imgScale = new float[] { .5f, .5f };
+	int layersToDraw = 1;
+	float[] imgScale = new float[] { .7f, 1.f };
 	float[] movementScale = new float[] { 0.5f, 1 };
 	float[] offsetX = new float[] { 0, 0.5f };
 	float[] offsetY = new float[] { 0, 0.5f };
@@ -68,7 +69,7 @@ public class BackgroundRender {
 			spriteBatch.draw(starfieldDeepTexture, screen.x, screen.y, screen.width, screen.height, uvMap1.x, uvMap1.y, uvMap2.x, uvMap2.y);
 
 			spriteBatch.enableBlending();
-			for (int i = 0; i < imgScale.length; i++) {
+			for (int i = 0; i < imgScale.length && i < layersToDraw; i++) {
 				getUvMap(screen, starfieldParalaxTexture, movementScale[i], imgScale[i], offsetX[i], offsetY[i], uvMap1, uvMap2);
 				spriteBatch.draw(starfieldParalaxTexture, screen.x, screen.y, screen.width, screen.height, uvMap1.x, uvMap1.y, uvMap2.x, uvMap2.y);
 			}

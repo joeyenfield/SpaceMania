@@ -34,7 +34,7 @@ public class MainGame extends Game implements InputProcessor {
 		loadingScreen = new LoadingScreen(this, input);
 		splashScreen = new SplashScreen(this, input);
 
-			loadScreen(new GameEngineScreen(this, input), false);
+		loadScreen(new GameEngineScreen(this, input), false);
 
 	}
 

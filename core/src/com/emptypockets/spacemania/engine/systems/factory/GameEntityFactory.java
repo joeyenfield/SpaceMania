@@ -38,26 +38,29 @@ public abstract class GameEntityFactory {
 		case BULLET:
 			ent = createBulletEntity(id);
 			break;
-		case SHIP:
-			ent = createShipEntity(id);
+		case PLAYER:
+			ent = createPlayerEntity(id);
 			break;
-		case ENEMY:
-			ent = createEnemyEntity(id);
+		case DEFENCE_SHIP:
+			ent = createDefenceShipEntity(id);
 			break;
-		case PLAYER_BASE:
-			ent = createPlayerBase(id);
+		case STATION:
+			ent = createStationEntity(id);
+			break;
+		case ATTACK_SHIP:
+			ent = createAttackShipEntity(id);
 			break;
 		default:
-			throw new RuntimeException("Not yet implemented");
+			throw new RuntimeException();
 		}
 		return ent;
 	}
 
-	protected GameEntity createPlayerBase(int entityId) {
+	protected GameEntity createStationEntity(int entityId) {
 		float radius = 128;
 
 		GameEntity entity = PoolsManager.obtain(GameEntity.class);
-		entity.type = GameEntityType.PLAYER_BASE;
+		entity.type = GameEntityType.STATION;
 		entity.setData(engine, entityId);
 
 		// Add Components
@@ -106,11 +109,58 @@ public abstract class GameEntityFactory {
 		return entity;
 	}
 
-	protected GameEntity createEnemyEntity(int entityId) {
+	protected GameEntity createDefenceShipEntity(int entityId) {
 		float radius = 20;
 
 		GameEntity entity = PoolsManager.obtain(GameEntity.class);
-		entity.type = GameEntityType.ENEMY;
+		entity.type = GameEntityType.DEFENCE_SHIP;
+		entity.setData(engine, entityId);
+
+		entity.addComponent(ComponentType.LINEAR_TRANSFORM);
+		entity.addComponent(ComponentType.LINEAR_MOVEMENT);
+		entity.addComponent(ComponentType.ANGULAR_TRANSFORM);
+		entity.addComponent(ComponentType.ANGULAR_MOVEMENT);
+		entity.addComponent(ComponentType.PARTITION);
+		entity.addComponent(ComponentType.COLLISSION);
+		entity.addComponent(ComponentType.RENDER);
+		entity.addComponent(ComponentType.NETWORK_DATA);
+		entity.addComponent(ComponentType.CONSTRAINED_MOVEMENT);
+		entity.addComponent(ComponentType.WEAPON);
+		entity.addComponent(ComponentType.AI);
+
+		entity.getComponent(ComponentType.PARTITION, PartitionComponent.class).state.radius = radius;
+		entity.getComponent(ComponentType.RENDER, RenderComponent.class).state.setData(assetStore.getRegion("enemy-follow"), 2 * radius, 2 * radius, true,2);
+		entity.getComponent(ComponentType.COLLISSION, CollissionComponent.class).state.collissionRadius = radius;
+		entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT, ConstrainedRegionComponent.class).state.constrainedRegion = engine.universeRegion;
+		entity.getComponent(ComponentType.CONSTRAINED_MOVEMENT, ConstrainedRegionComponent.class).state.constrainRadius = radius;
+
+		WeaponComponent weapon = entity.getComponent(ComponentType.WEAPON, WeaponComponent.class);
+		weapon.state.shootTime = MathUtils.random(GameEngineScreen.bulletShootTimeMin, GameEngineScreen.bulletShootTimeMax);
+		weapon.state.shooting = false;
+		weapon.state.bulletVel = GameEngineScreen.bulletVel;
+		weapon.state.bulletLife = 5;
+
+		LinearMovementComponent comp = (LinearMovementComponent) entity.getComponent(ComponentType.LINEAR_MOVEMENT);
+		// float progress = (0.1f + 0.8f * (i / (ents - 1f)));
+		// entity.linearTransform.data.pos.x = width * progress;
+		// entity.linearTransform.data.pos.y = height * progress;
+		// comp.data.vel.x = 10;?
+		comp.state.vel.x = MathUtils.random(GameEngineScreen.minVelEnemy, GameEngineScreen.maxVelEnemy) * MathUtils.randomSign();
+		comp.state.vel.y = MathUtils.random(GameEngineScreen.minVelEnemy, GameEngineScreen.maxVelEnemy) * MathUtils.randomSign();
+		comp.state.maxVel = GameEngineScreen.maxVelEnemy;
+		entity.linearTransform.state.pos.x = MathUtils.random(engine.universeRegion.x, engine.universeRegion.x + engine.universeRegion.width);
+		entity.linearTransform.state.pos.y = MathUtils.random(engine.universeRegion.y, engine.universeRegion.y + engine.universeRegion.height);
+
+		entity.getComponent(ComponentType.AI, AiComponent.class).searchSize = GameEngineScreen.enemySearchWindow;
+
+		return entity;
+	}
+	
+	protected GameEntity createAttackShipEntity(int entityId){
+		float radius = 20;
+
+		GameEntity entity = PoolsManager.obtain(GameEntity.class);
+		entity.type = GameEntityType.DEFENCE_SHIP;
 		entity.setData(engine, entityId);
 
 		entity.addComponent(ComponentType.LINEAR_TRANSFORM);
@@ -153,11 +203,11 @@ public abstract class GameEntityFactory {
 		return entity;
 	}
 
-	protected GameEntity createShipEntity(int entityId) {
+	protected GameEntity createPlayerEntity(int entityId) {
 		float radius = 20;
 
 		GameEntity entity = PoolsManager.obtain(GameEntity.class);
-		entity.type = GameEntityType.SHIP;
+		entity.type = GameEntityType.PLAYER;
 		entity.setData(engine, entityId);
 
 		LinearTransformComponent linearTransform = (LinearTransformComponent) entity.addComponent(ComponentType.LINEAR_TRANSFORM);

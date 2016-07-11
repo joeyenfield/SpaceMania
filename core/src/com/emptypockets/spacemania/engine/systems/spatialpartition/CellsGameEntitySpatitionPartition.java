@@ -16,7 +16,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.partition.PartitionComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.partition.PartitionState;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.RectangeUtils;
 
 public class CellsGameEntitySpatitionPartition implements EntityDestructionListener {
@@ -150,7 +150,7 @@ public class CellsGameEntitySpatitionPartition implements EntityDestructionListe
 		}
 	}
 
-	public void renderDebug(ShapeRenderer render, TextRender text, Rectangle region, float pixelSize,Vector2 offset) {
+	public void renderDebug(ShapeRenderer render, ShapeRenderUtil text, Rectangle region, float pixelSize,Vector2 offset) {
 		encodeRange(region, tempPartitionKey);
 		render.begin(ShapeType.Line);
 		for (int x = tempPartitionKey.xS; x <= tempPartitionKey.xE; x++) {

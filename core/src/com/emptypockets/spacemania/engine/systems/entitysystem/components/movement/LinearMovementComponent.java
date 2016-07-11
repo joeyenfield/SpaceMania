@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.RectangeUtils;
 
 public class LinearMovementComponent extends EntityComponent<LinearMovementState> {
@@ -26,7 +26,7 @@ public class LinearMovementComponent extends EntityComponent<LinearMovementState
 	}
 
 	@Override
-	public void debug(ShapeRenderer render, TextRender textRender, Rectangle screenView, Vector2 offset) {
+	public void debug(ShapeRenderer render, ShapeRenderUtil textRender, Rectangle screenView, Vector2 offset) {
 		super.debug(render, textRender, screenView, offset);
 		tempP1.set(entity.linearTransform.state.pos).add(offset);
 		tempP2.set(entity.linearTransform.state.pos).add(offset).add(state.vel);

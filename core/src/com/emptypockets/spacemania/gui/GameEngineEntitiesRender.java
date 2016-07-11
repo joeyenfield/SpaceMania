@@ -12,7 +12,7 @@ import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.render.RenderComponent;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 
 public class GameEngineEntitiesRender {
 	public boolean showDebug = false;
@@ -29,7 +29,7 @@ public class GameEngineEntitiesRender {
 		shapeBatch.end();
 
 	}
-	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, TextRender textHelper, float pixelSize) {
+	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, ShapeRenderUtil textHelper, float pixelSize) {
 		screenView.set(screen);
 
 		Vector2 offset = engine.worldRenderOffset;

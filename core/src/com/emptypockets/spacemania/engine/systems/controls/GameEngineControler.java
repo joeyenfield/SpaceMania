@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.GameEngine;
 import com.emptypockets.spacemania.engine.systems.entitysystem.EntityDestructionListener;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.CameraHelper;
 
 public class GameEngineControler implements InputProcessor, EntityDestructionListener {
@@ -57,7 +57,7 @@ public class GameEngineControler implements InputProcessor, EntityDestructionLis
 		return currentTouchScreen.dst(lastTouchDownScreen);
 	}
 
-	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, TextRender textHelper, float pixelSize) {
+	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, ShapeRenderUtil textHelper, float pixelSize) {
 		if (this.selectedEntity != null) {
 			renderTemp.set(this.selectedEntity.getPos()).add(engine.worldRenderOffset);
 			shapeBatch.begin(ShapeType.Line);

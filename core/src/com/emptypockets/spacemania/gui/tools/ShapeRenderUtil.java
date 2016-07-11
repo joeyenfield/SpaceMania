@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 
-public class TextRender {
+public class ShapeRenderUtil {
 	float prog1 = 0;
 	float prog2 = 0;
 	float ang1 = 0;

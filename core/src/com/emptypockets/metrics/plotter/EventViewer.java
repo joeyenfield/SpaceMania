@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.emptypockets.metrics.events.EventSystem;
 import com.emptypockets.metrics.events.render.EventRender;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.CameraHelper;
 import com.emptypockets.spacemania.utils.camera.PanAndZoomCamController;
 
@@ -20,14 +20,14 @@ public class EventViewer extends ApplicationAdapter {
 	ShapeRenderer shape;
 	OrthographicCamera camera;
 	PanAndZoomCamController cameraControl;
-	TextRender textRender;
+	ShapeRenderUtil textRender;
 	EventRender events;
 	CameraHelper helper;
 
 	@Override
 	public void create() {
 		helper = new CameraHelper();
-		textRender = new TextRender();
+		textRender = new ShapeRenderUtil();
 		events = new EventRender();
 
 		shape = new ShapeRenderer();

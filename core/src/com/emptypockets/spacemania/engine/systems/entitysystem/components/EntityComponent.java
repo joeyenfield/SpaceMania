@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntity;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public abstract class EntityComponent<STATE_TYPE extends ComponentState> implements Poolable {
@@ -72,7 +72,7 @@ public abstract class EntityComponent<STATE_TYPE extends ComponentState> impleme
 		return screenView.contains(entity.linearTransform.state.pos.x+offset.x,entity.linearTransform.state.pos.y+offset.y); 
 	}
 
-	public void debug(ShapeRenderer render, TextRender textRender, Rectangle screenView, Vector2 offset) {
+	public void debug(ShapeRenderer render, ShapeRenderUtil textRender, Rectangle screenView, Vector2 offset) {
 
 	}
 }

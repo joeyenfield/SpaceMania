@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.GameEngine;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 
 public class BackgroundRender {
 	Texture starfieldDeepTexture;
@@ -44,7 +44,7 @@ public class BackgroundRender {
 		starfieldParalaxTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 	}
 
-	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, TextRender textHelper, float pixelSize) {
+	public void render(GameEngine engine, Rectangle screen, ShapeRenderer shapeBatch, SpriteBatch spriteBatch, ShapeRenderUtil textHelper, float pixelSize) {
 		screenView.set(screen);
 
 		Vector2 offset = engine.worldRenderOffset;

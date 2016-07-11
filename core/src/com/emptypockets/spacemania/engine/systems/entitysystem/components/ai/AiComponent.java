@@ -12,7 +12,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.GameEntityType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.movement.LinearMovementComponent;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.RectangeUtils;
 
 public class AiComponent extends EntityComponent<AiState> implements EntityDestructionListener {
@@ -40,7 +40,7 @@ public class AiComponent extends EntityComponent<AiState> implements EntityDestr
 	}
 
 	@Override
-	public void debug(ShapeRenderer render, TextRender textRender, Rectangle screenView, Vector2 offset) {
+	public void debug(ShapeRenderer render, ShapeRenderUtil textRender, Rectangle screenView, Vector2 offset) {
 		super.debug(render, textRender, screenView, offset);
 		debugP1.set(entity.linearTransform.state.pos).add(offset).add(force);
 		debugP2.set(entity.linearTransform.state.pos).add(offset);

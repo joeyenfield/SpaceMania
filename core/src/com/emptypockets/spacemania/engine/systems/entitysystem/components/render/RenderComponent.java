@@ -10,7 +10,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Entity
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ai.AiComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.collission.CollissionComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.partition.PartitionComponent;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class RenderComponent extends EntityComponent<RenderState> {
@@ -77,7 +77,7 @@ public class RenderComponent extends EntityComponent<RenderState> {
 		return RenderState.class;
 	}
 
-	public void renderDebug(ShapeRenderer render, TextRender textRender, Rectangle screenView, Vector2 offset) {
+	public void renderDebug(ShapeRenderer render, ShapeRenderUtil textRender, Rectangle screenView, Vector2 offset) {
 		float radius = 0;
 
 		for (int i = 0; i < ComponentType.COMPONENT_TYPES; i++) {

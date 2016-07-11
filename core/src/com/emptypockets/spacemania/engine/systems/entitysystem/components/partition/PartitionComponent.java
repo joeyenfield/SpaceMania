@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ComponentType;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 
 public class PartitionComponent extends EntityComponent<PartitionState> {
 
@@ -18,7 +18,7 @@ public class PartitionComponent extends EntityComponent<PartitionState> {
 	}
 
 	@Override
-	public void debug(ShapeRenderer render, TextRender textRender, Rectangle screenView, Vector2 offset) {
+	public void debug(ShapeRenderer render, ShapeRenderUtil textRender, Rectangle screenView, Vector2 offset) {
 		super.debug(render, textRender, screenView, offset);
 		render.setColor(Color.GREEN);
 		render.circle(entity.linearTransform.state.pos.x + offset.x, entity.linearTransform.state.pos.y + offset.y, state.radius);

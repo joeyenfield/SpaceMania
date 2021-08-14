@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.emptypockets.metrics.events.Event;
 import com.emptypockets.metrics.events.EventSystem;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.CameraHelper;
 import com.emptypockets.spacemania.utils.GraphicsToolkit;
 import com.emptypockets.spacemania.utils.RectangeUtils;
@@ -28,7 +28,7 @@ public class EventRender {
 	Rectangle eventBounds = new Rectangle();
 
 	Rectangle displayAxisBounds = new Rectangle();
-	TextRender text = new TextRender();
+	ShapeRenderUtil text = new ShapeRenderUtil();
 
 	Vector2 axisPoint1 = new Vector2();
 	Vector2 axisPoint2 = new Vector2();

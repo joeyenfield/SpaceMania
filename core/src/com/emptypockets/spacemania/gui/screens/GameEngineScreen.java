@@ -30,7 +30,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.render
 import com.emptypockets.spacemania.gui.BackgroundRender;
 import com.emptypockets.spacemania.gui.GameEngineEntitiesRender;
 import com.emptypockets.spacemania.gui.tools.StageScreen;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.CameraHelper;
 import com.emptypockets.spacemania.utils.camera.PanAndZoomCamController;
 
@@ -76,7 +76,7 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRender;
-	TextRender textHelper;
+	ShapeRenderUtil textHelper;
 
 	PanAndZoomCamController cameraController;
 	GameEngineControler gameEngineControler;
@@ -130,7 +130,7 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 		backroundRender = new BackgroundRender();
 		spriteBatch = new SpriteBatch();
 		shapeRender = new ShapeRenderer();
-		textHelper = new TextRender();
+		textHelper = new ShapeRenderUtil();
 
 		serverGameEngine = new GameEngineHost(0,20);
 		serverGameEngine.setUniverseSize(-width / 2, -height / 2, width, height);

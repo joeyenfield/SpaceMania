@@ -12,7 +12,7 @@ import com.emptypockets.spacemania.engine.systems.entitysystem.components.Compon
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.EntityComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.ai.AiComponent;
 import com.emptypockets.spacemania.engine.systems.entitysystem.components.destruction.DestructionComponent;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.PoolsManager;
 
 public class CollissionComponent extends EntityComponent<CollissionState> {
@@ -26,7 +26,7 @@ public class CollissionComponent extends EntityComponent<CollissionState> {
 	}
 	
 	@Override
-	public void debug(ShapeRenderer render, TextRender textRender, Rectangle screenView, Vector2 offset) {
+	public void debug(ShapeRenderer render, ShapeRenderUtil textRender, Rectangle screenView, Vector2 offset) {
 		super.debug(render, textRender, screenView, offset);
 		float radius = state.collissionRadius;
 		if (entity.hasAnyOfAbility(ComponentType.DESTRUCTION.getMask())) {

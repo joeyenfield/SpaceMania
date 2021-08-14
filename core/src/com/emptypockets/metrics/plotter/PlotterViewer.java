@@ -24,7 +24,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.emptypockets.metrics.plotter.data.TimeSeriesDataset;
 import com.emptypockets.metrics.plotter.graphs.line.LinePlotDataGraph;
 import com.emptypockets.metrics.plotter.graphs.line.LinePlotDescription;
-import com.emptypockets.spacemania.gui.tools.TextRender;
+import com.emptypockets.spacemania.gui.tools.ShapeRenderUtil;
 import com.emptypockets.spacemania.utils.CameraHelper;
 import com.emptypockets.spacemania.utils.GraphicsToolkit;
 import com.emptypockets.spacemania.utils.camera.PanAndZoomCamController;
@@ -47,7 +47,7 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 
 	Stage stage;
 	DataLoggerGraphManager manager;
-	TextRender textRender;
+	ShapeRenderUtil textRender;
 
 	CameraHelper helper;
 
@@ -64,7 +64,7 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 	@Override
 	public void create() {
 		helper = new CameraHelper();
-		textRender = new TextRender();
+		textRender = new ShapeRenderUtil();
 		textRender.strictDraw = false;
 		stage = new Stage(new ScreenViewport());
 

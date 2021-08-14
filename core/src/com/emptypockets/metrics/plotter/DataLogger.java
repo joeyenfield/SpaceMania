@@ -38,6 +38,7 @@ public class DataLogger {
 
 	public void reset() throws IOException {
 		Path directory = Paths.get(dataDirectory);
+		Files.createDirectories(directory);
 		Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {

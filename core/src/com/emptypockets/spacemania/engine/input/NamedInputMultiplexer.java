@@ -223,11 +223,11 @@ public class NamedInputMultiplexer implements InputProcessor {
 	}
 
 	@Override
-	public boolean scrolled(int amount) {
+	public boolean scrolled(float amountX, float amountY) {
 		if (detail)
 			System.out.println("\nscrolled - Start");
 		for (int i = 0, n = processors.size; i < n; i++)
-			if (processors.get(i).scrolled(amount)) {
+			if (processors.get(i).scrolled(amountX, amountY)) {
 				if (exit || detail) {
 					System.out.println("scrolled[" + names.get(i) + "]-True");
 				}
@@ -241,6 +241,6 @@ public class NamedInputMultiplexer implements InputProcessor {
 			System.out.println("scrolled - NONE");
 		}
 		return false;
-
 	}
+
 }

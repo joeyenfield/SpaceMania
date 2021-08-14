@@ -139,6 +139,11 @@ public class PanAndZoomCamController implements InputProcessor {
         return true;
     }
 
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        return scrolled((int) (amountX+amountY));
+    }
+
     public void changeZoom(float zoom, float x, float y) {
         //Zoom Disabled
         if (!zoomEnabled) {
@@ -163,7 +168,6 @@ public class PanAndZoomCamController implements InputProcessor {
         limitZoom = limit;
     }
 
-    @Override
     public boolean scrolled(int amount) {
         float newZoom = camera.zoom * (1 + (amount < 0 ? 0.1f : -0.1f));
         changeZoom(newZoom, lastMouse.x, lastMouse.y);

@@ -381,6 +381,11 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 	}
 
 	@Override
+	public void pinchStop() {
+
+	}
+
+	@Override
 	public boolean keyDown(int keycode) {
 		// TODO Auto-generated method stub
 		return false;
@@ -512,8 +517,11 @@ public class PlotterViewer extends ApplicationAdapter implements GestureListener
 	}
 
 	@Override
+	public boolean scrolled(float amountX, float amountY) {
+		return false;
+	}
+
 	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

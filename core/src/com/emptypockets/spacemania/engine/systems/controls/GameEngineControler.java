@@ -171,6 +171,10 @@ public class GameEngineControler implements InputProcessor, EntityDestructionLis
 	}
 
 	@Override
+	public boolean scrolled(float amountX, float amountY) {
+		return false;
+	}
+
 	public boolean scrolled(int amount) {
 		return false;
 	}

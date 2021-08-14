@@ -1,10 +1,15 @@
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
+        gradlePluginPortal()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'org.wisepersist:gwt-gradle-plugin:1.0.13'
+        classpath 'org.gretty:gretty:3.0.2'
+        classpath 'com.android.tools.build:gradle:3.5.4'
     }
 }
 
@@ -15,67 +20,71 @@ allprojects {
     version = '1.0'
     ext {
         appName = 'SpaceMania'
-        gdxVersion = '1.6.0'
-        aiVersion = '1.5.0'
+//        gdxVersion = '1.6.0'
+//        aiVersion = '1.5.0'
         kryonetVersion = '2.22.0-RC1'
+
+        gdxVersion = '1.10.0'
+        roboVMVersion = '2.3.12'
+        box2DLightsVersion = '1.5'
+        ashleyVersion = '1.7.3'
+        aiVersion = '1.8.2'
+        gdxControllersVersion = '2.1.0'
+        shapedrawerVersion = '2.5.0'
     }
 
     repositories {
+        mavenLocal()
         mavenCentral()
+        google()
+        gradlePluginPortal()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url 'https://jitpack.io' }
     }
 }
 
 project(":desktop") {
-    apply plugin: "java"
-
+    apply plugin: "java-library"
 
     dependencies {
-        compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
-        compile "com.esotericsoftware:kryonet:$kryonetVersion"
-        compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        implementation project(":core")
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+        api "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        api "de.tomgrill.gdxdialogs:gdx-dialogs-desktop:1.2.5"
+        api "com.esotericsoftware:kryonet:$kryonetVersion"
     }
 }
 
 project(":android") {
-    apply plugin: "android"
+    apply plugin: "com.android.application"
 
     configurations { natives }
 
     dependencies {
-        compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
-        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
+        implementation project(":core")
+        api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
+        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
-        compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
-        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-controllers-android:$gdxVersion"
-        compile "com.esotericsoftware:kryonet:$kryonetVersion"
+        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
+        api "de.tomgrill.gdxdialogs:gdx-dialogs-android:1.2.5"
+        api "com.esotericsoftware:kryonet:$kryonetVersion"
     }
 }
 
 project(":core") {
-    apply plugin: "java"
-
-    sourceSets.test.java.srcDirs = ["test/"]
-
+    apply plugin: "java-library"
     dependencies {
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
-        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
-        compile "com.esotericsoftware:kryonet:$kryonetVersion"
-
-        compile 'junit:junit:4.+'
-        testCompile 'junit:junit:4.+'
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+        api "net.dermetfan.libgdx-utils:libgdx-utils:0.13.4"
+        api "de.tomgrill.gdxdialogs:gdx-dialogs-core:1.2.5"
+        api "com.github.czyzby:gdx-kiwi:1.9.1.9.6"
+        api "com.esotericsoftware:kryonet:$kryonetVersion"
+        implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
     }
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
 }

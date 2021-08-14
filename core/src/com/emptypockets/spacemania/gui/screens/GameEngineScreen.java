@@ -48,8 +48,8 @@ public class GameEngineScreen extends StageScreen implements EntityDestructionLi
 
 	public static long hostNetowrkPeroid = 100;
 
-	int width = 1000;
-	int height = 1000;
+	int width = 10000;
+	int height = 10000;
 
 	int regionSizeX = 1000;
 	int regionSizeY = 1000;

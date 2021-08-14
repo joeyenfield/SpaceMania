@@ -1,6 +1,7 @@
 package com.emptypockets.metrics.plotter.gui;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree;
@@ -14,12 +15,13 @@ public class LinePlotDescriptionPanel extends Tree {
 	ColorNode lineColor;
 	CheckBox lineEnabled;
 	CheckBox pointEnabled;
-	
+
+
 	public LinePlotDescriptionPanel(Skin skin, String name) {
 		super(skin);
 		this.name= name;
 		enabled = new CheckBox(name, skin);
-		Node node = new Node(enabled);
+		Node node = new MyNode(enabled);
 		add(node);
 
 		pointColor =new ColorNode("", skin);
@@ -27,10 +29,10 @@ public class LinePlotDescriptionPanel extends Tree {
 		lineEnabled = new CheckBox("Line", skin);
 		pointEnabled = new CheckBox("Point", skin);
 		
-		Node line = new Node(lineEnabled);
+		Node line = new MyNode(lineEnabled);
 		line.add(lineColor);
 		
-		Node point = new Node(pointEnabled);
+		Node point = new MyNode(pointEnabled);
 		point.add(pointColor);
 		
 		

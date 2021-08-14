@@ -47,10 +47,10 @@ public class ColorNode extends Node {
 		alphaSlider = new Slider(0, 1, 0.1f, false, skin);
 		getActor().setSize(20, 20);
 		alphaSlider.setValue(1f);
-		add(new Node(redSlider));
-		add(new Node(greenSlider));
-		add(new Node(blueSlider));
-		add(new Node(alphaSlider));
+		add(new MyNode(redSlider));
+		add(new MyNode(greenSlider));
+		add(new MyNode(blueSlider));
+		add(new MyNode(alphaSlider));
 
 		InputListener stopTouchDown = new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
